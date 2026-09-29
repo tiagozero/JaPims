@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pimsleur Japanese — Lesson Study Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Poppins:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -13,37 +13,54 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
-                        jp: ['Noto Sans JP', 'sans-serif']
+                        sans: ['var(--font-body)', 'sans-serif'],
+                        jp: ['var(--font-jp)', 'sans-serif']
                     }
                 }
             }
         }
     </script>
     <style>
+        :root {
+            --font-body: 'Inter', 'Noto Sans JP', sans-serif;
+            --font-jp: 'Noto Sans JP', sans-serif;
+            --furigana-scale: 1;
+        }
+
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
-        pre::-webkit-scrollbar, #chat-container::-webkit-scrollbar, #modal-lessons-scroll::-webkit-scrollbar, #settings-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-        pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb, #settings-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
+
+        pre::-webkit-scrollbar,
+        #chat-container::-webkit-scrollbar,
+        #modal-lessons-scroll::-webkit-scrollbar,
+        #settings-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        pre::-webkit-scrollbar-thumb,
+        #chat-container::-webkit-scrollbar-thumb,
+        #modal-lessons-scroll::-webkit-scrollbar-thumb,
+        #settings-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
+
         .dark body { background-color: #000; }
 
-        ruby {
-            ruby-position: over;
-            ruby-align: center;
-        }
+        .font-jp { font-family: var(--font-jp); }
+        body { font-family: var(--font-body); }
+
+        /* Ruby / furigana — rt uses `em`, so it inherits from parent.
+           --furigana-scale is the only multiplier. */
+        ruby { ruby-position: over; ruby-align: center; }
         ruby rt {
-            font-size: 0.55em;
+            font-size: calc(0.55em * var(--furigana-scale));
             font-weight: 600;
             opacity: 0.75;
             letter-spacing: 0.02em;
             line-height: 1.1;
             user-select: none;
         }
-        .text-4xl ruby rt, .text-5xl ruby rt { font-size: 0.5em; }
-        .text-sm ruby rt { font-size: 0.65em; }
-        .text-lg ruby rt { font-size: 0.55em; }
+        .text-4xl ruby rt,
+        .text-5xl ruby rt { font-size: calc(0.5em * var(--furigana-scale)); }
+        .text-sm ruby rt { font-size: calc(0.65em * var(--furigana-scale)); }
+        .text-lg ruby rt { font-size: calc(0.55em * var(--furigana-scale)); }
     </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
@@ -108,6 +125,7 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto">
 
+        <!-- ============ DASHBOARD ============ -->
         <section id="tab-dashboard" class="tab-content space-y-6">
             <div class="bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-rose-500/5 dark:from-neutral-950 dark:via-neutral-950 dark:to-black border border-rose-200/50 dark:border-neutral-900 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
                 <div class="relative z-10 max-w-2xl">
@@ -176,9 +194,7 @@
                         View all (<span id="view-all-count">0</span>) <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
-
                 <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
                 <div id="lessons-empty" class="hidden text-center py-10 space-y-3">
                     <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-2xl">
                         <i class="fa-solid fa-inbox"></i>
@@ -216,7 +232,6 @@
                             <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-import text-rose-500"></i> Import a Lesson</h3>
                             <p class="text-xs text-slate-500 dark:text-neutral-400 mt-1">Upload a <code class="px-1 rounded bg-white dark:bg-neutral-950">.json</code> file, or paste the lesson JSON directly.</p>
                         </div>
-
                         <div class="flex flex-wrap items-center gap-2">
                             <label class="cursor-pointer px-4 py-2.5 bg-slate-900 dark:bg-neutral-800 hover:bg-slate-800 dark:hover:bg-neutral-700 text-white text-sm font-medium rounded-xl transition flex items-center gap-2">
                                 <i class="fa-solid fa-file-arrow-up"></i> Choose .json File
@@ -229,11 +244,9 @@
                                 <i class="fa-solid fa-eraser"></i> Clear
                             </button>
                         </div>
-
                         <textarea id="import-textarea" rows="9" spellcheck="false"
                             placeholder='{&#10;  "title": "My Lesson",&#10;  "vocabulary": [ { "jp": "…", "furigana": "{漢字|かんじ}", "romaji": "…", "en": "…" } ]&#10;}'
                             class="w-full font-mono text-xs bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-y"></textarea>
-
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div id="import-message" class="text-sm font-medium"></div>
                             <button onclick="importFromTextarea()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2 self-start sm:self-auto">
@@ -285,6 +298,7 @@
             </div>
         </section>
 
+        <!-- ============ FLASHCARDS ============ -->
         <section id="tab-flashcards" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
             <div id="flashcards-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
                 <h3 class="text-xl font-bold">No lesson loaded</h3>
@@ -345,6 +359,7 @@
             </div>
         </section>
 
+        <!-- ============ ROLEPLAY ============ -->
         <section id="tab-roleplay" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
             <div id="roleplay-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
                 <h3 class="text-xl font-bold">No roleplay scenarios available</h3>
@@ -383,6 +398,7 @@
             </div>
         </section>
 
+        <!-- ============ QUIZ ============ -->
         <section id="tab-quiz" class="tab-content hidden space-y-6 max-w-2xl mx-auto">
             <div id="quiz-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
                 <h3 class="text-xl font-bold">No quiz available</h3>
@@ -421,6 +437,7 @@
             </div>
         </section>
 
+        <!-- ============ TRANSCRIPT ============ -->
         <section id="tab-transcript" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
             <div id="transcript-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
                 <h3 class="text-xl font-bold">No transcript available</h3>
@@ -447,6 +464,7 @@
 
     </main>
 
+    <!-- ============ ALL LESSONS MODAL ============ -->
     <div id="all-lessons-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
@@ -475,6 +493,7 @@
         </div>
     </div>
 
+    <!-- ============ SETTINGS MODAL ============ -->
     <div id="settings-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
@@ -482,7 +501,7 @@
                     <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-gear"></i></div>
                     <div>
                         <h3 class="text-lg font-bold">Settings</h3>
-                        <p class="text-xs text-slate-500 dark:text-neutral-400">Data backup, restore, and exports.</p>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Appearance, typography, data, and exports.</p>
                     </div>
                 </div>
                 <button onclick="closeSettingsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition">
@@ -491,6 +510,58 @@
             </div>
 
             <div id="settings-scroll" class="overflow-y-auto p-5 space-y-6">
+
+                <!-- TYPOGRAPHY -->
+                <section class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-font text-rose-500"></i>
+                        <h4 class="font-bold text-base">Typography</h4>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Font Family</label>
+                        <select id="font-family-select" onchange="applyFontFamily(this.value)"
+                            class="w-full bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        </select>
+                        <p class="text-[11px] text-slate-500 dark:text-neutral-400">
+                            Japanese text always uses a compatible JP font from the selected family.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Furigana Size</label>
+                            <span id="furigana-size-value" class="text-xs font-mono font-semibold text-rose-600">100%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="adjustFuriganaScale(-0.1)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 transition flex items-center justify-center">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <input type="range" id="furigana-size-range" min="50" max="200" step="5" value="100"
+                                oninput="applyFuriganaScale(parseInt(this.value, 10) / 100)"
+                                class="flex-1 accent-rose-600">
+                            <button onclick="adjustFuriganaScale(0.1)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 transition flex items-center justify-center">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-neutral-900/50 border border-slate-200 dark:border-neutral-800">
+                            <div class="font-jp text-lg leading-loose">
+                                <ruby>日本語<rt>にほんご</rt></ruby>が<ruby>少<rt>すこ</rt></ruby>しわかります。
+                            </div>
+                            <p class="text-[10px] text-slate-500 dark:text-neutral-400 mt-1">Live preview</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="resetTypography()" class="px-3.5 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Typography
+                        </button>
+                    </div>
+                </section>
+
+                <hr class="border-slate-200 dark:border-neutral-900">
+
+                <!-- Data Backup -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-database text-rose-500"></i>
@@ -511,6 +582,7 @@
 
                 <hr class="border-slate-200 dark:border-neutral-900">
 
+                <!-- Flashcards CSV -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-file-csv text-emerald-500"></i>
@@ -532,6 +604,7 @@
 
                 <hr class="border-slate-200 dark:border-neutral-900">
 
+                <!-- Danger Zone -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
@@ -548,20 +621,42 @@
 
     <script>
         // =========================================================
-        // STATE
+        // STORAGE KEYS
         // =========================================================
-        const STORAGE_KEY   = 'pimsleur_lessons_v2';
-        const ACTIVE_KEY    = 'pimsleur_active_lesson_v2';
-        const FC_EN_KEY     = 'pimsleur_show_fc_english';
-        const TR_EN_KEY     = 'pimsleur_show_tr_english';
-        const RP_EN_KEY     = 'pimsleur_show_rp_english';
-        const ROMAJI_KEY    = 'pimsleur_show_romaji';
-        const FURIGANA_KEY  = 'pimsleur_show_furigana';
-        const MANAGER_KEY   = 'pimsleur_lesson_manager_open';
+        const STORAGE_KEY        = 'pimsleur_lessons_v2';
+        const ACTIVE_KEY         = 'pimsleur_active_lesson_v2';
+        const FC_EN_KEY          = 'pimsleur_show_fc_english';
+        const TR_EN_KEY          = 'pimsleur_show_tr_english';
+        const RP_EN_KEY          = 'pimsleur_show_rp_english';
+        const ROMAJI_KEY         = 'pimsleur_show_romaji';
+        const FURIGANA_KEY       = 'pimsleur_show_furigana';
+        const MANAGER_KEY        = 'pimsleur_lesson_manager_open';
+        const DARK_MODE_KEY      = 'pimsleur_dark_mode';
+        const FONT_FAMILY_KEY    = 'pimsleur_font_family';
+        const FURIGANA_SCALE_KEY = 'pimsleur_furigana_scale';
 
         const DASHBOARD_LESSON_LIMIT = 3;
-        const BACKUP_VERSION = 2;
+        const BACKUP_VERSION = 4;
 
+        // =========================================================
+        // FONT FAMILY CATALOG (10 options)
+        // =========================================================
+        const FONT_FAMILIES = [
+            { id: 'inter',        label: 'Inter + Noto Sans JP (default)', body: "'Inter', 'Noto Sans JP', sans-serif",        jp: "'Noto Sans JP', sans-serif" },
+            { id: 'noto-sans',    label: 'Noto Sans JP',                    body: "'Noto Sans JP', sans-serif",                  jp: "'Noto Sans JP', sans-serif" },
+            { id: 'noto-serif',   label: 'Noto Serif JP (serif)',           body: "'Noto Serif JP', serif",                      jp: "'Noto Serif JP', serif" },
+            { id: 'roboto',       label: 'Roboto',                          body: "'Roboto', 'Noto Sans JP', sans-serif",        jp: "'Noto Sans JP', sans-serif" },
+            { id: 'open-sans',    label: 'Open Sans',                       body: "'Open Sans', 'Noto Sans JP', sans-serif",     jp: "'Noto Sans JP', sans-serif" },
+            { id: 'lato',         label: 'Lato',                            body: "'Lato', 'Noto Sans JP', sans-serif",          jp: "'Noto Sans JP', sans-serif" },
+            { id: 'poppins',      label: 'Poppins',                         body: "'Poppins', 'Noto Sans JP', sans-serif",       jp: "'Noto Sans JP', sans-serif" },
+            { id: 'merriweather', label: 'Merriweather (serif)',            body: "'Merriweather', 'Noto Serif JP', serif",      jp: "'Noto Serif JP', serif" },
+            { id: 'georgia',      label: 'Georgia (system serif)',          body: "Georgia, 'Noto Serif JP', serif",             jp: "'Noto Serif JP', serif" },
+            { id: 'jetbrains',    label: 'JetBrains Mono (mono)',           body: "'JetBrains Mono', 'Noto Sans JP', monospace", jp: "'Noto Sans JP', sans-serif" }
+        ];
+
+        // =========================================================
+        // STATE
+        // =========================================================
         let lessons = [];
         let activeLesson = null;
 
@@ -578,6 +673,9 @@
         let showRomaji            = storageGet(ROMAJI_KEY) !== '0';
         let showFurigana          = storageGet(FURIGANA_KEY) !== '0';
         let lessonManagerOpen     = storageGet(MANAGER_KEY) === '1';
+        let darkModeEnabled       = storageGet(DARK_MODE_KEY) === '1';
+        let fontFamilyId          = storageGet(FONT_FAMILY_KEY) || 'inter';
+        let furiganaScale         = parseFloat(storageGet(FURIGANA_SCALE_KEY) || '1');
 
         let chatHistory = [];
         let pendingOptions = null;
@@ -595,10 +693,7 @@
         }
         function storageGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
         function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-        function scrollToEl(id) {
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        function scrollToEl(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         function todayStamp() {
             const d = new Date();
             const pad = function(n) { return String(n).padStart(2, '0'); };
@@ -613,10 +708,79 @@
             return s;
         }
         function stopCurrentAudio() {
-            if (currentAudioEl) {
-                try { currentAudioEl.pause(); } catch (e) {}
-                currentAudioEl = null;
+            if (currentAudioEl) { try { currentAudioEl.pause(); } catch (e) {} currentAudioEl = null; }
+        }
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        // =========================================================
+        // THEME
+        // =========================================================
+        function applyDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (darkModeEnabled) {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun';
+            } else {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon';
             }
+        }
+        function toggleDarkMode() {
+            darkModeEnabled = !darkModeEnabled;
+            storageSet(DARK_MODE_KEY, darkModeEnabled ? '1' : '0');
+            applyDarkMode();
+        }
+
+        // =========================================================
+        // TYPOGRAPHY
+        // =========================================================
+        function applyTypography() {
+            const family = FONT_FAMILIES.find(function(f) { return f.id === fontFamilyId; }) || FONT_FAMILIES[0];
+            document.documentElement.style.setProperty('--font-body', family.body);
+            document.documentElement.style.setProperty('--font-jp', family.jp);
+            document.documentElement.style.setProperty('--furigana-scale', String(furiganaScale));
+
+            // Sync UI
+            const furRange = document.getElementById('furigana-size-range');
+            if (furRange) furRange.value = String(Math.round(furiganaScale * 100));
+            const furLbl = document.getElementById('furigana-size-value');
+            if (furLbl) furLbl.textContent = Math.round(furiganaScale * 100) + '%';
+            const sel = document.getElementById('font-family-select');
+            if (sel) sel.value = fontFamilyId;
+        }
+
+        function buildFontFamilyOptions() {
+            const sel = document.getElementById('font-family-select');
+            if (!sel) return;
+            sel.innerHTML = FONT_FAMILIES.map(function(f) {
+                return '<option value="' + f.id + '">' + esc(f.label) + '</option>';
+            }).join('');
+            sel.value = fontFamilyId;
+        }
+
+        function applyFontFamily(id) {
+            if (!FONT_FAMILIES.some(function(f) { return f.id === id; })) return;
+            fontFamilyId = id;
+            storageSet(FONT_FAMILY_KEY, id);
+            applyTypography();
+        }
+
+        function applyFuriganaScale(scale) {
+            furiganaScale = clamp(parseFloat(scale) || 1, 0.5, 2);
+            storageSet(FURIGANA_SCALE_KEY, String(furiganaScale));
+            applyTypography();
+        }
+        function adjustFuriganaScale(delta) {
+            applyFuriganaScale(Math.round((furiganaScale + delta) * 100) / 100);
+        }
+
+        function resetTypography() {
+            fontFamilyId = 'inter';
+            furiganaScale = 1;
+            storageSet(FONT_FAMILY_KEY, fontFamilyId);
+            storageSet(FURIGANA_SCALE_KEY, String(furiganaScale));
+            applyTypography();
         }
 
         // =========================================================
@@ -624,9 +788,7 @@
         // =========================================================
         function renderFurigana(jp, furigana) {
             const plain = String(jp || '');
-            if (!showFurigana || !furigana || !String(furigana).trim()) {
-                return esc(plain);
-            }
+            if (!showFurigana || !furigana || !String(furigana).trim()) return esc(plain);
             const safe = esc(String(furigana));
             return safe.replace(/\{([^{}|]+)\|([^{}|]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>');
         }
@@ -756,7 +918,6 @@
 
         const DEMO_JSON = JSON.stringify(DEMO_LESSON, null, 2);
 
-        // Schema text built as array to avoid template-literal edge cases
         const SCHEMA_TEXT = [
             '{',
             '  "id": "unit-2",                              // optional',
@@ -831,17 +992,13 @@
             '// Multiple readings can appear in one string:',
             '//   "{日本語|にほんご}が{少し|すこし}わかります"',
             '//',
-            '// Only text inside the braces (before the pipe) is displayed;',
-            '// text after the pipe becomes the furigana above it.',
-            '// Hiragana, katakana, and punctuation pass through unchanged.',
-            '//',
             '// The "furigana" field is completely optional. If omitted, the',
             '// plain "jp" text is shown. A global toggle in the header',
             '// can hide all furigana at any time.'
         ].join('\n');
 
         // =========================================================
-        // LESSON MANAGER TOGGLE
+        // LESSON MANAGER
         // =========================================================
         function applyLessonManagerUI() {
             const panel = document.getElementById('lesson-manager');
@@ -857,22 +1014,17 @@
                 hint.textContent = 'Show';
             }
         }
-
         function toggleLessonManager(forceOpen) {
             if (forceOpen === true) lessonManagerOpen = true;
             else if (forceOpen === false) lessonManagerOpen = false;
             else lessonManagerOpen = !lessonManagerOpen;
-
             storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0');
             applyLessonManagerUI();
-
-            if (lessonManagerOpen) {
-                setTimeout(function() { scrollToEl('lesson-manager'); }, 50);
-            }
+            if (lessonManagerOpen) setTimeout(function() { scrollToEl('lesson-manager'); }, 50);
         }
 
         // =========================================================
-        // ALL LESSONS MODAL
+        // MODALS
         // =========================================================
         function openAllLessonsModal() {
             const modal = document.getElementById('all-lessons-modal');
@@ -902,15 +1054,14 @@
             grid.innerHTML = lessons.map(lessonCardHtml).join('');
         }
 
-        // =========================================================
-        // SETTINGS MODAL
-        // =========================================================
         function openSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
             refreshCSVLessonScope();
+            buildFontFamilyOptions();
+            applyTypography();
             const msg = document.getElementById('settings-import-message');
             msg.textContent = '';
             msg.className = 'text-sm font-medium';
@@ -927,9 +1078,7 @@
             const current = sel.value;
             sel.innerHTML = '<option value="__all__">All lessons</option>' +
                 lessons.map(function(l) { return '<option value="' + esc(l.id) + '">' + esc(l.title) + '</option>'; }).join('');
-            if (current && Array.from(sel.options).some(function(o) { return o.value === current; })) {
-                sel.value = current;
-            }
+            if (current && Array.from(sel.options).some(function(o) { return o.value === current; })) sel.value = current;
         }
         function showSettingsMessage(text, type) {
             const el = document.getElementById('settings-import-message');
@@ -952,7 +1101,10 @@
                     showRoleplayEnglish: showRoleplayEnglish,
                     showRomaji: showRomaji,
                     showFurigana: showFurigana,
-                    lessonManagerOpen: lessonManagerOpen
+                    lessonManagerOpen: lessonManagerOpen,
+                    darkModeEnabled: darkModeEnabled,
+                    fontFamilyId: fontFamilyId,
+                    furiganaScale: furiganaScale
                 }
             };
             const json = JSON.stringify(backup, null, 2);
@@ -967,7 +1119,6 @@
             setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
             showSettingsMessage('Exported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' + preferences.', 'success');
         }
-
         function handleImportAllData(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
@@ -982,13 +1133,11 @@
             reader.readAsText(file);
             event.target.value = '';
         }
-
         function applyImportAllData(data) {
             let incomingLessons = null;
             let incomingPrefs = null;
-            if (Array.isArray(data)) {
-                incomingLessons = data;
-            } else if (data && typeof data === 'object' && Array.isArray(data.lessons)) {
+            if (Array.isArray(data)) incomingLessons = data;
+            else if (data && typeof data === 'object' && Array.isArray(data.lessons)) {
                 incomingLessons = data.lessons;
                 incomingPrefs = data.preferences || null;
             } else {
@@ -1017,6 +1166,9 @@
                 if (typeof incomingPrefs.showRomaji === 'boolean') { showRomaji = incomingPrefs.showRomaji; storageSet(ROMAJI_KEY, showRomaji ? '1' : '0'); }
                 if (typeof incomingPrefs.showFurigana === 'boolean') { showFurigana = incomingPrefs.showFurigana; storageSet(FURIGANA_KEY, showFurigana ? '1' : '0'); }
                 if (typeof incomingPrefs.lessonManagerOpen === 'boolean') { lessonManagerOpen = incomingPrefs.lessonManagerOpen; storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0'); }
+                if (typeof incomingPrefs.darkModeEnabled === 'boolean') { darkModeEnabled = incomingPrefs.darkModeEnabled; storageSet(DARK_MODE_KEY, darkModeEnabled ? '1' : '0'); }
+                if (typeof incomingPrefs.fontFamilyId === 'string' && FONT_FAMILIES.some(function(f) { return f.id === incomingPrefs.fontFamilyId; })) { fontFamilyId = incomingPrefs.fontFamilyId; storageSet(FONT_FAMILY_KEY, fontFamilyId); }
+                if (typeof incomingPrefs.furiganaScale === 'number') { furiganaScale = clamp(incomingPrefs.furiganaScale, 0.5, 2); storageSet(FURIGANA_SCALE_KEY, String(furiganaScale)); }
             }
 
             const stillExists = activeLesson ? lessons.find(function(l) { return l.id === activeLesson.id; }) : null;
@@ -1028,6 +1180,8 @@
                 delete transcriptAudioMap[key];
             });
 
+            applyDarkMode();
+            applyTypography();
             updateFlashcardEnglishUI();
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
@@ -1041,7 +1195,6 @@
             refreshCSVLessonScope();
             showSettingsMessage('Imported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' successfully.', 'success');
         }
-
         function clearAllData() {
             if (!lessons.length && !activeLesson) { showSettingsMessage('Nothing to clear - already empty.', 'success'); return; }
             if (!confirm('This will permanently DELETE all lessons and preferences.\n\nContinue?')) return;
@@ -1051,17 +1204,18 @@
                 URL.revokeObjectURL(transcriptAudioMap[key].url);
                 delete transcriptAudioMap[key];
             });
-
             lessons = [];
             activeLesson = null;
             stopCurrentAudio();
-
             showFlashcardEnglish = false;
             showTranscriptEnglish = false;
             showRoleplayEnglish = false;
             showRomaji = true;
             showFurigana = true;
             lessonManagerOpen = false;
+            darkModeEnabled = false;
+            fontFamilyId = 'inter';
+            furiganaScale = 1;
 
             storageSet(STORAGE_KEY, '[]');
             storageSet(ACTIVE_KEY, '');
@@ -1071,7 +1225,12 @@
             storageSet(ROMAJI_KEY, '1');
             storageSet(FURIGANA_KEY, '1');
             storageSet(MANAGER_KEY, '0');
+            storageSet(DARK_MODE_KEY, '0');
+            storageSet(FONT_FAMILY_KEY, 'inter');
+            storageSet(FURIGANA_SCALE_KEY, '1');
 
+            applyDarkMode();
+            applyTypography();
             updateFlashcardEnglishUI();
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
@@ -1093,10 +1252,8 @@
             const scope = document.getElementById('csv-lesson-scope').value;
             let targetLessons;
             let filenameBase;
-            if (scope === '__all__') {
-                targetLessons = lessons.slice();
-                filenameBase = 'pimsleur-flashcards-all';
-            } else {
+            if (scope === '__all__') { targetLessons = lessons.slice(); filenameBase = 'pimsleur-flashcards-all'; }
+            else {
                 const found = lessons.find(function(l) { return l.id === scope; });
                 if (!found) { showSettingsMessage('Lesson not found.', 'error'); return; }
                 targetLessons = [found];
@@ -1128,7 +1285,7 @@
         }
 
         // =========================================================
-        // TOGGLE STYLING HELPERS
+        // TOGGLE HELPERS
         // =========================================================
         function setToggleStyle(btn, icon, on) {
             if (on) {
@@ -1140,9 +1297,6 @@
             }
         }
 
-        // =========================================================
-        // FURIGANA TOGGLE
-        // =========================================================
         function toggleFurigana() {
             showFurigana = !showFurigana;
             storageSet(FURIGANA_KEY, showFurigana ? '1' : '0');
@@ -1167,10 +1321,6 @@
                 btn.classList.add('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
             }
         }
-
-        // =========================================================
-        // ROMAJI TOGGLE
-        // =========================================================
         function toggleRomaji() {
             showRomaji = !showRomaji;
             storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
@@ -1200,9 +1350,6 @@
             if (el) el.style.display = showRomaji ? '' : 'none';
         }
 
-        // =========================================================
-        // ENGLISH TOGGLES
-        // =========================================================
         function toggleFlashcardEnglish() {
             showFlashcardEnglish = !showFlashcardEnglish;
             storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0');
@@ -1386,13 +1533,6 @@
             if (tabId === 'roleplay') initRoleplay();
         }
 
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            icon.className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
-
         // =========================================================
         // DASHBOARD
         // =========================================================
@@ -1408,7 +1548,6 @@
             document.getElementById('stat-quiz').textContent = totals.quiz;
             document.getElementById('stat-scenarios').textContent = totals.scen;
         }
-
         function renderActiveBanner() {
             const banner = document.getElementById('active-banner');
             const badge = document.getElementById('active-lesson-badge');
@@ -1424,7 +1563,6 @@
                 badge.classList.add('hidden');
             }
         }
-
         function lessonCardHtml(l) {
             const isActive = activeLesson && activeLesson.id === l.id;
             const chips = [
@@ -1465,7 +1603,6 @@
                     '</div>' +
                 '</div>';
         }
-
         function renderLessons() {
             const grid = document.getElementById('lessons-grid');
             const empty = document.getElementById('lessons-empty');
@@ -2042,7 +2179,6 @@
                 playUploadedAudio(idx);
             }
         });
-
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const modalLessons = document.getElementById('all-lessons-modal');
@@ -2051,14 +2187,25 @@
                 if (modalSettings && !modalSettings.classList.contains('hidden')) { closeSettingsModal(); }
             }
         });
+        const modalLessonsEl = document.getElementById('all-lessons-modal');
+        if (modalLessonsEl) modalLessonsEl.addEventListener('click', function(e) { if (e.target === this) closeAllLessonsModal(); });
+        const modalSettingsEl = document.getElementById('settings-modal');
+        if (modalSettingsEl) modalSettingsEl.addEventListener('click', function(e) { if (e.target === this) closeSettingsModal(); });
 
         // =========================================================
         // INIT
         // =========================================================
         function initApp() {
             try {
+                // Apply persisted theme + typography FIRST to avoid a flash
+                applyDarkMode();
+                applyTypography();
+
                 document.getElementById('schema-code').textContent = SCHEMA_TEXT;
                 document.getElementById('demo-code').textContent = DEMO_JSON;
+
+                buildFontFamilyOptions();
+                applyTypography(); // re-sync UI now that options exist
 
                 loadFromStorage();
                 renderLessons();
@@ -2074,25 +2221,14 @@
                 applyLessonManagerUI();
 
                 refreshLessonViews();
-                console.log('[Pimsleur Study Hub] Initialized. Lessons:', lessons.length);
+                console.log('[Pimsleur Study Hub] Initialized. Lessons:', lessons.length,
+                    '| Dark:', darkModeEnabled,
+                    '| Font:', fontFamilyId,
+                    '| Furigana:', Math.round(furiganaScale * 100) + '%');
             } catch (err) {
                 console.error('[Pimsleur Study Hub] Init error:', err);
-                alert('Initialization error: ' + err.message + '\n\nPlease try clearing browser data or opening the console for details.');
+                alert('Initialization error: ' + err.message);
             }
-        }
-
-        // Attach modal backdrop handlers safely
-        const modalLessonsEl = document.getElementById('all-lessons-modal');
-        if (modalLessonsEl) {
-            modalLessonsEl.addEventListener('click', function(e) {
-                if (e.target === this) closeAllLessonsModal();
-            });
-        }
-        const modalSettingsEl = document.getElementById('settings-modal');
-        if (modalSettingsEl) {
-            modalSettingsEl.addEventListener('click', function(e) {
-                if (e.target === this) closeSettingsModal();
-            });
         }
 
         window.onload = initApp;
