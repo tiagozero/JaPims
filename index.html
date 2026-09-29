@@ -29,22 +29,21 @@
         pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb, #settings-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
         .dark body { background-color: #000; }
 
-        /* Furigana (ruby) styling */
         ruby {
             ruby-position: over;
             ruby-align: center;
         }
         ruby rt {
-            font-size: 0.5em;
-            font-weight: 500;
-            opacity: 0.6;
+            font-size: 0.55em;
+            font-weight: 600;
+            opacity: 0.75;
             letter-spacing: 0.02em;
             line-height: 1.1;
             user-select: none;
         }
-        .text-4xl ruby rt, .text-5xl ruby rt { font-size: 0.45em; }
-        .text-sm ruby rt { font-size: 0.6em; }
-        .text-lg ruby rt { font-size: 0.5em; }
+        .text-4xl ruby rt, .text-5xl ruby rt { font-size: 0.5em; }
+        .text-sm ruby rt { font-size: 0.65em; }
+        .text-lg ruby rt { font-size: 0.55em; }
     </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
@@ -109,9 +108,7 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto">
 
-        <!-- ============ DASHBOARD / LESSON LIBRARY ============ -->
         <section id="tab-dashboard" class="tab-content space-y-6">
-
             <div class="bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-rose-500/5 dark:from-neutral-950 dark:via-neutral-950 dark:to-black border border-rose-200/50 dark:border-neutral-900 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
                 <div class="relative z-10 max-w-2xl">
                     <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-700 dark:text-rose-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Lesson Library</span>
@@ -119,7 +116,6 @@
                     <p class="text-slate-600 dark:text-neutral-300 text-sm sm:text-base leading-relaxed mb-6">
                         Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, roleplay scenarios, quizzes and a full transcript explorer.
                         Furigana readings display above kanji via ruby annotations, and you can attach per-sentence audio in the Transcript tab.
-                        No lesson ships with the app — bring your own, or start from the demo file provided below.
                     </p>
                     <div class="flex flex-wrap gap-3">
                         <button onclick="toggleLessonManager(true)" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2">
@@ -135,7 +131,6 @@
                 </div>
             </div>
 
-            <!-- Stats -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
                     <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3"><i class="fa-solid fa-book"></i></div>
@@ -159,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- Active lesson banner -->
             <div id="active-banner" class="hidden bg-white dark:bg-neutral-950 p-5 rounded-2xl border-2 border-rose-500/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -175,7 +169,6 @@
                 </div>
             </div>
 
-            <!-- Lesson list (limited to 3) -->
             <div class="bg-white dark:bg-neutral-950 p-6 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-5">
                 <div class="flex items-center justify-between gap-3">
                     <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-layer-group text-rose-500"></i> Your Lessons</h3>
@@ -192,7 +185,7 @@
                     </div>
                     <h4 class="font-bold text-lg">No lessons yet</h4>
                     <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
-                        This app does not include any built-in lesson. Import a lesson JSON file (or paste one) to get started — grab the demo below if you need a template.
+                        Import a lesson JSON file (or paste one) to get started — or load the demo below.
                     </p>
                     <div class="flex flex-wrap gap-2 justify-center pt-1">
                         <button onclick="toggleLessonManager(true)" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition">Import JSON</button>
@@ -201,7 +194,6 @@
                 </div>
             </div>
 
-            <!-- Lesson Manager (collapsible) -->
             <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm overflow-hidden">
                 <button onclick="toggleLessonManager()" id="lesson-manager-toggle"
                     class="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-slate-50 dark:hover:bg-neutral-900 transition">
@@ -219,12 +211,10 @@
                 </button>
 
                 <div id="lesson-manager" class="hidden border-t border-slate-200 dark:border-neutral-900 p-6 space-y-6">
-
-                    <!-- Import panel -->
                     <div id="import-panel" class="bg-slate-50 dark:bg-neutral-900/50 p-6 rounded-2xl border border-slate-200 dark:border-neutral-800 space-y-4 scroll-mt-24">
                         <div>
                             <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-import text-rose-500"></i> Import a Lesson</h3>
-                            <p class="text-xs text-slate-500 dark:text-neutral-400 mt-1">Upload a <code class="px-1 rounded bg-white dark:bg-neutral-950">.json</code> file, or paste the lesson JSON directly. Imported lessons are saved in your browser.</p>
+                            <p class="text-xs text-slate-500 dark:text-neutral-400 mt-1">Upload a <code class="px-1 rounded bg-white dark:bg-neutral-950">.json</code> file, or paste the lesson JSON directly.</p>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
@@ -252,51 +242,29 @@
                         </div>
                     </div>
 
-                    <!-- JSON structure -->
                     <details class="bg-slate-50 dark:bg-neutral-900/50 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden group">
                         <summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-3 hover:bg-slate-100 dark:hover:bg-neutral-900 transition">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-sitemap"></i></div>
                                 <div>
                                     <h3 class="font-bold text-lg">Lesson JSON Structure</h3>
-                                    <p class="text-xs text-slate-500 dark:text-neutral-400">Every field the app understands, with which ones are required.</p>
+                                    <p class="text-xs text-slate-500 dark:text-neutral-400">Every field the app understands.</p>
                                 </div>
                             </div>
                             <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
                         </summary>
                         <div class="px-6 pb-6 space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                                <div class="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20">
-                                    <div class="font-bold text-rose-600 mb-1">Required</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">title</code>
-                                </div>
-                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
-                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">At least one of</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">vocabulary · transcript · quiz · scenarios</code>
-                                </div>
-                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
-                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Optional</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">id · subtitle · description · furigana</code>
-                                </div>
-                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
-                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Audio</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">Per-sentence audio can be uploaded in the Transcript tab (session-only).</code>
-                                </div>
-                            </div>
-
                             <pre class="text-[11px] leading-relaxed font-mono bg-black text-slate-200 rounded-xl p-4 overflow-auto max-h-[520px]"><code id="schema-code"></code></pre>
-                            <p class="text-xs text-slate-500 dark:text-neutral-400"><i class="fa-solid fa-circle-info mr-1"></i> The <code>//</code> comments above are explanations only — remove them before importing, since strict JSON does not allow comments.</p>
                         </div>
                     </details>
 
-                    <!-- Demo JSON -->
                     <div id="demo-panel" class="bg-slate-50 dark:bg-neutral-900/50 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden scroll-mt-24">
                         <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-neutral-800">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-flask"></i></div>
                                 <div>
                                     <h3 class="font-bold text-lg">Demo Lesson JSON</h3>
-                                    <p class="text-xs text-slate-500 dark:text-neutral-400">A complete sample lesson with furigana (Unit 2: Greetings, Weather &amp; Capabilities). Not loaded by default.</p>
+                                    <p class="text-xs text-slate-500 dark:text-neutral-400">Complete sample lesson with furigana.</p>
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -304,28 +272,23 @@
                                     <i class="fa-solid fa-copy"></i> Copy
                                 </button>
                                 <button onclick="downloadDemoJson()" class="px-3.5 py-2 bg-white dark:bg-neutral-950 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-semibold rounded-xl transition flex items-center gap-2">
-                                    <i class="fa-solid fa-download"></i> Download .json
+                                    <i class="fa-solid fa-download"></i> Download
                                 </button>
                                 <button onclick="loadDemoIntoImportBox()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2">
-                                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Send to Import Box
+                                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Send to Import
                                 </button>
                             </div>
                         </div>
                         <pre class="text-[11px] leading-relaxed font-mono bg-black text-slate-200 p-4 overflow-auto max-h-[520px]"><code id="demo-code"></code></pre>
                     </div>
-
                 </div>
             </div>
-
         </section>
 
-        <!-- ============ FLASHCARDS ============ -->
         <section id="tab-flashcards" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
-
             <div id="flashcards-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-clone"></i></div>
                 <h3 class="text-xl font-bold">No lesson loaded</h3>
-                <p class="text-sm text-slate-500 dark:text-neutral-400">Import a lesson JSON, or open one from your dashboard to start studying.</p>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">Import a lesson JSON to start studying.</p>
                 <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
             </div>
 
@@ -337,8 +300,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="toggleFlashcardEnglish()" id="fc-english-toggle"
-                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
-                            title="Toggle English translation visibility">
+                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800">
                             <i id="fc-english-icon" class="fa-solid fa-eye-slash"></i>
                             <span id="fc-english-label">Show English</span>
                         </button>
@@ -366,9 +328,7 @@
                                 <div class="w-12 h-12 rounded-2xl bg-slate-200/70 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-xl">
                                     <i class="fa-solid fa-eye-slash"></i>
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-xs">
-                                    English hidden. Turn on <span class="font-semibold text-slate-700 dark:text-neutral-200">"Show English"</span> to reveal the translation.
-                                </p>
+                                <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-xs">English hidden.</p>
                             </div>
                         </div>
                     </div>
@@ -385,13 +345,9 @@
             </div>
         </section>
 
-        <!-- ============ ROLEPLAY ============ -->
         <section id="tab-roleplay" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
-
             <div id="roleplay-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-comments"></i></div>
                 <h3 class="text-xl font-bold">No roleplay scenarios available</h3>
-                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>scenarios</code> array, or no lesson is loaded.</p>
                 <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
             </div>
 
@@ -399,12 +355,11 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
                     <div>
                         <h2 class="text-xl font-bold tracking-tight">Interactive Dialogue Simulator</h2>
-                        <p class="text-xs text-slate-500 dark:text-neutral-400">Pick a scenario and respond correctly to advance the conversation.</p>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Pick a scenario and respond correctly.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         <button onclick="toggleRoleplayEnglish()" id="rp-english-toggle"
-                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
-                            title="Toggle English translation visibility">
+                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800">
                             <i id="rp-english-icon" class="fa-solid fa-eye-slash"></i>
                             <span id="rp-english-label">Show English</span>
                         </button>
@@ -418,7 +373,7 @@
                     <div class="text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Select your reply or speak:</div>
                     <div id="response-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-neutral-900">
-                        <input type="text" id="custom-reply-input" placeholder="Type Japanese response or Romaji..." class="flex-1 min-w-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        <input type="text" id="custom-reply-input" placeholder="Type Japanese..." class="flex-1 min-w-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
                         <button onclick="sendCustomReply()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl transition text-sm">Send</button>
                         <button onclick="startVoiceRecognition()" id="mic-btn" class="p-2.5 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl transition text-sm" title="Speech Recognition">
                             <i class="fa-solid fa-microphone"></i>
@@ -428,13 +383,9 @@
             </div>
         </section>
 
-        <!-- ============ QUIZ ============ -->
         <section id="tab-quiz" class="tab-content hidden space-y-6 max-w-2xl mx-auto">
-
             <div id="quiz-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-brain"></i></div>
                 <h3 class="text-xl font-bold">No quiz available</h3>
-                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>quiz</code> array, or no lesson is loaded.</p>
                 <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
             </div>
 
@@ -443,7 +394,7 @@
                     <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-neutral-900">
                         <div>
                             <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Self Assessment</span>
-                            <h2 class="text-xl font-bold tracking-tight">Comprehension &amp; Translation Test</h2>
+                            <h2 class="text-xl font-bold tracking-tight">Comprehension Test</h2>
                         </div>
                         <div id="quiz-progress-text" class="text-sm font-semibold text-slate-500">Question 1 of 1</div>
                     </div>
@@ -470,25 +421,20 @@
             </div>
         </section>
 
-        <!-- ============ TRANSCRIPT ============ -->
         <section id="tab-transcript" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
-
             <div id="transcript-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-book-open"></i></div>
                 <h3 class="text-xl font-bold">No transcript available</h3>
-                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>transcript</code> array, or no lesson is loaded.</p>
                 <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
             </div>
 
             <div id="transcript-toolbar" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
                 <div>
                     <h2 class="text-xl font-bold tracking-tight">Transcript Explorer</h2>
-                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with furigana, romaji &amp; optional custom audio upload.</p>
+                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line with furigana, romaji &amp; custom audio.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <button onclick="toggleTranscriptEnglish()" id="tr-english-toggle"
-                        class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
-                        title="Toggle English translation visibility">
+                        class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800">
                         <i id="tr-english-icon" class="fa-solid fa-eye-slash"></i>
                         <span id="tr-english-label">Show English</span>
                     </button>
@@ -501,7 +447,6 @@
 
     </main>
 
-    <!-- ============ ALL LESSONS MODAL ============ -->
     <div id="all-lessons-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
@@ -516,7 +461,7 @@
                     <button onclick="closeAllLessonsModal(); toggleLessonManager(true);" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-plus"></i> Import
                     </button>
-                    <button onclick="closeAllLessonsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition" title="Close">
+                    <button onclick="closeAllLessonsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
@@ -530,7 +475,6 @@
         </div>
     </div>
 
-    <!-- ============ SETTINGS MODAL ============ -->
     <div id="settings-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
@@ -541,23 +485,18 @@
                         <p class="text-xs text-slate-500 dark:text-neutral-400">Data backup, restore, and exports.</p>
                     </div>
                 </div>
-                <button onclick="closeSettingsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition" title="Close">
+                <button onclick="closeSettingsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
             <div id="settings-scroll" class="overflow-y-auto p-5 space-y-6">
-
-                <!-- Data Backup -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-database text-rose-500"></i>
                         <h4 class="font-bold text-base">Data Backup &amp; Restore</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">
-                        Export <span class="font-semibold">all your lessons and preferences</span> as a single JSON file, or restore from a previous backup.
-                        Importing will <span class="font-semibold text-rose-600">replace</span> everything currently saved in this browser.
-                    </p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Export all lessons + preferences as a single JSON, or restore from a backup. Importing will <span class="font-semibold text-rose-600">replace</span> everything.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button onclick="exportAllData()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-download"></i> Export All Data
@@ -572,15 +511,12 @@
 
                 <hr class="border-slate-200 dark:border-neutral-900">
 
-                <!-- Flashcards CSV -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-file-csv text-emerald-500"></i>
                         <h4 class="font-bold text-base">Flashcards CSV Export</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">
-                        Download your flashcards as a CSV file — compatible with <span class="font-semibold">Anki</span>, <span class="font-semibold">Quizlet</span>, Excel, and Google Sheets.
-                    </p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Download flashcards as CSV — Anki, Quizlet, Excel compatible.</p>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <select id="csv-lesson-scope" class="flex-1 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
                             <option value="__all__">All lessons</option>
@@ -590,43 +526,38 @@
                         </button>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-neutral-400">
-                        <i class="fa-solid fa-circle-info mr-1"></i>
-                        Columns: <code>Lesson, Tag, Japanese, Furigana, Romaji, English, Notes</code>. UTF-8 encoded with BOM (Excel-friendly).
+                        Columns: Lesson, Tag, Japanese, Furigana, Romaji, English, Notes.
                     </p>
                 </section>
 
                 <hr class="border-slate-200 dark:border-neutral-900">
 
-                <!-- Danger Zone -->
                 <section class="space-y-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
                         <h4 class="font-bold text-base">Danger Zone</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">
-                        This permanently deletes all lessons and preferences from this browser. <span class="font-semibold">Export a backup first!</span>
-                    </p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Permanently deletes all lessons and preferences.</p>
                     <button onclick="clearAllData()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2">
                         <i class="fa-solid fa-trash"></i> Clear All Data
                     </button>
                 </section>
-
             </div>
         </div>
     </div>
 
     <script>
-        /* =========================================================
-           STATE
-           ========================================================= */
-        const STORAGE_KEY = 'pimsleur_lessons_v2';
-        const ACTIVE_KEY  = 'pimsleur_active_lesson_v2';
-        const FC_EN_KEY   = 'pimsleur_show_fc_english';
-        const TR_EN_KEY   = 'pimsleur_show_tr_english';
-        const RP_EN_KEY   = 'pimsleur_show_rp_english';
-        const ROMAJI_KEY  = 'pimsleur_show_romaji';
-        const FURIGANA_KEY = 'pimsleur_show_furigana';
-        const MANAGER_KEY = 'pimsleur_lesson_manager_open';
+        // =========================================================
+        // STATE
+        // =========================================================
+        const STORAGE_KEY   = 'pimsleur_lessons_v2';
+        const ACTIVE_KEY    = 'pimsleur_active_lesson_v2';
+        const FC_EN_KEY     = 'pimsleur_show_fc_english';
+        const TR_EN_KEY     = 'pimsleur_show_tr_english';
+        const RP_EN_KEY     = 'pimsleur_show_rp_english';
+        const ROMAJI_KEY    = 'pimsleur_show_romaji';
+        const FURIGANA_KEY  = 'pimsleur_show_furigana';
+        const MANAGER_KEY   = 'pimsleur_lesson_manager_open';
 
         const DASHBOARD_LESSON_LIMIT = 3;
         const BACKUP_VERSION = 2;
@@ -645,7 +576,7 @@
         let showTranscriptEnglish = storageGet(TR_EN_KEY) === '1';
         let showRoleplayEnglish   = storageGet(RP_EN_KEY) === '1';
         let showRomaji            = storageGet(ROMAJI_KEY) !== '0';
-        let showFurigana          = storageGet(FURIGANA_KEY) !== '0'; // default ON
+        let showFurigana          = storageGet(FURIGANA_KEY) !== '0';
         let lessonManagerOpen     = storageGet(MANAGER_KEY) === '1';
 
         let chatHistory = [];
@@ -654,9 +585,33 @@
         const transcriptAudioMap = {};
         let currentAudioEl = null;
 
-        /* =========================================================
-           AUDIO
-           ========================================================= */
+        // =========================================================
+        // HELPERS
+        // =========================================================
+        function esc(s) {
+            return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function(c) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+            });
+        }
+        function storageGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+        function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        function scrollToEl(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function todayStamp() {
+            const d = new Date();
+            const pad = function(n) { return String(n).padStart(2, '0'); };
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+        }
+        function slugify(s) {
+            return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'lesson';
+        }
+        function csvEscape(v) {
+            const s = String(v === undefined || v === null ? '' : v);
+            if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+            return s;
+        }
         function stopCurrentAudio() {
             if (currentAudioEl) {
                 try { currentAudioEl.pause(); } catch (e) {}
@@ -664,50 +619,42 @@
             }
         }
 
-        /* =========================================================
-           FURIGANA RENDERING
-           --------------------------------------------------------
-           Notation: {kanji|reading}
-           Examples:
-             "日本語"         -> "{日本語|にほんご}"
-             "いいお天気ですね" -> "いいお{天気|てんき}ですね"
-           If `furigana` is missing/empty, falls back to `jp`.
-           If the Furigana toggle is OFF, returns the plain text.
-           ========================================================= */
+        // =========================================================
+        // FURIGANA RENDERING  {kanji|reading}
+        // =========================================================
         function renderFurigana(jp, furigana) {
             const plain = String(jp || '');
             if (!showFurigana || !furigana || !String(furigana).trim()) {
                 return esc(plain);
             }
             const safe = esc(String(furigana));
-            // Only match {something|something} with no nested braces or pipes inside
             return safe.replace(/\{([^{}|]+)\|([^{}|]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>');
         }
 
-        /* =========================================================
-           DEMO LESSON (with furigana)
-           ========================================================= */
+        // =========================================================
+        // DEMO LESSON
+        // =========================================================
         const DEMO_LESSON = {
             id: "demo-pimsleur-unit-2",
             title: "Pimsleur Japanese 1 — Unit 2",
             subtitle: "Greetings, Weather & Capabilities",
             description: "Practice polite morning greetings, small talk about the weather, expressing language ability, and customary modesty.",
             vocabulary: [
-                { jp: "おはようございます", romaji: "Ohayō gozaimasu", en: "Good morning (politely)", tag: "Greeting", notes: "Used customarily until 10 or 11 a.m. in business or formal contexts." },
-                { jp: "おはよう", romaji: "Ohayō", en: "Good morning (casual)", tag: "Greeting", notes: "Used for family members or close friends." },
+                { jp: "おはようございます", romaji: "Ohayō gozaimasu", en: "Good morning (politely)", tag: "Greeting", notes: "Used until 10-11 a.m. in business contexts." },
+                { jp: "おはよう", romaji: "Ohayō", en: "Good morning (casual)", tag: "Greeting", notes: "Used for family or close friends." },
                 { jp: "お天気", furigana: "お{天気|てんき}", romaji: "Otenki", en: "Weather", tag: "Noun", notes: "Weather conditions." },
-                { jp: "いいお天気ですね", furigana: "いいお{天気|てんき}ですね", romaji: "Ii otenki desu ne", en: "It's good weather, isn't it?", tag: "Phrase", notes: "Used when fully expecting the other person to agree." },
+                { jp: "いいお天気ですね", furigana: "いいお{天気|てんき}ですね", romaji: "Ii otenki desu ne", en: "It's good weather, isn't it?", tag: "Phrase", notes: "Expecting agreement." },
                 { jp: "そうですね", romaji: "Sō desu ne", en: "That's right / I agree", tag: "Phrase", notes: "Agreement with the other speaker." },
-                { jp: "じゃあまた", romaji: "Jā mata", en: "See you / Goodbye", tag: "Farewell", notes: "Casual farewell when leaving." },
+                { jp: "じゃあまた", romaji: "Jā mata", en: "See you / Goodbye", tag: "Farewell", notes: "Casual farewell." },
                 { jp: "ありがとう", romaji: "Arigatō", en: "Thanks (casual)", tag: "Courtesy", notes: "Expressing gratitude." },
                 { jp: "ありがとうございます", romaji: "Arigatō gozaimasu", en: "Thank you very much (polite)", tag: "Courtesy", notes: "Polite expression of thanks." },
-                { jp: "日本語がわかりますか", furigana: "{日本語|にほんご}がわかりますか", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?", tag: "Question", notes: "Asking about language comprehension." },
-                { jp: "日本語が少しわかります", furigana: "{日本語|にほんご}が{少し|すこし}わかります", romaji: "Nihongo ga sukoshi wakarimasu", en: "I understand Japanese a little", tag: "Phrase", notes: "Modest assertion of language skill." },
+                { jp: "日本語がわかりますか", furigana: "{日本語|にほんご}がわかりますか", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?", tag: "Question", notes: "Asking about comprehension." },
+                { jp: "日本語が少しわかります", furigana: "{日本語|にほんご}が{少し|すこし}わかります", romaji: "Nihongo ga sukoshi wakarimasu", en: "I understand Japanese a little", tag: "Phrase", notes: "Modest assertion." },
                 { jp: "上手ですね", furigana: "{上手|じょうず}ですね", romaji: "Jōzu desu ne", en: "You're skilled, aren't you?", tag: "Compliment", notes: "Praising someone's ability." },
-                { jp: "上手じゃありません", furigana: "{上手|じょうず}じゃありません", romaji: "Jōzu ja arimasen", en: "I'm not very good / not skilled", tag: "Modesty", notes: "Customary polite self-deprecation in Japanese culture." },
+                { jp: "上手じゃありません", furigana: "{上手|じょうず}じゃありません", romaji: "Jōzu ja arimasen", en: "I'm not very good", tag: "Modesty", notes: "Customary polite self-deprecation." },
                 { jp: "英語がわかりますか", furigana: "{英語|えいご}がわかりますか", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?", tag: "Question", notes: "Asking about English proficiency." },
-                { jp: "わかりません", romaji: "Wakarimasen", en: "I don't understand", tag: "Phrase", notes: "Negative statement of comprehension." },
-                { jp: "少し", furigana: "{少し|すこし}", romaji: "Sukoshi", en: "A little", tag: "Adverb", notes: "Indicating a small amount." },
+                { jp: "わかりません", romaji: "Wakarimasen", en: "I don't understand", tag: "Phrase", notes: "Negative comprehension." },
+                { jp: "少し", furigana: "{少し|すこし}", romaji: "Sukoshi", en: "A little", tag: "Adverb", notes: "Small amount." },
                 { jp: "私はアメリカ人です", furigana: "{私|わたし}はアメリカ{人|じん}です", romaji: "Watashi wa Amerikajin desu", en: "I am an American", tag: "Statement", notes: "Stating nationality." }
             ],
             transcript: [
@@ -739,7 +686,7 @@
                 { q: "How do you say 'It's good weather, isn't it?'", options: ["日本語がわかりますか", "いいお天気ですね", "おはようございます", "英語がわかりません"], correct: 1 },
                 { q: "What is the Japanese word for 'A little'?", options: ["少し (Sukoshi)", "英語 (Eigo)", "天気 (Tenki)", "ありがとう (Arigatō)"], correct: 0 },
                 { q: "How do you say 'See you / Goodbye'?", options: ["そうですね", "じゃあまた", "上手です", "わかりません"], correct: 1 },
-                { q: "How do you respond when someone compliments your Japanese ('上手ですね'), following cultural modesty?", options: ["はい、上手です", "上手じゃありません", "おはようございます", "いいお天気ですね"], correct: 1 }
+                { q: "How do you respond to '上手ですね' with cultural modesty?", options: ["はい、上手です", "上手じゃありません", "おはようございます", "いいお天気ですね"], correct: 1 }
             ],
             scenarios: [
                 {
@@ -809,121 +756,93 @@
 
         const DEMO_JSON = JSON.stringify(DEMO_LESSON, null, 2);
 
-        const SCHEMA_TEXT = `{
-  "id": "unit-2",                              // optional — auto-generated when omitted
-  "title": "Pimsleur Japanese 1 — Unit 2",     // REQUIRED
-  "subtitle": "Greetings, Weather & Capabilities",   // optional
-  "description": "Short summary shown on the lesson card.",  // optional
+        // Schema text built as array to avoid template-literal edge cases
+        const SCHEMA_TEXT = [
+            '{',
+            '  "id": "unit-2",                              // optional',
+            '  "title": "Pimsleur Japanese 1 - Unit 2",     // REQUIRED',
+            '  "subtitle": "Greetings, Weather & Capabilities",   // optional',
+            '  "description": "Short summary shown on the lesson card.",  // optional',
+            '',
+            '  "vocabulary": [                              // -> Flashcards tab',
+            '    {',
+            '      "jp": "日本語",                           // REQUIRED',
+            '      "furigana": "{日本語|にほんご}",           // optional',
+            '      "romaji": "Nihongo",',
+            '      "en": "Japanese language",',
+            '      "tag": "Noun",                           // small label on the card',
+            '      "notes": "Used until about 10 a.m."      // shown on card back',
+            '    }',
+            '  ],',
+            '',
+            '  "transcript": [                              // -> Transcript Explorer tab',
+            '    {',
+            '      "jp": "いいお天気ですね。",',
+            '      "furigana": "いいお{天気|てんき}ですね。",  // optional',
+            '      "romaji": "Ii otenki desu ne.",',
+            '      "en": "It\'s good weather, isn\'t it?"',
+            '    }',
+            '  ],',
+            '',
+            '  "quiz": [                                    // -> Quiz tab',
+            '    {',
+            '      "q": "How do you politely say Good morning?",',
+            '      "options": ["おはようございます", "じゃあまた", "そうですね", "わかりません"],',
+            '      "correct": 0                              // 0-based index',
+            '    }',
+            '  ],',
+            '',
+            '  "scenarios": [                               // -> Roleplay Studio tab',
+            '    {',
+            '      "id": "hotel",',
+            '      "name": "Hotel Receptionist",',
+            '      "steps": [',
+            '        {',
+            '          "speaker": "receptionist",           // any name except "user"',
+            '          "jp": "日本語がわかりますか?",',
+            '          "furigana": "{日本語|にほんご}がわかりますか?",',
+            '          "romaji": "Nihongo ga wakarimasu ka?",',
+            '          "en": "Do you understand Japanese?"',
+            '        },',
+            '        {',
+            '          "speaker": "user",                   // you must choose a reply',
+            '          "prompt": "Answer that you understand a little.",',
+            '          "options": [',
+            '            { "jp": "はい、少しわかります。",',
+            '              "furigana": "はい、{少し|すこし}わかります。",',
+            '              "en": "Yes, I understand a little.", "correct": true },',
+            '            { "jp": "わかりません。", "en": "I don\'t understand.", "correct": false }',
+            '          ]',
+            '        }',
+            '      ]',
+            '    }',
+            '  ]',
+            '}',
+            '',
+            '// ============================================================',
+            '// FURIGANA NOTATION',
+            '// ============================================================',
+            '// Use {kanji|reading} to place a reading above a kanji group.',
+            '//',
+            '//   "日本語"           -> "{日本語|にほんご}"',
+            '//   "お天気"           -> "お{天気|てんき}"',
+            '//   "私はアメリカ人です" -> "{私|わたし}はアメリカ{人|じん}です"',
+            '//',
+            '// Multiple readings can appear in one string:',
+            '//   "{日本語|にほんご}が{少し|すこし}わかります"',
+            '//',
+            '// Only text inside the braces (before the pipe) is displayed;',
+            '// text after the pipe becomes the furigana above it.',
+            '// Hiragana, katakana, and punctuation pass through unchanged.',
+            '//',
+            '// The "furigana" field is completely optional. If omitted, the',
+            '// plain "jp" text is shown. A global toggle in the header',
+            '// can hide all furigana at any time.'
+        ].join('\n');
 
-  "vocabulary": [                              // -> Flashcards tab
-    {
-      "jp": "日本語",                           // REQUIRED — plain Japanese text
-      "furigana": "{日本語|にほんご}",           // optional — reading above kanji
-      "romaji": "Nihongo",
-      "en": "Japanese language",
-      "tag": "Noun",                           // small label on the card front
-      "notes": "…"                             // shown on the card back
-    }
-  ],
-
-  "transcript": [                              // -> Transcript Explorer tab
-    {
-      "jp": "いいお天気ですね。",
-      "furigana": "いいお{天気|てんき}ですね。",  // optional
-      "romaji": "Ii otenki desu ne.",
-      "en": "It's good weather, isn't it?"
-    }
-  ],
-
-  "quiz": [                                    // -> Quiz tab  ("correct" = 0-based index)
-    {
-      "q": "How do you politely say 'Good morning'?",
-      "options": ["おはようございます", "じゃあまた", "そうですね", "わかりません"],
-      "correct": 0
-    }
-  ],
-
-  "scenarios": [                               // -> Roleplay Studio tab
-    {
-      "id": "hotel",
-      "name": "Hotel Receptionist",
-      "steps": [
-        {
-          "speaker": "receptionist",           // any name that is NOT "user"
-          "jp": "日本語がわかりますか?",
-          "furigana": "{日本語|にほんご}がわかりますか?",  // optional
-          "romaji": "Nihongo ga wakarimasu ka?",
-          "en": "Do you understand Japanese?"
-        },
-        {
-          "speaker": "user",                   // "user" = you must choose a reply
-          "prompt": "Answer that you understand a little.",
-          "options": [
-            { "jp": "はい、少しわかります。",
-              "furigana": "はい、{少し|すこし}わかります。",   // optional
-              "en": "Yes, I understand a little.", "correct": true },
-            { "jp": "わかりません。", "en": "I don't understand.", "correct": false }
-          ]
-        }
-      ]
-    }
-  ]
-}
-
-// -----------------------------------------------------------------
-// FURIGANA NOTATION
-// -----------------------------------------------------------------
-// Use {kanji|reading} to place a reading above a kanji group.
-// The whole string is written with plain kanji + markup where needed.
-//
-//   "日本語"           -> "{日本語|にほんご}"
-//   "お天気"           -> "お{天気|てんき}"
-//   "私はアメリカ人です" -> "{私|わたし}はアメリカ{人|じん}です"
-//
-// Multiple readings can appear in one string:
-//   "{日本語|にほんご}が{少し|すこし}わかります"
-//
-// Only the text inside the braces (before the pipe) is used for display;
-// the text after the pipe becomes the furigana above it.
-// Hiragana, katakana, and punctuation are left as-is.
-//
-// `furigana` is completely optional — if omitted, the plain "jp" is shown.
-// A global toggle in the header can hide all furigana at any time.`;
-
-        /* =========================================================
-           HELPERS
-           ========================================================= */
-        function esc(s) {
-            return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, c => (
-                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-            ));
-        }
-        function storageGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-        function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-        function scrollToEl(id) {
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        function todayStamp() {
-            const d = new Date();
-            const pad = n => String(n).padStart(2, '0');
-            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-        }
-        function slugify(s) {
-            return String(s || '').toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '')
-                .slice(0, 60) || 'lesson';
-        }
-        function csvEscape(v) {
-            const s = String(v === undefined || v === null ? '' : v);
-            if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-            return s;
-        }
-
-        /* =========================================================
-           LESSON MANAGER TOGGLE
-           ========================================================= */
+        // =========================================================
+        // LESSON MANAGER TOGGLE
+        // =========================================================
         function applyLessonManagerUI() {
             const panel = document.getElementById('lesson-manager');
             const chevron = document.getElementById('lesson-manager-chevron');
@@ -948,13 +867,13 @@
             applyLessonManagerUI();
 
             if (lessonManagerOpen) {
-                setTimeout(() => scrollToEl('lesson-manager'), 50);
+                setTimeout(function() { scrollToEl('lesson-manager'); }, 50);
             }
         }
 
-        /* =========================================================
-           ALL LESSONS MODAL
-           ========================================================= */
+        // =========================================================
+        // ALL LESSONS MODAL
+        // =========================================================
         function openAllLessonsModal() {
             const modal = document.getElementById('all-lessons-modal');
             modal.classList.remove('hidden');
@@ -962,22 +881,18 @@
             document.body.style.overflow = 'hidden';
             renderAllLessonsModal();
         }
-
         function closeAllLessonsModal() {
             const modal = document.getElementById('all-lessons-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
         }
-
         function renderAllLessonsModal() {
             const grid = document.getElementById('modal-lessons-grid');
             const empty = document.getElementById('modal-lessons-empty');
             const count = document.getElementById('modal-lesson-count');
             if (!grid) return;
-
             count.textContent = lessons.length;
-
             if (!lessons.length) {
                 grid.innerHTML = '';
                 empty.classList.remove('hidden');
@@ -987,9 +902,9 @@
             grid.innerHTML = lessons.map(lessonCardHtml).join('');
         }
 
-        /* =========================================================
-           SETTINGS MODAL
-           ========================================================= */
+        // =========================================================
+        // SETTINGS MODAL
+        // =========================================================
         function openSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.classList.remove('hidden');
@@ -1000,34 +915,31 @@
             msg.textContent = '';
             msg.className = 'text-sm font-medium';
         }
-
         function closeSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
         }
-
         function refreshCSVLessonScope() {
             const sel = document.getElementById('csv-lesson-scope');
             if (!sel) return;
             const current = sel.value;
             sel.innerHTML = '<option value="__all__">All lessons</option>' +
-                lessons.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join('');
-            if (current && [...sel.options].some(o => o.value === current)) {
+                lessons.map(function(l) { return '<option value="' + esc(l.id) + '">' + esc(l.title) + '</option>'; }).join('');
+            if (current && Array.from(sel.options).some(function(o) { return o.value === current; })) {
                 sel.value = current;
             }
         }
-
         function showSettingsMessage(text, type) {
             const el = document.getElementById('settings-import-message');
             el.className = 'text-sm font-medium ' + (type === 'error' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400');
             el.textContent = text;
         }
 
-        /* =========================================================
-           EXPORT / IMPORT ALL DATA
-           ========================================================= */
+        // =========================================================
+        // EXPORT / IMPORT ALL DATA
+        // =========================================================
         function exportAllData() {
             const backup = {
                 app: 'pimsleur-study-hub',
@@ -1035,45 +947,38 @@
                 exportedAt: new Date().toISOString(),
                 lessons: lessons,
                 preferences: {
-                    showFlashcardEnglish,
-                    showTranscriptEnglish,
-                    showRoleplayEnglish,
-                    showRomaji,
-                    showFurigana,
-                    lessonManagerOpen
+                    showFlashcardEnglish: showFlashcardEnglish,
+                    showTranscriptEnglish: showTranscriptEnglish,
+                    showRoleplayEnglish: showRoleplayEnglish,
+                    showRomaji: showRomaji,
+                    showFurigana: showFurigana,
+                    lessonManagerOpen: lessonManagerOpen
                 }
             };
-
             const json = JSON.stringify(backup, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `pimsleur-backup-${todayStamp()}.json`;
+            a.download = 'pimsleur-backup-' + todayStamp() + '.json';
             document.body.appendChild(a);
             a.click();
             a.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-            showSettingsMessage(`Exported ${lessons.length} lesson${lessons.length === 1 ? '' : 's'} + preferences.`, 'success');
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+            showSettingsMessage('Exported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' + preferences.', 'success');
         }
 
         function handleImportAllData(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = function(e) {
                 let data;
-                try {
-                    data = JSON.parse(e.target.result);
-                } catch (err) {
-                    showSettingsMessage('Invalid JSON — ' + err.message, 'error');
-                    return;
-                }
+                try { data = JSON.parse(e.target.result); }
+                catch (err) { showSettingsMessage('Invalid JSON - ' + err.message, 'error'); return; }
                 applyImportAllData(data);
             };
-            reader.onerror = () => showSettingsMessage('Could not read that file.', 'error');
+            reader.onerror = function() { showSettingsMessage('Could not read that file.', 'error'); };
             reader.readAsText(file);
             event.target.value = '';
         }
@@ -1081,7 +986,6 @@
         function applyImportAllData(data) {
             let incomingLessons = null;
             let incomingPrefs = null;
-
             if (Array.isArray(data)) {
                 incomingLessons = data;
             } else if (data && typeof data === 'object' && Array.isArray(data.lessons)) {
@@ -1091,68 +995,35 @@
                 showSettingsMessage('This file does not look like a Pimsleur backup.', 'error');
                 return;
             }
-
             const normalized = [];
             for (let i = 0; i < incomingLessons.length; i++) {
-                try {
-                    normalized.push(normalizeLesson(incomingLessons[i]));
-                } catch (err) {
-                    showSettingsMessage(`Lesson #${i + 1} is invalid — ${err.message}`, 'error');
-                    return;
-                }
+                try { normalized.push(normalizeLesson(incomingLessons[i])); }
+                catch (err) { showSettingsMessage('Lesson #' + (i + 1) + ' is invalid - ' + err.message, 'error'); return; }
             }
-
-            if (!normalized.length) {
-                showSettingsMessage('The backup contains no lessons.', 'error');
-                return;
-            }
+            if (!normalized.length) { showSettingsMessage('The backup contains no lessons.', 'error'); return; }
 
             const existingSummary = lessons.length
-                ? `This will REPLACE ${lessons.length} existing lesson${lessons.length === 1 ? '' : 's'} and all preferences.`
+                ? 'This will REPLACE ' + lessons.length + ' existing lesson' + (lessons.length === 1 ? '' : 's') + ' and all preferences.'
                 : 'This will restore your lessons and preferences.';
-            if (!confirm(`${existingSummary}\n\nImport ${normalized.length} lesson${normalized.length === 1 ? '' : 's'} now?`)) {
-                return;
-            }
+            if (!confirm(existingSummary + '\n\nImport ' + normalized.length + ' lesson' + (normalized.length === 1 ? '' : 's') + ' now?')) return;
 
             lessons = normalized;
             persistLessons();
 
             if (incomingPrefs && typeof incomingPrefs === 'object') {
-                if (typeof incomingPrefs.showFlashcardEnglish === 'boolean') {
-                    showFlashcardEnglish = incomingPrefs.showFlashcardEnglish;
-                    storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0');
-                }
-                if (typeof incomingPrefs.showTranscriptEnglish === 'boolean') {
-                    showTranscriptEnglish = incomingPrefs.showTranscriptEnglish;
-                    storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0');
-                }
-                if (typeof incomingPrefs.showRoleplayEnglish === 'boolean') {
-                    showRoleplayEnglish = incomingPrefs.showRoleplayEnglish;
-                    storageSet(RP_EN_KEY, showRoleplayEnglish ? '1' : '0');
-                }
-                if (typeof incomingPrefs.showRomaji === 'boolean') {
-                    showRomaji = incomingPrefs.showRomaji;
-                    storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
-                }
-                if (typeof incomingPrefs.showFurigana === 'boolean') {
-                    showFurigana = incomingPrefs.showFurigana;
-                    storageSet(FURIGANA_KEY, showFurigana ? '1' : '0');
-                }
-                if (typeof incomingPrefs.lessonManagerOpen === 'boolean') {
-                    lessonManagerOpen = incomingPrefs.lessonManagerOpen;
-                    storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0');
-                }
+                if (typeof incomingPrefs.showFlashcardEnglish === 'boolean') { showFlashcardEnglish = incomingPrefs.showFlashcardEnglish; storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0'); }
+                if (typeof incomingPrefs.showTranscriptEnglish === 'boolean') { showTranscriptEnglish = incomingPrefs.showTranscriptEnglish; storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0'); }
+                if (typeof incomingPrefs.showRoleplayEnglish === 'boolean') { showRoleplayEnglish = incomingPrefs.showRoleplayEnglish; storageSet(RP_EN_KEY, showRoleplayEnglish ? '1' : '0'); }
+                if (typeof incomingPrefs.showRomaji === 'boolean') { showRomaji = incomingPrefs.showRomaji; storageSet(ROMAJI_KEY, showRomaji ? '1' : '0'); }
+                if (typeof incomingPrefs.showFurigana === 'boolean') { showFurigana = incomingPrefs.showFurigana; storageSet(FURIGANA_KEY, showFurigana ? '1' : '0'); }
+                if (typeof incomingPrefs.lessonManagerOpen === 'boolean') { lessonManagerOpen = incomingPrefs.lessonManagerOpen; storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0'); }
             }
 
-            const stillExists = activeLesson ? lessons.find(l => l.id === activeLesson.id) : null;
-            if (!stillExists) {
-                activeLesson = null;
-                storageSet(ACTIVE_KEY, '');
-            } else {
-                activeLesson = stillExists;
-            }
+            const stillExists = activeLesson ? lessons.find(function(l) { return l.id === activeLesson.id; }) : null;
+            if (!stillExists) { activeLesson = null; storageSet(ACTIVE_KEY, ''); }
+            else { activeLesson = stillExists; }
 
-            Object.keys(transcriptAudioMap).forEach(key => {
+            Object.keys(transcriptAudioMap).forEach(function(key) {
                 URL.revokeObjectURL(transcriptAudioMap[key].url);
                 delete transcriptAudioMap[key];
             });
@@ -1168,21 +1039,15 @@
             renderActiveBanner();
             refreshLessonViews();
             refreshCSVLessonScope();
-
-            showSettingsMessage(`Imported ${lessons.length} lesson${lessons.length === 1 ? '' : 's'} successfully.`, 'success');
+            showSettingsMessage('Imported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' successfully.', 'success');
         }
 
         function clearAllData() {
-            if (!lessons.length && !activeLesson) {
-                showSettingsMessage('Nothing to clear — already empty.', 'success');
-                return;
-            }
-            if (!confirm('This will permanently DELETE all lessons and preferences from this browser.\n\nExport a backup first if you have not already.\n\nContinue?')) {
-                return;
-            }
+            if (!lessons.length && !activeLesson) { showSettingsMessage('Nothing to clear - already empty.', 'success'); return; }
+            if (!confirm('This will permanently DELETE all lessons and preferences.\n\nContinue?')) return;
             if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
 
-            Object.keys(transcriptAudioMap).forEach(key => {
+            Object.keys(transcriptAudioMap).forEach(function(key) {
                 URL.revokeObjectURL(transcriptAudioMap[key].url);
                 delete transcriptAudioMap[key];
             });
@@ -1218,78 +1083,53 @@
             renderActiveBanner();
             refreshLessonViews();
             refreshCSVLessonScope();
-
             showSettingsMessage('All data cleared.', 'success');
         }
 
-        /* =========================================================
-           FLASHCARDS CSV EXPORT
-           ========================================================= */
+        // =========================================================
+        // CSV EXPORT
+        // =========================================================
         function downloadFlashcardsCSV() {
             const scope = document.getElementById('csv-lesson-scope').value;
             let targetLessons;
             let filenameBase;
-
             if (scope === '__all__') {
                 targetLessons = lessons.slice();
                 filenameBase = 'pimsleur-flashcards-all';
             } else {
-                const found = lessons.find(l => l.id === scope);
-                if (!found) {
-                    showSettingsMessage('The selected lesson could not be found.', 'error');
-                    return;
-                }
+                const found = lessons.find(function(l) { return l.id === scope; });
+                if (!found) { showSettingsMessage('Lesson not found.', 'error'); return; }
                 targetLessons = [found];
-                filenameBase = `pimsleur-flashcards-${slugify(found.title)}`;
+                filenameBase = 'pimsleur-flashcards-' + slugify(found.title);
             }
+            if (!targetLessons.length) { showSettingsMessage('No lessons available.', 'error'); return; }
 
-            if (!targetLessons.length) {
-                showSettingsMessage('No lessons available to export.', 'error');
-                return;
-            }
-
-            const rows = [
-                ['Lesson', 'Tag', 'Japanese', 'Furigana', 'Romaji', 'English', 'Notes']
-            ];
-
+            const rows = [['Lesson', 'Tag', 'Japanese', 'Furigana', 'Romaji', 'English', 'Notes']];
             let totalCards = 0;
-            targetLessons.forEach(lesson => {
-                (lesson.vocabulary || []).forEach(v => {
-                    rows.push([
-                        lesson.title || '',
-                        v.tag || '',
-                        v.jp || '',
-                        v.furigana || '',
-                        v.romaji || '',
-                        v.en || '',
-                        v.notes || ''
-                    ]);
+            targetLessons.forEach(function(lesson) {
+                (lesson.vocabulary || []).forEach(function(v) {
+                    rows.push([lesson.title || '', v.tag || '', v.jp || '', v.furigana || '', v.romaji || '', v.en || '', v.notes || '']);
                     totalCards++;
                 });
             });
+            if (totalCards === 0) { showSettingsMessage('No vocabulary cards to export.', 'error'); return; }
 
-            if (totalCards === 0) {
-                showSettingsMessage('The selected lesson(s) contain no vocabulary cards.', 'error');
-                return;
-            }
-
-            const csv = '\uFEFF' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+            const csv = '\uFEFF' + rows.map(function(row) { return row.map(csvEscape).join(','); }).join('\r\n');
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${filenameBase}-${todayStamp()}.csv`;
+            a.download = filenameBase + '-' + todayStamp() + '.csv';
             document.body.appendChild(a);
             a.click();
             a.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-            showSettingsMessage(`Exported ${totalCards} flashcard${totalCards === 1 ? '' : 's'} as CSV.`, 'success');
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+            showSettingsMessage('Exported ' + totalCards + ' flashcard' + (totalCards === 1 ? '' : 's') + ' as CSV.', 'success');
         }
 
-        /* =========================================================
-           TOGGLE UI HELPERS
-           ========================================================= */
+        // =========================================================
+        // TOGGLE STYLING HELPERS
+        // =========================================================
         function setToggleStyle(btn, icon, on) {
             if (on) {
                 btn.classList.add('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
@@ -1300,9 +1140,9 @@
             }
         }
 
-        /* =========================================================
-           FURIGANA TOGGLE
-           ========================================================= */
+        // =========================================================
+        // FURIGANA TOGGLE
+        // =========================================================
         function toggleFurigana() {
             showFurigana = !showFurigana;
             storageSet(FURIGANA_KEY, showFurigana ? '1' : '0');
@@ -1314,7 +1154,6 @@
                 if (pendingOptions) renderRoleplayOptions(pendingOptions);
             }
         }
-
         function updateFuriganaUI() {
             const icon = document.getElementById('furigana-icon');
             const btn = document.getElementById('furigana-toggle');
@@ -1329,9 +1168,9 @@
             }
         }
 
-        /* =========================================================
-           ROMAJI TOGGLE
-           ========================================================= */
+        // =========================================================
+        // ROMAJI TOGGLE
+        // =========================================================
         function toggleRomaji() {
             showRomaji = !showRomaji;
             storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
@@ -1343,7 +1182,6 @@
                 if (pendingOptions) renderRoleplayOptions(pendingOptions);
             }
         }
-
         function updateRomajiUI() {
             const icon = document.getElementById('romaji-icon');
             const btn = document.getElementById('romaji-toggle');
@@ -1357,29 +1195,26 @@
                 btn.classList.add('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
             }
         }
-
         function applyRomajiToFlashcard() {
             const el = document.getElementById('fc-romaji');
             if (el) el.style.display = showRomaji ? '' : 'none';
         }
 
-        /* =========================================================
-           ENGLISH TOGGLES
-           ========================================================= */
+        // =========================================================
+        // ENGLISH TOGGLES
+        // =========================================================
         function toggleFlashcardEnglish() {
             showFlashcardEnglish = !showFlashcardEnglish;
             storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0');
             updateFlashcardEnglishUI();
             applyFlashcardEnglishVisibility();
         }
-
         function toggleTranscriptEnglish() {
             showTranscriptEnglish = !showTranscriptEnglish;
             storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0');
             updateTranscriptEnglishUI();
             renderTranscriptList();
         }
-
         function toggleRoleplayEnglish() {
             showRoleplayEnglish = !showRoleplayEnglish;
             storageSet(RP_EN_KEY, showRoleplayEnglish ? '1' : '0');
@@ -1387,80 +1222,46 @@
             renderRoleplay();
             if (pendingOptions) renderRoleplayOptions(pendingOptions);
         }
-
         function updateFlashcardEnglishUI() {
             const icon = document.getElementById('fc-english-icon');
             const label = document.getElementById('fc-english-label');
             const btn = document.getElementById('fc-english-toggle');
-            if (showFlashcardEnglish) {
-                icon.className = 'fa-solid fa-eye';
-                label.textContent = 'Hide English';
-                setToggleStyle(btn, icon, true);
-            } else {
-                icon.className = 'fa-solid fa-eye-slash';
-                label.textContent = 'Show English';
-                setToggleStyle(btn, icon, false);
-            }
+            if (showFlashcardEnglish) { icon.className = 'fa-solid fa-eye'; label.textContent = 'Hide English'; setToggleStyle(btn, icon, true); }
+            else { icon.className = 'fa-solid fa-eye-slash'; label.textContent = 'Show English'; setToggleStyle(btn, icon, false); }
         }
-
         function updateTranscriptEnglishUI() {
             const icon = document.getElementById('tr-english-icon');
             const label = document.getElementById('tr-english-label');
             const btn = document.getElementById('tr-english-toggle');
-            if (showTranscriptEnglish) {
-                icon.className = 'fa-solid fa-eye';
-                label.textContent = 'Hide English';
-                setToggleStyle(btn, icon, true);
-            } else {
-                icon.className = 'fa-solid fa-eye-slash';
-                label.textContent = 'Show English';
-                setToggleStyle(btn, icon, false);
-            }
+            if (showTranscriptEnglish) { icon.className = 'fa-solid fa-eye'; label.textContent = 'Hide English'; setToggleStyle(btn, icon, true); }
+            else { icon.className = 'fa-solid fa-eye-slash'; label.textContent = 'Show English'; setToggleStyle(btn, icon, false); }
         }
-
         function updateRoleplayEnglishUI() {
             const icon = document.getElementById('rp-english-icon');
             const label = document.getElementById('rp-english-label');
             const btn = document.getElementById('rp-english-toggle');
-            if (showRoleplayEnglish) {
-                icon.className = 'fa-solid fa-eye';
-                label.textContent = 'Hide English';
-                setToggleStyle(btn, icon, true);
-            } else {
-                icon.className = 'fa-solid fa-eye-slash';
-                label.textContent = 'Show English';
-                setToggleStyle(btn, icon, false);
-            }
+            if (showRoleplayEnglish) { icon.className = 'fa-solid fa-eye'; label.textContent = 'Hide English'; setToggleStyle(btn, icon, true); }
+            else { icon.className = 'fa-solid fa-eye-slash'; label.textContent = 'Show English'; setToggleStyle(btn, icon, false); }
         }
-
         function applyFlashcardEnglishVisibility() {
             const revealed = document.getElementById('fc-back-revealed');
             const hidden = document.getElementById('fc-back-hidden');
             if (!revealed || !hidden) return;
-            if (showFlashcardEnglish) {
-                revealed.classList.remove('hidden');
-                hidden.classList.add('hidden');
-                hidden.classList.remove('flex');
-            } else {
-                revealed.classList.add('hidden');
-                hidden.classList.remove('hidden');
-                hidden.classList.add('flex');
-            }
+            if (showFlashcardEnglish) { revealed.classList.remove('hidden'); hidden.classList.add('hidden'); hidden.classList.remove('flex'); }
+            else { revealed.classList.add('hidden'); hidden.classList.remove('hidden'); hidden.classList.add('flex'); }
         }
 
-        /* =========================================================
-           LESSON NORMALISATION
-           ========================================================= */
+        // =========================================================
+        // LESSON NORMALISATION
+        // =========================================================
         function normalizeLesson(raw) {
-            if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-                throw new Error('The JSON root must be a single lesson object.');
-            }
+            if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Root must be a lesson object.');
             const title = String(raw.title || '').trim();
             if (!title) throw new Error('Missing required field: "title".');
 
             const lesson = {
                 id: String(raw.id || '').trim() || ('lesson-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
-                title,
+                title: title,
                 subtitle: String(raw.subtitle || '').trim(),
                 description: String(raw.description || '').trim(),
                 vocabulary: [],
@@ -1471,113 +1272,117 @@
 
             if (Array.isArray(raw.vocabulary)) {
                 lesson.vocabulary = raw.vocabulary
-                    .filter(v => v && typeof v === 'object' && (v.jp || v.en))
-                    .map(v => ({
-                        jp: String(v.jp || ''),
-                        furigana: String(v.furigana || ''),
-                        romaji: String(v.romaji || ''),
-                        en: String(v.en || ''),
-                        tag: String(v.tag || 'Vocabulary'),
-                        notes: String(v.notes || '')
-                    }));
+                    .filter(function(v) { return v && typeof v === 'object' && (v.jp || v.en); })
+                    .map(function(v) {
+                        return {
+                            jp: String(v.jp || ''),
+                            furigana: String(v.furigana || ''),
+                            romaji: String(v.romaji || ''),
+                            en: String(v.en || ''),
+                            tag: String(v.tag || 'Vocabulary'),
+                            notes: String(v.notes || '')
+                        };
+                    });
             }
 
             if (Array.isArray(raw.transcript)) {
                 lesson.transcript = raw.transcript
-                    .filter(t => t && typeof t === 'object' && (t.jp || t.en))
-                    .map(t => ({
-                        jp: String(t.jp || ''),
-                        furigana: String(t.furigana || ''),
-                        romaji: String(t.romaji || ''),
-                        en: String(t.en || '')
-                    }));
+                    .filter(function(t) { return t && typeof t === 'object' && (t.jp || t.en); })
+                    .map(function(t) {
+                        return {
+                            jp: String(t.jp || ''),
+                            furigana: String(t.furigana || ''),
+                            romaji: String(t.romaji || ''),
+                            en: String(t.en || '')
+                        };
+                    });
             }
 
             if (Array.isArray(raw.quiz)) {
                 lesson.quiz = raw.quiz
-                    .filter(q => q && typeof q === 'object' && q.q && Array.isArray(q.options) && q.options.length)
-                    .map(q => ({
-                        q: String(q.q),
-                        options: q.options.map(o => String(o)),
-                        correct: Math.max(0, Math.min(q.options.length - 1, parseInt(q.correct, 10) || 0))
-                    }));
+                    .filter(function(q) { return q && typeof q === 'object' && q.q && Array.isArray(q.options) && q.options.length; })
+                    .map(function(q) {
+                        return {
+                            q: String(q.q),
+                            options: q.options.map(function(o) { return String(o); }),
+                            correct: Math.max(0, Math.min(q.options.length - 1, parseInt(q.correct, 10) || 0))
+                        };
+                    });
             }
 
             if (Array.isArray(raw.scenarios)) {
                 lesson.scenarios = raw.scenarios
-                    .filter(s => s && typeof s === 'object' && Array.isArray(s.steps))
-                    .map((s, i) => ({
-                        id: String(s.id || ('scenario-' + i)),
-                        name: String(s.name || ('Scenario ' + (i + 1))),
-                        steps: s.steps
-                            .filter(st => st && typeof st === 'object')
-                            .map(st => {
-                                if (String(st.speaker) === 'user') {
+                    .filter(function(s) { return s && typeof s === 'object' && Array.isArray(s.steps); })
+                    .map(function(s, i) {
+                        return {
+                            id: String(s.id || ('scenario-' + i)),
+                            name: String(s.name || ('Scenario ' + (i + 1))),
+                            steps: s.steps
+                                .filter(function(st) { return st && typeof st === 'object'; })
+                                .map(function(st) {
+                                    if (String(st.speaker) === 'user') {
+                                        return {
+                                            speaker: 'user',
+                                            prompt: String(st.prompt || 'Choose the correct response:'),
+                                            options: (Array.isArray(st.options) ? st.options : [])
+                                                .filter(function(o) { return o && typeof o === 'object'; })
+                                                .map(function(o) {
+                                                    return {
+                                                        jp: String(o.jp || ''),
+                                                        furigana: String(o.furigana || ''),
+                                                        en: String(o.en || ''),
+                                                        correct: !!o.correct
+                                                    };
+                                                })
+                                        };
+                                    }
                                     return {
-                                        speaker: 'user',
-                                        prompt: String(st.prompt || 'Choose the correct response:'),
-                                        options: (Array.isArray(st.options) ? st.options : [])
-                                            .filter(o => o && typeof o === 'object')
-                                            .map(o => ({
-                                                jp: String(o.jp || ''),
-                                                furigana: String(o.furigana || ''),
-                                                en: String(o.en || ''),
-                                                correct: !!o.correct
-                                            }))
+                                        speaker: String(st.speaker || 'speaker'),
+                                        jp: String(st.jp || ''),
+                                        furigana: String(st.furigana || ''),
+                                        romaji: String(st.romaji || ''),
+                                        en: String(st.en || '')
                                     };
-                                }
-                                return {
-                                    speaker: String(st.speaker || 'speaker'),
-                                    jp: String(st.jp || ''),
-                                    furigana: String(st.furigana || ''),
-                                    romaji: String(st.romaji || ''),
-                                    en: String(st.en || '')
-                                };
-                            })
-                    }));
+                                })
+                        };
+                    });
             }
 
             if (!lesson.vocabulary.length && !lesson.transcript.length && !lesson.quiz.length && !lesson.scenarios.length) {
-                throw new Error('The lesson must contain at least one of: "vocabulary", "transcript", "quiz", "scenarios".');
+                throw new Error('Lesson must contain at least one of: vocabulary, transcript, quiz, scenarios.');
             }
-
             return lesson;
         }
 
-        /* =========================================================
-           PERSISTENCE
-           ========================================================= */
+        // =========================================================
+        // PERSISTENCE
+        // =========================================================
         function persistLessons() { storageSet(STORAGE_KEY, JSON.stringify(lessons)); }
-
         function loadFromStorage() {
             try {
                 const raw = JSON.parse(storageGet(STORAGE_KEY) || '[]');
-                lessons = Array.isArray(raw) ? raw.filter(l => l && l.title) : [];
+                lessons = Array.isArray(raw) ? raw.filter(function(l) { return l && l.title; }) : [];
             } catch (e) { lessons = []; }
-
             const activeId = storageGet(ACTIVE_KEY);
-            activeLesson = lessons.find(l => l.id === activeId) || null;
+            activeLesson = lessons.find(function(l) { return l.id === activeId; }) || null;
         }
 
-        /* =========================================================
-           TAB SWITCHING
-           ========================================================= */
+        // =========================================================
+        // TAB SWITCHING
+        // =========================================================
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
+            document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.add('hidden'); });
+            document.querySelectorAll('.nav-btn').forEach(function(btn) {
                 btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm');
                 btn.classList.add('text-slate-600', 'dark:text-neutral-300', 'hover:bg-slate-100', 'dark:hover:bg-neutral-900');
             });
-
             const section = document.getElementById('tab-' + tabId);
             if (section) section.classList.remove('hidden');
-
             const activeNav = document.getElementById('nav-' + tabId);
             if (activeNav) {
                 activeNav.classList.remove('text-slate-600', 'dark:text-neutral-300', 'hover:bg-slate-100', 'dark:hover:bg-neutral-900');
                 activeNav.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
             }
-
             if (tabId === 'roleplay') initRoleplay();
         }
 
@@ -1588,17 +1393,16 @@
             icon.className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
 
-        /* =========================================================
-           DASHBOARD RENDERING
-           ========================================================= */
+        // =========================================================
+        // DASHBOARD
+        // =========================================================
         function renderStats() {
-            const totals = lessons.reduce((acc, l) => {
+            const totals = lessons.reduce(function(acc, l) {
                 acc.vocab += (l.vocabulary || []).length;
                 acc.quiz += (l.quiz || []).length;
                 acc.scen += (l.scenarios || []).length;
                 return acc;
             }, { vocab: 0, quiz: 0, scen: 0 });
-
             document.getElementById('stat-lessons').textContent = lessons.length;
             document.getElementById('stat-vocab').textContent = totals.vocab;
             document.getElementById('stat-quiz').textContent = totals.quiz;
@@ -1612,7 +1416,7 @@
                 banner.classList.remove('hidden');
                 document.getElementById('active-banner-title').textContent = activeLesson.title;
                 document.getElementById('active-banner-sub').textContent =
-                    activeLesson.subtitle || `${(activeLesson.vocabulary || []).length} words · ${(activeLesson.quiz || []).length} quiz questions`;
+                    activeLesson.subtitle || ((activeLesson.vocabulary || []).length + ' words \u00b7 ' + (activeLesson.quiz || []).length + ' quiz questions');
                 badge.classList.remove('hidden');
                 badge.textContent = activeLesson.title;
             } else {
@@ -1629,43 +1433,43 @@
                 { icon: 'fa-brain', n: (l.quiz || []).length, label: 'quiz' },
                 { icon: 'fa-comments', n: (l.scenarios || []).length, label: 'scenarios' }
             ];
-            return `
-            <div class="p-5 rounded-2xl border ${isActive ? 'border-rose-500/60 ring-1 ring-rose-500/20' : 'border-slate-200 dark:border-neutral-900'} bg-slate-50/60 dark:bg-neutral-900/40 flex flex-col justify-between gap-4">
-                <div>
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <h4 class="font-bold text-base leading-tight truncate">${esc(l.title)}</h4>
-                            ${l.subtitle ? `<p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5 line-clamp-2">${esc(l.subtitle)}</p>` : ''}
-                        </div>
-                        ${isActive ? '<span class="shrink-0 px-2 py-0.5 bg-rose-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wide">Active</span>' : ''}
-                    </div>
-                    ${l.description ? `<p class="text-xs text-slate-500 dark:text-neutral-400 mt-2 line-clamp-2">${esc(l.description)}</p>` : ''}
-                    <div class="flex flex-wrap gap-1.5 mt-3">
-                        ${chips.filter(c => c.n > 0).map(c => `
-                            <span class="px-2 py-1 rounded-lg bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 text-[10px] font-semibold text-slate-600 dark:text-neutral-300 flex items-center gap-1">
-                                <i class="fa-solid ${c.icon} text-rose-500"></i> ${c.n} ${c.label}
-                            </span>`).join('')}
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 pt-3 border-t border-slate-200/70 dark:border-neutral-900">
-                    <button onclick="openLesson('${esc(l.id)}')" class="flex-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-play"></i> Study
-                    </button>
-                    <button onclick="exportLesson('${esc(l.id)}')" title="Export JSON" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-slate-100 dark:hover:bg-neutral-900 text-xs font-semibold rounded-xl transition">
-                        <i class="fa-solid fa-download"></i>
-                    </button>
-                    <button onclick="deleteLesson('${esc(l.id)}')" title="Delete" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 text-xs font-semibold rounded-xl transition">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            </div>`;
+            return '' +
+                '<div class="p-5 rounded-2xl border ' + (isActive ? 'border-rose-500/60 ring-1 ring-rose-500/20' : 'border-slate-200 dark:border-neutral-900') + ' bg-slate-50/60 dark:bg-neutral-900/40 flex flex-col justify-between gap-4">' +
+                    '<div>' +
+                        '<div class="flex items-start justify-between gap-2">' +
+                            '<div class="min-w-0">' +
+                                '<h4 class="font-bold text-base leading-tight truncate">' + esc(l.title) + '</h4>' +
+                                (l.subtitle ? '<p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5 line-clamp-2">' + esc(l.subtitle) + '</p>' : '') +
+                            '</div>' +
+                            (isActive ? '<span class="shrink-0 px-2 py-0.5 bg-rose-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wide">Active</span>' : '') +
+                        '</div>' +
+                        (l.description ? '<p class="text-xs text-slate-500 dark:text-neutral-400 mt-2 line-clamp-2">' + esc(l.description) + '</p>' : '') +
+                        '<div class="flex flex-wrap gap-1.5 mt-3">' +
+                            chips.filter(function(c) { return c.n > 0; }).map(function(c) {
+                                return '<span class="px-2 py-1 rounded-lg bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 text-[10px] font-semibold text-slate-600 dark:text-neutral-300 flex items-center gap-1">' +
+                                    '<i class="fa-solid ' + c.icon + ' text-rose-500"></i> ' + c.n + ' ' + c.label +
+                                '</span>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="flex items-center gap-2 pt-3 border-t border-slate-200/70 dark:border-neutral-900">' +
+                        '<button onclick="openLesson(\'' + esc(l.id) + '\')" class="flex-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5">' +
+                            '<i class="fa-solid fa-play"></i> Study' +
+                        '</button>' +
+                        '<button onclick="exportLesson(\'' + esc(l.id) + '\')" title="Export JSON" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-slate-100 dark:hover:bg-neutral-900 text-xs font-semibold rounded-xl transition">' +
+                            '<i class="fa-solid fa-download"></i>' +
+                        '</button>' +
+                        '<button onclick="deleteLesson(\'' + esc(l.id) + '\')" title="Delete" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 text-xs font-semibold rounded-xl transition">' +
+                            '<i class="fa-solid fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
         }
 
         function renderLessons() {
             const grid = document.getElementById('lessons-grid');
             const empty = document.getElementById('lessons-empty');
             const viewAllBtn = document.getElementById('view-all-lessons-btn');
-
             if (!lessons.length) {
                 grid.innerHTML = '';
                 empty.classList.remove('hidden');
@@ -1674,25 +1478,22 @@
                 return;
             }
             empty.classList.add('hidden');
-
             const visible = lessons.slice(0, DASHBOARD_LESSON_LIMIT);
             grid.innerHTML = visible.map(lessonCardHtml).join('');
-
             if (lessons.length > DASHBOARD_LESSON_LIMIT) {
                 viewAllBtn.classList.remove('hidden');
                 document.getElementById('view-all-count').textContent = lessons.length;
             } else {
                 viewAllBtn.classList.add('hidden');
             }
-
             renderAllLessonsModal();
         }
 
-        /* =========================================================
-           LESSON ACTIONS
-           ========================================================= */
+        // =========================================================
+        // LESSON ACTIONS
+        // =========================================================
         function openLesson(id) {
-            const lesson = lessons.find(l => l.id === id);
+            const lesson = lessons.find(function(l) { return l.id === id; });
             if (!lesson) return;
             activeLesson = lesson;
             storageSet(ACTIVE_KEY, lesson.id);
@@ -1703,7 +1504,6 @@
             closeAllLessonsModal();
             switchTab('flashcards');
         }
-
         function clearActiveLesson() {
             activeLesson = null;
             storageSet(ACTIVE_KEY, '');
@@ -1711,20 +1511,17 @@
             refreshLessonViews();
             renderLessons();
         }
-
         function deleteLesson(id) {
-            const lesson = lessons.find(l => l.id === id);
+            const lesson = lessons.find(function(l) { return l.id === id; });
             if (!lesson) return;
-            if (!confirm(`Delete "${lesson.title}"? This cannot be undone.`)) return;
-            lessons = lessons.filter(l => l.id !== id);
-
-            Object.keys(transcriptAudioMap).forEach(key => {
-                if (key.startsWith(id + ':')) {
+            if (!confirm('Delete "' + lesson.title + '"? This cannot be undone.')) return;
+            lessons = lessons.filter(function(l) { return l.id !== id; });
+            Object.keys(transcriptAudioMap).forEach(function(key) {
+                if (key.indexOf(id + ':') === 0) {
                     URL.revokeObjectURL(transcriptAudioMap[key].url);
                     delete transcriptAudioMap[key];
                 }
             });
-
             if (activeLesson && activeLesson.id === id) {
                 activeLesson = null;
                 storageSet(ACTIVE_KEY, '');
@@ -1737,9 +1534,8 @@
             refreshLessonViews();
             refreshCSVLessonScope();
         }
-
         function exportLesson(id) {
-            const lesson = lessons.find(l => l.id === id);
+            const lesson = lessons.find(function(l) { return l.id === id; });
             if (!lesson) return;
             const blob = new Blob([JSON.stringify(lesson, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1749,87 +1545,63 @@
             document.body.appendChild(a);
             a.click();
             a.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
         }
 
-        /* =========================================================
-           IMPORT (single lesson)
-           ========================================================= */
+        // =========================================================
+        // SINGLE LESSON IMPORT
+        // =========================================================
         function handleFileImport(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = function(e) {
                 document.getElementById('import-textarea').value = e.target.result;
                 importFromTextarea();
             };
-            reader.onerror = () => showImportMessage('Could not read that file.', 'error');
+            reader.onerror = function() { showImportMessage('Could not read that file.', 'error'); };
             reader.readAsText(file);
             event.target.value = '';
         }
-
         function importFromTextarea() {
             const text = document.getElementById('import-textarea').value.trim();
-            if (!text) {
-                showImportMessage('Paste a lesson JSON or choose a .json file first.', 'error');
-                return;
-            }
+            if (!text) { showImportMessage('Paste a lesson JSON or choose a .json file first.', 'error'); return; }
             let raw;
-            try {
-                raw = JSON.parse(text);
-            } catch (err) {
-                showImportMessage('Invalid JSON — ' + err.message, 'error');
-                return;
-            }
+            try { raw = JSON.parse(text); }
+            catch (err) { showImportMessage('Invalid JSON - ' + err.message, 'error'); return; }
             let lesson;
-            try {
-                lesson = normalizeLesson(raw);
-            } catch (err) {
-                showImportMessage(err.message, 'error');
-                return;
-            }
-
-            const existingIdx = lessons.findIndex(l => l.id === lesson.id);
+            try { lesson = normalizeLesson(raw); }
+            catch (err) { showImportMessage(err.message, 'error'); return; }
+            const existingIdx = lessons.findIndex(function(l) { return l.id === lesson.id; });
             let verb = 'Imported';
-            if (existingIdx >= 0) {
-                lessons[existingIdx] = lesson;
-                verb = 'Updated';
-            } else {
-                lessons.push(lesson);
-            }
-
+            if (existingIdx >= 0) { lessons[existingIdx] = lesson; verb = 'Updated'; }
+            else { lessons.push(lesson); }
             persistLessons();
             activeLesson = lesson;
             storageSet(ACTIVE_KEY, lesson.id);
-
             document.getElementById('import-textarea').value = '';
-            showImportMessage(`${verb} "${lesson.title}". It is now the active lesson — open Flashcards to begin.`, 'success');
-
+            showImportMessage(verb + ' "' + lesson.title + '". It is now active.', 'success');
             renderLessons();
             renderStats();
             renderActiveBanner();
             refreshLessonViews();
             refreshCSVLessonScope();
         }
-
         function showImportMessage(text, type) {
             const el = document.getElementById('import-message');
             el.className = 'text-sm font-medium ' + (type === 'error' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400');
             el.textContent = text;
         }
-
         function clearImportBox() {
             document.getElementById('import-textarea').value = '';
             showImportMessage('', 'success');
         }
-
         function loadDemoIntoImportBox() {
             if (!lessonManagerOpen) toggleLessonManager(true);
             document.getElementById('import-textarea').value = DEMO_JSON;
-            showImportMessage('Demo lesson loaded into the import box. Review it, then press "Import Lesson".', 'success');
-            setTimeout(() => scrollToEl('import-panel'), 100);
+            showImportMessage('Demo lesson loaded into the import box. Press "Import Lesson" to add it.', 'success');
+            setTimeout(function() { scrollToEl('import-panel'); }, 100);
         }
-
         async function copyDemoJson() {
             try {
                 await navigator.clipboard.writeText(DEMO_JSON);
@@ -1844,7 +1616,6 @@
                 showImportMessage('Demo JSON copied to clipboard.', 'success');
             }
         }
-
         function downloadDemoJson() {
             const blob = new Blob([DEMO_JSON], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1854,15 +1625,15 @@
             document.body.appendChild(a);
             a.click();
             a.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
         }
 
-        /* =========================================================
-           VOICE RECOGNITION
-           ========================================================= */
+        // =========================================================
+        // VOICE RECOGNITION
+        // =========================================================
         function startVoiceRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Speech recognition is not supported in this browser. You can type your response instead.");
+                alert('Speech recognition is not supported in this browser. You can type your response instead.');
                 return;
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1870,31 +1641,26 @@
             recognition.lang = 'ja-JP';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
-
             const micBtn = document.getElementById('mic-btn');
             micBtn.classList.add('bg-rose-500', 'text-white');
-
-            recognition.onresult = function (event) {
+            recognition.onresult = function(event) {
                 document.getElementById('custom-reply-input').value = event.results[0][0].transcript;
                 micBtn.classList.remove('bg-rose-500', 'text-white');
             };
-            recognition.onerror = function () { micBtn.classList.remove('bg-rose-500', 'text-white'); };
-            recognition.onend = function () { micBtn.classList.remove('bg-rose-500', 'text-white'); };
+            recognition.onerror = function() { micBtn.classList.remove('bg-rose-500', 'text-white'); };
+            recognition.onend = function() { micBtn.classList.remove('bg-rose-500', 'text-white'); };
             recognition.start();
         }
 
-        /* =========================================================
-           REFRESH LESSON VIEWS
-           ========================================================= */
+        // =========================================================
+        // REFRESH ALL
+        // =========================================================
         function refreshLessonViews() {
             renderActiveBanner();
-
             const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
             document.getElementById('flashcards-empty').classList.toggle('hidden', vocab.length > 0);
             document.getElementById('flashcards-body').classList.toggle('hidden', vocab.length === 0);
-            document.getElementById('fc-lesson-name').textContent = activeLesson
-                ? (activeLesson.title + ' — click a card to flip.')
-                : 'Click card to flip.';
+            document.getElementById('fc-lesson-name').textContent = activeLesson ? (activeLesson.title + ' \u2014 click a card to flip.') : 'Click card to flip.';
             currentFlashcardIdx = 0;
             isCardFlipped = false;
             if (vocab.length) updateFlashcard();
@@ -1908,19 +1674,17 @@
 
             document.getElementById('transcript-search').value = '';
             renderTranscript();
-
             populateScenarioSelect();
             initRoleplay();
         }
 
-        /* =========================================================
-           FLASHCARDS
-           ========================================================= */
+        // =========================================================
+        // FLASHCARDS
+        // =========================================================
         function updateFlashcard() {
             const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
             if (!vocab.length) return;
             if (currentFlashcardIdx >= vocab.length) currentFlashcardIdx = 0;
-
             const item = vocab[currentFlashcardIdx];
             document.getElementById('fc-current').textContent = currentFlashcardIdx + 1;
             document.getElementById('fc-total').textContent = vocab.length;
@@ -1931,24 +1695,20 @@
             romajiEl.style.display = showRomaji ? '' : 'none';
             document.getElementById('fc-english').textContent = item.en || '';
             document.getElementById('fc-notes').textContent = item.notes || '';
-
             isCardFlipped = false;
             document.getElementById('flashcard-inner').style.transform = 'rotateY(0deg)';
             applyFlashcardEnglishVisibility();
         }
-
         function flipCard() {
             isCardFlipped = !isCardFlipped;
             document.getElementById('flashcard-inner').style.transform = isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
         }
-
         function nextCard() {
             const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
             if (!vocab.length) return;
             currentFlashcardIdx = (currentFlashcardIdx + 1) % vocab.length;
             updateFlashcard();
         }
-
         function prevCard() {
             const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
             if (!vocab.length) return;
@@ -1956,47 +1716,39 @@
             updateFlashcard();
         }
 
-        /* =========================================================
-           ROLEPLAY
-           ========================================================= */
+        // =========================================================
+        // ROLEPLAY
+        // =========================================================
         function populateScenarioSelect() {
             const sel = document.getElementById('scenario-select');
             const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
-            sel.innerHTML = scenarios.map((s, i) =>
-                `<option value="${i}">${esc(s.name || ('Scenario ' + (i + 1)))}</option>`
-            ).join('');
+            sel.innerHTML = scenarios.map(function(s, i) {
+                return '<option value="' + i + '">' + esc(s.name || ('Scenario ' + (i + 1))) + '</option>';
+            }).join('');
             currentScenarioIdx = 0;
         }
-
         function changeScenario() {
             currentScenarioIdx = parseInt(document.getElementById('scenario-select').value, 10) || 0;
             initRoleplay();
         }
-
         function initRoleplay() {
             chatStep = 0;
             chatHistory = [];
             pendingOptions = null;
             document.getElementById('response-options').innerHTML = '';
             document.getElementById('chat-container').innerHTML = '';
-
             const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
             const has = scenarios.length > 0 && scenarios[currentScenarioIdx] && scenarios[currentScenarioIdx].steps.length > 0;
-
             document.getElementById('roleplay-empty').classList.toggle('hidden', has);
             document.getElementById('roleplay-body').classList.toggle('hidden', !has);
-
             if (!has) return;
             renderChatStep();
         }
-
         function renderChatStep() {
             const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
             const scenario = scenarios[currentScenarioIdx];
             if (!scenario) return;
-
             const flow = scenario.steps;
-
             if (chatStep >= flow.length) {
                 chatHistory.push({ type: 'complete' });
                 renderRoleplay();
@@ -2004,16 +1756,9 @@
                 pendingOptions = null;
                 return;
             }
-
             const current = flow[chatStep];
             if (current.speaker !== 'user') {
-                chatHistory.push({
-                    type: 'npc',
-                    jp: current.jp,
-                    furigana: current.furigana,
-                    romaji: current.romaji,
-                    en: current.en
-                });
+                chatHistory.push({ type: 'npc', jp: current.jp, furigana: current.furigana, romaji: current.romaji, en: current.en });
                 renderRoleplay();
                 chatStep++;
                 setTimeout(renderChatStep, 800);
@@ -2024,78 +1769,68 @@
                 renderRoleplayOptions(current.options);
             }
         }
-
         function renderRoleplay() {
             const chatContainer = document.getElementById('chat-container');
             chatContainer.innerHTML = chatHistory.map(renderChatEntry).join('');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-
         function renderChatEntry(entry) {
             if (entry.type === 'npc') {
                 const romajiPart = (showRomaji && entry.romaji) ? esc(entry.romaji) : '';
                 const enPart = (showRoleplayEnglish && entry.en) ? esc(entry.en) : '';
                 let meta = '';
-                if (romajiPart && enPart) meta = romajiPart + ' — ' + enPart;
+                if (romajiPart && enPart) meta = romajiPart + ' \u2014 ' + enPart;
                 else meta = romajiPart || enPart;
-
-                return `
-                    <div class="flex items-start gap-3 max-w-[85%]">
-                        <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user-tie"></i></div>
-                        <div class="bg-slate-100 dark:bg-neutral-900 p-3.5 rounded-2xl rounded-tl-none space-y-1">
-                            <div class="font-jp font-bold text-base leading-loose">${renderFurigana(entry.jp, entry.furigana)}</div>
-                            ${meta ? `<div class="text-xs text-slate-500 dark:text-neutral-400">${meta}</div>` : ''}
-                        </div>
-                    </div>`;
+                return '' +
+                    '<div class="flex items-start gap-3 max-w-[85%]">' +
+                        '<div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user-tie"></i></div>' +
+                        '<div class="bg-slate-100 dark:bg-neutral-900 p-3.5 rounded-2xl rounded-tl-none space-y-1">' +
+                            '<div class="font-jp font-bold text-base leading-loose">' + renderFurigana(entry.jp, entry.furigana) + '</div>' +
+                            (meta ? '<div class="text-xs text-slate-500 dark:text-neutral-400">' + meta + '</div>' : '') +
+                        '</div>' +
+                    '</div>';
             }
             if (entry.type === 'prompt') {
-                return `<div class="text-xs font-semibold text-rose-600 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">${esc(entry.text)}</div>`;
+                return '<div class="text-xs font-semibold text-rose-600 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">' + esc(entry.text) + '</div>';
             }
             if (entry.type === 'user') {
-                return `
-                    <div class="flex items-start gap-3 max-w-[85%] ml-auto flex-row-reverse">
-                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user"></i></div>
-                        <div class="bg-amber-600 text-white p-3.5 rounded-2xl rounded-tr-none space-y-1 text-right">
-                            <div class="font-jp font-bold text-base leading-loose">${renderFurigana(entry.jp, entry.furigana)}</div>
-                        </div>
-                    </div>`;
+                return '' +
+                    '<div class="flex items-start gap-3 max-w-[85%] ml-auto flex-row-reverse">' +
+                        '<div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user"></i></div>' +
+                        '<div class="bg-amber-600 text-white p-3.5 rounded-2xl rounded-tr-none space-y-1 text-right">' +
+                            '<div class="font-jp font-bold text-base leading-loose">' + renderFurigana(entry.jp, entry.furigana) + '</div>' +
+                        '</div>' +
+                    '</div>';
             }
             if (entry.type === 'complete') {
-                return `
-                    <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center space-y-2 my-auto">
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-2xl"></i>
-                        <h4 class="font-bold text-emerald-700 dark:text-emerald-300">Scenario Completed Successfully!</h4>
-                        <p class="text-xs text-slate-600 dark:text-neutral-400">You successfully navigated the conversation.</p>
-                        <button onclick="initRoleplay()" class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-xl text-xs">Restart Scenario</button>
-                    </div>`;
+                return '' +
+                    '<div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center space-y-2 my-auto">' +
+                        '<i class="fa-solid fa-circle-check text-emerald-600 text-2xl"></i>' +
+                        '<h4 class="font-bold text-emerald-700 dark:text-emerald-300">Scenario Completed!</h4>' +
+                        '<p class="text-xs text-slate-600 dark:text-neutral-400">You successfully navigated the conversation.</p>' +
+                        '<button onclick="initRoleplay()" class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-xl text-xs">Restart Scenario</button>' +
+                    '</div>';
             }
             return '';
         }
-
         function renderRoleplayOptions(options) {
             const optionsContainer = document.getElementById('response-options');
-            optionsContainer.innerHTML = options.map((opt, idx) => {
-                const enPart = (showRoleplayEnglish && opt.en)
-                    ? `<span class="text-xs text-slate-500 dark:text-neutral-400">${esc(opt.en)}</span>`
-                    : '';
-                return `
-                    <button onclick="handleRoleplayChoice(${idx})" class="p-3 bg-slate-50 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200 dark:border-neutral-800 rounded-xl text-left transition flex flex-col gap-1">
-                        <span class="font-jp font-bold text-sm text-slate-900 dark:text-white leading-loose">${renderFurigana(opt.jp, opt.furigana)}</span>
-                        ${enPart}
-                    </button>`;
+            optionsContainer.innerHTML = options.map(function(opt, idx) {
+                const enPart = (showRoleplayEnglish && opt.en) ? '<span class="text-xs text-slate-500 dark:text-neutral-400">' + esc(opt.en) + '</span>' : '';
+                return '' +
+                    '<button onclick="handleRoleplayChoice(' + idx + ')" class="p-3 bg-slate-50 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200 dark:border-neutral-800 rounded-xl text-left transition flex flex-col gap-1">' +
+                        '<span class="font-jp font-bold text-sm text-slate-900 dark:text-white leading-loose">' + renderFurigana(opt.jp, opt.furigana) + '</span>' +
+                        enPart +
+                    '</button>';
             }).join('');
         }
-
         function handleRoleplayChoice(optIdx) {
             const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
             const scenario = scenarios[currentScenarioIdx];
             if (!scenario) return;
-
             const current = scenario.steps[chatStep];
             if (!current || current.speaker !== 'user') return;
-
             const chosen = current.options[optIdx];
-
             if (chosen && chosen.correct) {
                 chatHistory.push({ type: 'user', jp: chosen.jp, furigana: chosen.furigana });
                 renderRoleplay();
@@ -2104,28 +1839,25 @@
                 document.getElementById('response-options').innerHTML = '';
                 setTimeout(renderChatStep, 600);
             } else {
-                alert("That wasn't the expected response for this prompt. Try again!");
+                alert("That wasn't the expected response. Try again!");
             }
         }
-
         function sendCustomReply() {
             const input = document.getElementById('custom-reply-input');
             const val = input.value.trim();
             if (!val) return;
-
             chatHistory.push({ type: 'user', jp: val });
             renderRoleplay();
             input.value = '';
-
             chatStep++;
             pendingOptions = null;
             document.getElementById('response-options').innerHTML = '';
             setTimeout(renderChatStep, 800);
         }
 
-        /* =========================================================
-           QUIZ
-           ========================================================= */
+        // =========================================================
+        // QUIZ
+        // =========================================================
         function initQuiz() {
             currentQuizIdx = 0;
             quizScore = 0;
@@ -2134,44 +1866,37 @@
             document.getElementById('quiz-score-card').classList.add('hidden');
             renderQuizQuestion();
         }
-
         function renderQuizQuestion() {
             const quiz = activeLesson ? (activeLesson.quiz || []) : [];
             if (!quiz.length) return;
             const q = quiz[currentQuizIdx];
-
-            document.getElementById('quiz-progress-text').textContent = `Question ${currentQuizIdx + 1} of ${quiz.length}`;
+            document.getElementById('quiz-progress-text').textContent = 'Question ' + (currentQuizIdx + 1) + ' of ' + quiz.length;
             document.getElementById('quiz-question').textContent = q.q;
             document.getElementById('quiz-feedback').textContent = '';
             document.getElementById('quiz-next-btn').classList.add('hidden');
-
-            document.getElementById('quiz-options').innerHTML = q.options.map((opt, idx) => `
-                <button onclick="handleQuizAnswer(${idx}, ${q.correct})" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-neutral-900/50 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-left font-medium transition flex items-center justify-between group">
-                    <span class="font-jp text-sm sm:text-base">${esc(opt)}</span>
-                    <span class="w-6 h-6 rounded-full border border-slate-300 dark:border-neutral-700 flex items-center justify-center text-xs text-slate-400 group-hover:border-rose-500 group-hover:text-rose-500"><i class="fa-solid fa-check"></i></span>
-                </button>`).join('');
+            document.getElementById('quiz-options').innerHTML = q.options.map(function(opt, idx) {
+                return '' +
+                    '<button onclick="handleQuizAnswer(' + idx + ', ' + q.correct + ')" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-neutral-900/50 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-left font-medium transition flex items-center justify-between group">' +
+                        '<span class="font-jp text-sm sm:text-base">' + esc(opt) + '</span>' +
+                        '<span class="w-6 h-6 rounded-full border border-slate-300 dark:border-neutral-700 flex items-center justify-center text-xs text-slate-400 group-hover:border-rose-500 group-hover:text-rose-500"><i class="fa-solid fa-check"></i></span>' +
+                    '</button>';
+            }).join('');
         }
-
         function handleQuizAnswer(selectedIdx, correctIdx) {
             const options = document.getElementById('quiz-options').children;
             for (let i = 0; i < options.length; i++) {
                 options[i].disabled = true;
-                if (i === correctIdx) {
-                    options[i].classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-300');
-                } else if (i === selectedIdx) {
-                    options[i].classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-700', 'dark:text-rose-300');
-                }
+                if (i === correctIdx) options[i].classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-300');
+                else if (i === selectedIdx) options[i].classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-700', 'dark:text-rose-300');
             }
-
             if (selectedIdx === correctIdx) {
                 quizScore++;
                 document.getElementById('quiz-feedback').innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Correct!</span>';
             } else {
-                document.getElementById('quiz-feedback').innerHTML = '<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> Incorrect. Review the lesson.</span>';
+                document.getElementById('quiz-feedback').innerHTML = '<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> Incorrect.</span>';
             }
             document.getElementById('quiz-next-btn').classList.remove('hidden');
         }
-
         function nextQuizQuestion() {
             const quiz = activeLesson ? (activeLesson.quiz || []) : [];
             currentQuizIdx++;
@@ -2181,129 +1906,108 @@
                 document.getElementById('quiz-card').classList.add('hidden');
                 document.getElementById('quiz-footer').classList.add('hidden');
                 document.getElementById('quiz-score-card').classList.remove('hidden');
-                document.getElementById('quiz-final-score').textContent = `You scored ${quizScore} out of ${quiz.length} correct!`;
+                document.getElementById('quiz-final-score').textContent = 'You scored ' + quizScore + ' out of ' + quiz.length + ' correct!';
             }
         }
-
         function restartQuiz() { initQuiz(); }
 
-        /* =========================================================
-           TRANSCRIPT
-           ========================================================= */
+        // =========================================================
+        // TRANSCRIPT
+        // =========================================================
         function renderTranscript() {
             const lines = activeLesson ? (activeLesson.transcript || []) : [];
             const empty = document.getElementById('transcript-empty');
             const toolbar = document.getElementById('transcript-toolbar');
             const list = document.getElementById('transcript-list');
-
             empty.classList.toggle('hidden', lines.length > 0);
             toolbar.classList.toggle('hidden', lines.length === 0);
-
             if (!lines.length) { list.innerHTML = ''; return; }
-
-            document.getElementById('transcript-count').textContent =
-                `${lines.length} lines · ${activeLesson.title}`;
+            document.getElementById('transcript-count').textContent = lines.length + ' lines \u00b7 ' + activeLesson.title;
             renderTranscriptList();
         }
-
         function getFilteredTranscript() {
             const lines = activeLesson ? (activeLesson.transcript || []) : [];
             const query = (document.getElementById('transcript-search').value || '').toLowerCase().trim();
-            const indexed = lines.map((item, idx) => ({ item, idx }));
+            const indexed = lines.map(function(item, idx) { return { item: item, idx: idx }; });
             if (!query) return indexed;
-            return indexed.filter(({ item }) =>
-                (item.jp || '').toLowerCase().includes(query) ||
-                (item.furigana || '').toLowerCase().includes(query) ||
-                (item.romaji || '').toLowerCase().includes(query) ||
-                (item.en || '').toLowerCase().includes(query)
-            );
+            return indexed.filter(function(entry) {
+                const item = entry.item;
+                return (item.jp || '').toLowerCase().indexOf(query) !== -1 ||
+                       (item.furigana || '').toLowerCase().indexOf(query) !== -1 ||
+                       (item.romaji || '').toLowerCase().indexOf(query) !== -1 ||
+                       (item.en || '').toLowerCase().indexOf(query) !== -1;
+            });
         }
-
         function renderTranscriptList() {
             const entries = getFilteredTranscript();
             const lessonId = activeLesson ? activeLesson.id : '';
             const list = document.getElementById('transcript-list');
-
             if (!entries.length) {
-                list.innerHTML = `<div class="text-center text-sm text-slate-500 dark:text-neutral-400 py-8">No matching lines.</div>`;
+                list.innerHTML = '<div class="text-center text-sm text-slate-500 dark:text-neutral-400 py-8">No matching lines.</div>';
                 return;
             }
-
-            list.innerHTML = entries.map(({ item, idx }) => {
+            list.innerHTML = entries.map(function(entry) {
+                const item = entry.item;
+                const idx = entry.idx;
                 const key = lessonId + ':' + idx;
                 const custom = transcriptAudioMap[key];
                 const hasCustom = !!custom;
-
                 const romajiText = item.romaji || '';
                 const enText = item.en || '';
                 const showR = showRomaji && romajiText;
                 const showE = showTranscriptEnglish && enText;
-
                 let metaHtml = '';
-                if (showR && showE) {
-                    metaHtml = esc(romajiText) + ' — <span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
-                } else if (showR) {
-                    metaHtml = esc(romajiText);
-                } else if (showE) {
-                    metaHtml = '<span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
+                if (showR && showE) metaHtml = esc(romajiText) + ' \u2014 <span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
+                else if (showR) metaHtml = esc(romajiText);
+                else if (showE) metaHtml = '<span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
+                const metaRow = metaHtml ? '<div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">' + metaHtml + '</div>' : '';
+
+                let actionsHtml;
+                if (hasCustom) {
+                    actionsHtml = '' +
+                        '<button data-play-uploaded="' + idx + '" class="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">' +
+                            '<i class="fa-solid fa-play"></i> Play' +
+                        '</button>' +
+                        '<label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">' +
+                            '<i class="fa-solid fa-rotate"></i> Replace' +
+                            '<input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(' + idx + ', this)">' +
+                        '</label>' +
+                        '<button onclick="removeSentenceAudio(' + idx + ')" class="px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-rose-100 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition">' +
+                            '<i class="fa-solid fa-trash"></i>' +
+                        '</button>';
+                } else {
+                    actionsHtml = '' +
+                        '<label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">' +
+                            '<i class="fa-solid fa-upload"></i> Upload' +
+                            '<input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(' + idx + ', this)">' +
+                        '</label>';
                 }
 
-                const metaRow = metaHtml
-                    ? `<div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">${metaHtml}</div>`
-                    : '';
-
-                return `
-                <div class="p-4 rounded-xl bg-white dark:bg-neutral-950 border ${hasCustom ? 'border-emerald-500/40' : 'border-slate-200 dark:border-neutral-900'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm hover:border-rose-500/50 transition">
-                    <div class="space-y-1 min-w-0 flex-1">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs font-bold text-slate-400">#${idx + 1}</span>
-                            <div class="font-jp text-lg font-bold leading-loose">${renderFurigana(item.jp, item.furigana)}</div>
-                            ${hasCustom ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider" title="Custom audio attached"><i class="fa-solid fa-microphone-lines mr-1"></i>Custom</span>' : ''}
-                        </div>
-                        ${metaRow}
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        ${hasCustom ? `
-                            <button data-play-uploaded="${idx}" class="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Play uploaded audio">
-                                <i class="fa-solid fa-play"></i> Play
-                            </button>
-                            <label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Replace uploaded audio">
-                                <i class="fa-solid fa-rotate"></i> Replace
-                                <input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(${idx}, this)">
-                            </label>
-                            <button onclick="removeSentenceAudio(${idx})" class="px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-rose-100 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition" title="Remove uploaded audio">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        ` : `
-                            <label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Upload your own audio for this sentence">
-                                <i class="fa-solid fa-upload"></i> Upload
-                                <input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(${idx}, this)">
-                            </label>
-                        `}
-                    </div>
-                </div>`;
+                return '' +
+                    '<div class="p-4 rounded-xl bg-white dark:bg-neutral-950 border ' + (hasCustom ? 'border-emerald-500/40' : 'border-slate-200 dark:border-neutral-900') + ' flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm hover:border-rose-500/50 transition">' +
+                        '<div class="space-y-1 min-w-0 flex-1">' +
+                            '<div class="flex flex-wrap items-center gap-2">' +
+                                '<span class="text-xs font-bold text-slate-400">#' + (idx + 1) + '</span>' +
+                                '<div class="font-jp text-lg font-bold leading-loose">' + renderFurigana(item.jp, item.furigana) + '</div>' +
+                                (hasCustom ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider"><i class="fa-solid fa-microphone-lines mr-1"></i>Custom</span>' : '') +
+                            '</div>' +
+                            metaRow +
+                        '</div>' +
+                        '<div class="flex flex-wrap items-center gap-2 shrink-0">' + actionsHtml + '</div>' +
+                    '</div>';
             }).join('');
         }
-
         function filterTranscript() { renderTranscriptList(); }
 
-        /* ---------- Per-sentence uploaded audio ---------- */
         function uploadSentenceAudio(idx, input) {
             const file = input.files && input.files[0];
             if (!file || !activeLesson) return;
-
             const key = activeLesson.id + ':' + idx;
-            if (transcriptAudioMap[key]) {
-                URL.revokeObjectURL(transcriptAudioMap[key].url);
-            }
-            transcriptAudioMap[key] = {
-                url: URL.createObjectURL(file),
-                name: file.name
-            };
+            if (transcriptAudioMap[key]) URL.revokeObjectURL(transcriptAudioMap[key].url);
+            transcriptAudioMap[key] = { url: URL.createObjectURL(file), name: file.name };
             input.value = '';
             renderTranscriptList();
         }
-
         function removeSentenceAudio(idx) {
             if (!activeLesson) return;
             const key = activeLesson.id + ':' + idx;
@@ -2313,26 +2017,24 @@
                 renderTranscriptList();
             }
         }
-
         function playUploadedAudio(idx) {
             if (!activeLesson) return;
             const key = activeLesson.id + ':' + idx;
             const entry = transcriptAudioMap[key];
             if (!entry) return;
-
             stopCurrentAudio();
             const audio = new Audio(entry.url);
             currentAudioEl = audio;
-            audio.play().catch(err => {
+            audio.play().catch(function(err) {
                 console.error('Uploaded audio playback failed:', err);
                 alert('Could not play the uploaded audio file.');
             });
         }
 
-        /* =========================================================
-           GLOBAL EVENT DELEGATION
-           ========================================================= */
-        document.addEventListener('click', function (e) {
+        // =========================================================
+        // EVENT DELEGATION
+        // =========================================================
+        document.addEventListener('click', function(e) {
             const uploadPlayEl = e.target.closest('[data-play-uploaded]');
             if (uploadPlayEl) {
                 e.stopPropagation();
@@ -2341,48 +2043,56 @@
             }
         });
 
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const modalLessons = document.getElementById('all-lessons-modal');
-                if (modalLessons && !modalLessons.classList.contains('hidden')) {
-                    closeAllLessonsModal();
-                    return;
-                }
+                if (modalLessons && !modalLessons.classList.contains('hidden')) { closeAllLessonsModal(); return; }
                 const modalSettings = document.getElementById('settings-modal');
-                if (modalSettings && !modalSettings.classList.contains('hidden')) {
-                    closeSettingsModal();
-                }
+                if (modalSettings && !modalSettings.classList.contains('hidden')) { closeSettingsModal(); }
             }
         });
 
-        document.getElementById('all-lessons-modal').addEventListener('click', function (e) {
-            if (e.target === this) closeAllLessonsModal();
-        });
-        document.getElementById('settings-modal').addEventListener('click', function (e) {
-            if (e.target === this) closeSettingsModal();
-        });
-
-        /* =========================================================
-           INIT
-           ========================================================= */
+        // =========================================================
+        // INIT
+        // =========================================================
         function initApp() {
-            document.getElementById('schema-code').textContent = SCHEMA_TEXT;
-            document.getElementById('demo-code').textContent = DEMO_JSON;
+            try {
+                document.getElementById('schema-code').textContent = SCHEMA_TEXT;
+                document.getElementById('demo-code').textContent = DEMO_JSON;
 
-            loadFromStorage();
-            renderLessons();
-            renderStats();
-            renderActiveBanner();
+                loadFromStorage();
+                renderLessons();
+                renderStats();
+                renderActiveBanner();
 
-            updateFlashcardEnglishUI();
-            updateTranscriptEnglishUI();
-            updateRoleplayEnglishUI();
-            updateRomajiUI();
-            updateFuriganaUI();
-            applyRomajiToFlashcard();
-            applyLessonManagerUI();
+                updateFlashcardEnglishUI();
+                updateTranscriptEnglishUI();
+                updateRoleplayEnglishUI();
+                updateRomajiUI();
+                updateFuriganaUI();
+                applyRomajiToFlashcard();
+                applyLessonManagerUI();
 
-            refreshLessonViews();
+                refreshLessonViews();
+                console.log('[Pimsleur Study Hub] Initialized. Lessons:', lessons.length);
+            } catch (err) {
+                console.error('[Pimsleur Study Hub] Init error:', err);
+                alert('Initialization error: ' + err.message + '\n\nPlease try clearing browser data or opening the console for details.');
+            }
+        }
+
+        // Attach modal backdrop handlers safely
+        const modalLessonsEl = document.getElementById('all-lessons-modal');
+        if (modalLessonsEl) {
+            modalLessonsEl.addEventListener('click', function(e) {
+                if (e.target === this) closeAllLessonsModal();
+            });
+        }
+        const modalSettingsEl = document.getElementById('settings-modal');
+        if (modalSettingsEl) {
+            modalSettingsEl.addEventListener('click', function(e) {
+                if (e.target === this) closeSettingsModal();
+            });
         }
 
         window.onload = initApp;
