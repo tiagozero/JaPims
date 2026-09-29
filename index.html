@@ -66,12 +66,6 @@
             </nav>
 
             <div class="flex items-center gap-2">
-                <button onclick="cycleAudioEngine()" id="audio-engine-btn"
-                    class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
-                    title="Audio engine — click to cycle: Auto → Google → Browser">
-                    <i id="audio-engine-icon" class="fa-solid fa-shuffle"></i>
-                    <span id="audio-engine-label" class="hidden sm:inline">Auto</span>
-                </button>
                 <button onclick="toggleRomaji()" id="romaji-toggle"
                     class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
                     title="Toggle Romaji visibility">
@@ -96,7 +90,7 @@
                     <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Your Pimsleur Study Dashboard</h2>
                     <p class="text-slate-600 dark:text-neutral-300 text-sm sm:text-base leading-relaxed mb-6">
                         Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, roleplay scenarios, quizzes and a full transcript explorer.
-                        Japanese audio uses <span class="font-semibold">Google Translate TTS</span> with an automatic browser-voice fallback.
+                        Attach your own per-sentence audio in the Transcript tab.
                         No lesson ships with the app — bring your own, or start from the demo file provided below.
                     </p>
                     <div class="flex flex-wrap gap-3">
@@ -258,7 +252,7 @@
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
                                     <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Audio</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">Auto (Google → Browser fallback). Per-sentence audio can be uploaded in the Transcript tab (session-only).</code>
+                                    <code class="text-slate-600 dark:text-neutral-300">Per-sentence audio can be uploaded in the Transcript tab (session-only).</code>
                                 </div>
                             </div>
 
@@ -311,7 +305,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-2xl font-bold tracking-tight">Vocabulary Flashcards</h2>
-                        <p id="fc-lesson-name" class="text-xs text-slate-500 dark:text-neutral-400">Click card to flip. Audio uses Google Translate with browser fallback.</p>
+                        <p id="fc-lesson-name" class="text-xs text-slate-500 dark:text-neutral-400">Click card to flip.</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="toggleFlashcardEnglish()" id="fc-english-toggle"
@@ -355,9 +349,6 @@
                 <div class="flex items-center justify-between gap-4">
                     <button onclick="prevCard()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-900 font-medium rounded-xl shadow-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-arrow-left"></i> Previous
-                    </button>
-                    <button onclick="playCurrentAudio()" id="fc-audio-btn" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2" title="Play audio">
-                        <i id="fc-audio-icon" class="fa-brands fa-google"></i> Play Audio
                     </button>
                     <button onclick="nextCard()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-900 font-medium rounded-xl shadow-sm transition flex items-center gap-2">
                         Next <i class="fa-solid fa-arrow-right"></i>
@@ -464,7 +455,7 @@
             <div id="transcript-toolbar" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
                 <div>
                     <h2 class="text-xl font-bold tracking-tight">Transcript Explorer</h2>
-                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with audio playback &amp; optional custom upload.</p>
+                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with optional custom audio upload.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <button onclick="toggleTranscriptEnglish()" id="tr-english-toggle"
@@ -475,11 +466,6 @@
                     </button>
                     <input type="text" id="transcript-search" oninput="filterTranscript()" placeholder="Search phrases..." class="bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 w-full sm:w-auto">
                 </div>
-            </div>
-
-            <div id="audio-status-banner" class="hidden items-start gap-2 text-[11px] text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
-                <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
-                <span id="audio-status-text">Google Translate audio may occasionally be rate-limited. If it doesn't play, use the Audio Engine switch in the header to change engines, or upload your own audio for that sentence.</span>
             </div>
 
             <div id="transcript-list" class="space-y-3"></div>
@@ -527,10 +513,8 @@
         const RP_EN_KEY   = 'pimsleur_show_rp_english';
         const ROMAJI_KEY  = 'pimsleur_show_romaji';
         const MANAGER_KEY = 'pimsleur_lesson_manager_open';
-        const AUDIO_ENGINE_KEY = 'pimsleur_audio_engine';
 
         const DASHBOARD_LESSON_LIMIT = 3;
-        const AUDIO_ENGINE_CYCLE = ['auto', 'google', 'browser'];
 
         let lessons = [];
         let activeLesson = null;
@@ -547,161 +531,21 @@
         let showRoleplayEnglish   = storageGet(RP_EN_KEY) === '1';
         let showRomaji            = storageGet(ROMAJI_KEY) !== '0';
         let lessonManagerOpen     = storageGet(MANAGER_KEY) === '1';
-        let audioEngine           = storageGet(AUDIO_ENGINE_KEY) || 'auto';
 
         let chatHistory = [];
         let pendingOptions = null;
 
         const transcriptAudioMap = {};
         let currentAudioEl = null;
-        let currentSpeechUtterance = null;
 
         /* =========================================================
-           AUDIO ENGINE
-           --------------------------------------------------------
-           'auto'    -> try Google Translate first, fall back to browser
-           'google'  -> only use Google Translate
-           'browser' -> only use the Web Speech API
+           AUDIO (custom uploads only)
            ========================================================= */
-        function cycleAudioEngine() {
-            const i = AUDIO_ENGINE_CYCLE.indexOf(audioEngine);
-            audioEngine = AUDIO_ENGINE_CYCLE[(i + 1) % AUDIO_ENGINE_CYCLE.length];
-            storageSet(AUDIO_ENGINE_KEY, audioEngine);
-            updateAudioEngineUI();
-        }
-
-        function updateAudioEngineUI() {
-            const icon = document.getElementById('audio-engine-icon');
-            const label = document.getElementById('audio-engine-label');
-            const btn = document.getElementById('audio-engine-btn');
-            if (!icon || !label || !btn) return;
-
-            if (audioEngine === 'auto') {
-                icon.className = 'fa-solid fa-shuffle';
-                label.textContent = 'Auto';
-                btn.title = 'Audio engine: Auto (Google → Browser fallback). Click to switch to Google only.';
-            } else if (audioEngine === 'google') {
-                icon.className = 'fa-brands fa-google';
-                label.textContent = 'Google';
-                btn.title = 'Audio engine: Google Translate only. Click to switch to Browser voice only.';
-            } else {
-                icon.className = 'fa-solid fa-volume-high';
-                label.textContent = 'Browser';
-                btn.title = 'Audio engine: Browser voice only. Click to switch back to Auto.';
-            }
-            // Sync flashcard audio button icon
-            const fcIcon = document.getElementById('fc-audio-icon');
-            if (fcIcon) {
-                fcIcon.className = audioEngine === 'browser' ? 'fa-solid fa-volume-high' : 'fa-brands fa-google';
-            }
-        }
-
-        /* ---------- Google Translate TTS (promise) ---------- */
-        function googleTtsEndpoint(text, variant) {
-            const q = encodeURIComponent(text);
-            if (variant === 'tw-ob') {
-                return 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q=' + q;
-            }
-            return 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ja&q=' + q;
-        }
-
-        function tryGoogleTts(text, variant) {
-            return new Promise((resolve, reject) => {
-                const audio = new Audio();
-                audio.preload = 'auto';
-                let settled = false;
-
-                const finish = (ok) => {
-                    if (settled) return;
-                    settled = true;
-                    clearTimeout(timeoutId);
-                    if (ok) {
-                        currentAudioEl = audio;
-                        resolve();
-                    } else {
-                        try { audio.pause(); } catch (e) {}
-                        reject(new Error('google-tts-failed'));
-                    }
-                };
-
-                const timeoutId = setTimeout(() => finish(false), 6000);
-
-                audio.addEventListener('canplaythrough', () => finish(true), { once: true });
-                audio.addEventListener('error', () => finish(false), { once: true });
-
-                audio.src = googleTtsEndpoint(text, variant);
-                // Kick off loading
-                try { audio.load(); } catch (e) { finish(false); }
-            });
-        }
-
-        /* ---------- Browser Web Speech API ---------- */
-        function playBrowserTTS(text) {
-            if (!('speechSynthesis' in window)) {
-                console.warn('Web Speech API not supported in this browser.');
-                return false;
-            }
-            try {
-                window.speechSynthesis.cancel();
-                const utt = new SpeechSynthesisUtterance(text);
-                utt.lang = 'ja-JP';
-                utt.rate = 0.9;
-                // Try to pick a Japanese voice if available
-                const voices = window.speechSynthesis.getVoices();
-                const jp = voices.find(v => (v.lang || '').toLowerCase().startsWith('ja'));
-                if (jp) utt.voice = jp;
-                currentSpeechUtterance = utt;
-                window.speechSynthesis.speak(utt);
-                return true;
-            } catch (e) {
-                console.warn('Browser TTS failed:', e);
-                return false;
-            }
-        }
-
-        /* ---------- Unified entry point ---------- */
-        function playAudio(text) {
-            if (!text) return;
-            stopCurrentAudio();
-
-            if (audioEngine === 'browser') {
-                playBrowserTTS(text);
-                return;
-            }
-
-            if (audioEngine === 'google') {
-                tryGoogleTts(text, 'tw-ob')
-                    .catch(() => tryGoogleTts(text, 'gtx'))
-                    .catch(() => {
-                        console.warn('Google TTS failed. Switch Audio Engine to Auto or Browser.');
-                    });
-                return;
-            }
-
-            // auto: Google, fall back to Browser
-            tryGoogleTts(text, 'tw-ob')
-                .catch(() => tryGoogleTts(text, 'gtx'))
-                .catch(() => {
-                    console.warn('Google TTS unavailable — using browser voice instead.');
-                    playBrowserTTS(text);
-                });
-        }
-
         function stopCurrentAudio() {
             if (currentAudioEl) {
                 try { currentAudioEl.pause(); } catch (e) {}
                 currentAudioEl = null;
             }
-            if (currentSpeechUtterance && 'speechSynthesis' in window) {
-                try { window.speechSynthesis.cancel(); } catch (e) {}
-                currentSpeechUtterance = null;
-            }
-        }
-
-        // Preload voices (some browsers need this)
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
         }
 
         /* =========================================================
@@ -1600,12 +1444,6 @@
             updateFlashcard();
         }
 
-        function playCurrentAudio() {
-            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
-            if (!vocab.length) return;
-            playAudio(vocab[currentFlashcardIdx].jp);
-        }
-
         /* =========================================================
            ROLEPLAY
            ========================================================= */
@@ -1664,8 +1502,6 @@
                     en: current.en
                 });
                 renderRoleplay();
-                playAudio(current.jp);
-
                 chatStep++;
                 setTimeout(renderChatStep, 800);
             } else {
@@ -1913,12 +1749,9 @@
                         ${metaRow}
                     </div>
                     <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        <button data-speak="${esc(item.jp)}" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Play audio">
-                            <i class="${audioEngine === 'browser' ? 'fa-solid fa-volume-high' : 'fa-brands fa-google'}"></i> Play
-                        </button>
                         ${hasCustom ? `
                             <button data-play-uploaded="${idx}" class="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Play uploaded audio">
-                                <i class="fa-solid fa-play"></i> Custom
+                                <i class="fa-solid fa-play"></i> Play
                             </button>
                             <label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Replace uploaded audio">
                                 <i class="fa-solid fa-rotate"></i> Replace
@@ -1986,12 +1819,6 @@
            GLOBAL EVENT DELEGATION
            ========================================================= */
         document.addEventListener('click', function (e) {
-            const speakEl = e.target.closest('[data-speak]');
-            if (speakEl) {
-                e.stopPropagation();
-                playAudio(speakEl.getAttribute('data-speak'));
-                return;
-            }
             const uploadPlayEl = e.target.closest('[data-play-uploaded]');
             if (uploadPlayEl) {
                 e.stopPropagation();
@@ -2026,7 +1853,6 @@
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
             updateRomajiUI();
-            updateAudioEngineUI();
             applyRomajiToFlashcard();
             applyLessonManagerUI();
 
