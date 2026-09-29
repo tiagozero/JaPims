@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pimsleur Japanese — Lesson Study Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+                        jp: ['Noto Sans JP', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        pre::-webkit-scrollbar, #chat-container::-webkit-scrollbar, #modal-lessons-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
+        /* Force pure black in dark mode for the page background */
+        .dark body { background-color: #000; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
+
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-neutral-900 px-4 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-rose-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-torii-gate"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">Pimsleur Japanese</h1>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400 font-medium flex items-center gap-1.5">
+                        <span>Lesson Study Hub</span>
+                        <span id="active-lesson-badge" class="hidden px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold truncate max-w-[180px]"></span>
+                    </p>
+                </div>
+            </div>
+
+            <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all bg-rose-600 text-white shadow-sm flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-layer-group"></i> <span class="hidden sm:inline">Lessons</span>
+                </button>
+                <button onclick="switchTab('flashcards')" id="nav-flashcards" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-clone"></i> <span class="hidden sm:inline">Flashcards</span>
+                </button>
+                <button onclick="switchTab('roleplay')" id="nav-roleplay" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-comments"></i> <span class="hidden sm:inline">Roleplay</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-brain"></i> <span class="hidden sm:inline">Quiz</span>
+                </button>
+                <button onclick="switchTab('transcript')" id="nav-transcript" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-book-open"></i> <span class="hidden sm:inline">Transcript</span>
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button onclick="toggleRomaji()" id="romaji-toggle"
+                    class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
+                    title="Toggle Romaji visibility">
+                    <i id="romaji-icon" class="fa-solid fa-eye"></i>
+                    <span class="hidden sm:inline">Romaji</span>
+                </button>
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800 transition" title="Toggle Theme">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto">
+
+        <!-- ============ DASHBOARD / LESSON LIBRARY ============ -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+
+            <div class="bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-rose-500/5 dark:from-neutral-950 dark:via-neutral-950 dark:to-black border border-rose-200/50 dark:border-neutral-900 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-700 dark:text-rose-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Lesson Library</span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Your Pimsleur Study Dashboard</h2>
+                    <p class="text-slate-600 dark:text-neutral-300 text-sm sm:text-base leading-relaxed mb-6">
+                        Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, roleplay scenarios, quizzes and a full transcript explorer.
+                        Japanese audio is served by <span class="font-semibold">Google Translate TTS</span>, and you can attach your own per-sentence audio in the Transcript tab.
+                        No lesson ships with the app — bring your own, or start from the demo file provided below.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="toggleLessonManager(true)" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-file-import"></i> Import a Lesson
+                        </button>
+                        <button onclick="openAllLessonsModal()" class="px-5 py-2.5 bg-slate-900 dark:bg-neutral-900 hover:bg-slate-800 dark:hover:bg-neutral-800 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2 border border-slate-700 dark:border-neutral-800">
+                            <i class="fa-solid fa-layer-group"></i> View All Lessons
+                        </button>
+                    </div>
+                </div>
+                <div class="absolute right-0 bottom-0 opacity-10 dark:opacity-5 translate-x-10 translate-y-10 pointer-events-none text-rose-600">
+                    <i class="fa-solid fa-language text-[220px]"></i>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3"><i class="fa-solid fa-book"></i></div>
+                    <div id="stat-lessons" class="text-2xl font-extrabold">0</div>
+                    <div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">Lessons Imported</div>
+                </div>
+                <div class="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3"><i class="fa-solid fa-clone"></i></div>
+                    <div id="stat-vocab" class="text-2xl font-extrabold">0</div>
+                    <div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">Vocabulary Cards</div>
+                </div>
+                <div class="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3"><i class="fa-solid fa-brain"></i></div>
+                    <div id="stat-quiz" class="text-2xl font-extrabold">0</div>
+                    <div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">Quiz Questions</div>
+                </div>
+                <div class="bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3"><i class="fa-solid fa-comments"></i></div>
+                    <div id="stat-scenarios" class="text-2xl font-extrabold">0</div>
+                    <div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">Roleplay Scenarios</div>
+                </div>
+            </div>
+
+            <!-- Active lesson banner -->
+            <div id="active-banner" class="hidden bg-white dark:bg-neutral-950 p-5 rounded-2xl border-2 border-rose-500/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wider font-bold text-rose-600">Currently Studying</div>
+                        <div id="active-banner-title" class="font-bold text-base"></div>
+                        <div id="active-banner-sub" class="text-xs text-slate-500 dark:text-neutral-400"></div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="switchTab('flashcards')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition">Resume Study</button>
+                    <button onclick="clearActiveLesson()" class="px-4 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-sm font-medium rounded-xl transition">Close</button>
+                </div>
+            </div>
+
+            <!-- Lesson list (limited to 3) -->
+            <div class="bg-white dark:bg-neutral-950 p-6 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-5">
+                <div class="flex items-center justify-between gap-3">
+                    <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-layer-group text-rose-500"></i> Your Lessons</h3>
+                    <button id="view-all-lessons-btn" onclick="openAllLessonsModal()" class="hidden text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1.5">
+                        View all (<span id="view-all-count">0</span>) <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+                <div id="lessons-empty" class="hidden text-center py-10 space-y-3">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-inbox"></i>
+                    </div>
+                    <h4 class="font-bold text-lg">No lessons yet</h4>
+                    <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
+                        This app does not include any built-in lesson. Import a lesson JSON file (or paste one) to get started — grab the demo below if you need a template.
+                    </p>
+                    <div class="flex flex-wrap gap-2 justify-center pt-1">
+                        <button onclick="toggleLessonManager(true)" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition">Import JSON</button>
+                        <button onclick="loadDemoIntoImportBox()" class="px-4 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-sm font-medium rounded-xl transition">Use Demo Lesson</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson Manager (collapsible: Import + Demo JSON) -->
+            <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm overflow-hidden">
+                <button onclick="toggleLessonManager()" id="lesson-manager-toggle"
+                    class="w-full flex items-center justify-between gap-3 p-5 text-left hover:bg-slate-50 dark:hover:bg-neutral-900 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-sliders"></i></div>
+                        <div>
+                            <h3 class="font-bold text-lg">Lesson Manager</h3>
+                            <p class="text-xs text-slate-500 dark:text-neutral-400">Import new lessons, explore the JSON structure, or grab the demo file.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="hidden sm:inline text-xs font-semibold text-rose-600" id="lesson-manager-hint">Show</span>
+                        <i id="lesson-manager-chevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                    </div>
+                </button>
+
+                <div id="lesson-manager" class="hidden border-t border-slate-200 dark:border-neutral-900 p-6 space-y-6">
+
+                    <!-- Import panel -->
+                    <div id="import-panel" class="bg-slate-50 dark:bg-neutral-900/50 p-6 rounded-2xl border border-slate-200 dark:border-neutral-800 space-y-4 scroll-mt-24">
+                        <div>
+                            <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-import text-rose-500"></i> Import a Lesson</h3>
+                            <p class="text-xs text-slate-500 dark:text-neutral-400 mt-1">Upload a <code class="px-1 rounded bg-white dark:bg-neutral-950">.json</code> file, or paste the lesson JSON directly. Imported lessons are saved in your browser.</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="cursor-pointer px-4 py-2.5 bg-slate-900 dark:bg-neutral-800 hover:bg-slate-800 dark:hover:bg-neutral-700 text-white text-sm font-medium rounded-xl transition flex items-center gap-2">
+                                <i class="fa-solid fa-file-arrow-up"></i> Choose .json File
+                                <input type="file" accept=".json,application/json" class="hidden" onchange="handleFileImport(event)">
+                            </label>
+                            <button onclick="loadDemoIntoImportBox()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-sm font-medium rounded-xl transition flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Demo Into Box
+                            </button>
+                            <button onclick="clearImportBox()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-sm font-medium rounded-xl transition flex items-center gap-2">
+                                <i class="fa-solid fa-eraser"></i> Clear
+                            </button>
+                        </div>
+
+                        <textarea id="import-textarea" rows="9" spellcheck="false"
+                            placeholder='{&#10;  "title": "My Lesson",&#10;  "vocabulary": [ { "jp": "…", "romaji": "…", "en": "…" } ]&#10;}'
+                            class="w-full font-mono text-xs bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-y"></textarea>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div id="import-message" class="text-sm font-medium"></div>
+                            <button onclick="importFromTextarea()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2 self-start sm:self-auto">
+                                <i class="fa-solid fa-circle-plus"></i> Import Lesson
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- JSON structure -->
+                    <details class="bg-slate-50 dark:bg-neutral-900/50 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden group">
+                        <summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-3 hover:bg-slate-100 dark:hover:bg-neutral-900 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-sitemap"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-lg">Lesson JSON Structure</h3>
+                                    <p class="text-xs text-slate-500 dark:text-neutral-400">Every field the app understands, with which ones are required.</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <div class="px-6 pb-6 space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                                <div class="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20">
+                                    <div class="font-bold text-rose-600 mb-1">Required</div>
+                                    <code class="text-slate-600 dark:text-neutral-300">title</code>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
+                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">At least one of</div>
+                                    <code class="text-slate-600 dark:text-neutral-300">vocabulary · transcript · quiz · scenarios</code>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
+                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Optional</div>
+                                    <code class="text-slate-600 dark:text-neutral-300">id · subtitle · description</code>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
+                                    <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Audio</div>
+                                    <code class="text-slate-600 dark:text-neutral-300">Google Translate TTS by default. Per-sentence audio can be uploaded in the Transcript tab (session-only).</code>
+                                </div>
+                            </div>
+
+                            <pre class="text-[11px] leading-relaxed font-mono bg-black text-slate-200 rounded-xl p-4 overflow-auto max-h-[520px]"><code id="schema-code"></code></pre>
+                            <p class="text-xs text-slate-500 dark:text-neutral-400"><i class="fa-solid fa-circle-info mr-1"></i> The <code>//</code> comments above are explanations only — remove them before importing, since strict JSON does not allow comments.</p>
+                        </div>
+                    </details>
+
+                    <!-- Demo JSON -->
+                    <div id="demo-panel" class="bg-slate-50 dark:bg-neutral-900/50 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden scroll-mt-24">
+                        <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-neutral-800">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-flask"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-lg">Demo Lesson JSON</h3>
+                                    <p class="text-xs text-slate-500 dark:text-neutral-400">A complete sample lesson (Unit 2: Greetings, Weather &amp; Capabilities). Not loaded by default.</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="copyDemoJson()" class="px-3.5 py-2 bg-white dark:bg-neutral-950 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-semibold rounded-xl transition flex items-center gap-2">
+                                    <i class="fa-solid fa-copy"></i> Copy
+                                </button>
+                                <button onclick="downloadDemoJson()" class="px-3.5 py-2 bg-white dark:bg-neutral-950 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-semibold rounded-xl transition flex items-center gap-2">
+                                    <i class="fa-solid fa-download"></i> Download .json
+                                </button>
+                                <button onclick="loadDemoIntoImportBox()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Send to Import Box
+                                </button>
+                            </div>
+                        </div>
+                        <pre class="text-[11px] leading-relaxed font-mono bg-black text-slate-200 p-4 overflow-auto max-h-[520px]"><code id="demo-code"></code></pre>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============ FLASHCARDS ============ -->
+        <section id="tab-flashcards" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
+
+            <div id="flashcards-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-clone"></i></div>
+                <h3 class="text-xl font-bold">No lesson loaded</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">Import a lesson JSON, or open one from your dashboard to start studying.</p>
+                <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
+            </div>
+
+            <div id="flashcards-body" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight">Vocabulary Flashcards</h2>
+                        <p id="fc-lesson-name" class="text-xs text-slate-500 dark:text-neutral-400">Click card to flip. Audio is generated by Google Translate.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleFlashcardEnglish()" id="fc-english-toggle"
+                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
+                            title="Toggle English translation visibility">
+                            <i id="fc-english-icon" class="fa-solid fa-eye-slash"></i>
+                            <span id="fc-english-label">Show English</span>
+                        </button>
+                        <div class="flex items-center gap-2 bg-slate-100 dark:bg-neutral-900 px-3 py-1.5 rounded-xl text-sm font-semibold">
+                            <span id="fc-current" class="text-rose-600">1</span> / <span id="fc-total">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative w-full h-80 sm:h-96 perspective-1000 cursor-pointer" onclick="flipCard()">
+                    <div id="flashcard-inner" class="w-full h-full duration-500 transform-style-3d relative rounded-3xl shadow-lg border border-slate-200 dark:border-neutral-900 bg-white dark:bg-neutral-950">
+                        <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-white to-slate-50 dark:from-neutral-950 dark:to-black rounded-3xl">
+                            <span id="fc-tag" class="px-3 py-1 bg-rose-500/10 text-rose-600 rounded-full text-xs font-semibold mb-4">Tag</span>
+                            <div id="fc-japanese" class="font-jp text-4xl sm:text-5xl font-bold tracking-wider mb-3 text-slate-900 dark:text-white"></div>
+                            <div id="fc-romaji" class="text-lg font-medium text-slate-500 dark:text-neutral-400 mb-6"></div>
+                            <p class="text-xs text-slate-400 flex items-center gap-1.5"><i class="fa-solid fa-rotate"></i> Click card to reveal the back</p>
+                        </div>
+                        <div class="absolute inset-0 backface-hidden rotate-y-180 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-rose-50 to-amber-50 dark:from-neutral-950 dark:to-neutral-950 rounded-3xl">
+                            <div id="fc-back-revealed" class="flex flex-col items-center">
+                                <span class="px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full text-xs font-semibold mb-4">English Meaning</span>
+                                <div id="fc-english" class="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 dark:text-white"></div>
+                                <div id="fc-notes" class="text-sm text-slate-600 dark:text-neutral-300 max-w-md bg-white/80 dark:bg-neutral-900/80 p-3 rounded-xl border border-slate-200 dark:border-neutral-800"></div>
+                            </div>
+                            <div id="fc-back-hidden" class="hidden flex-col items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-slate-200/70 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-xs">
+                                    English hidden. Turn on <span class="font-semibold text-slate-700 dark:text-neutral-200">“Show English”</span> to reveal the translation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-4">
+                    <button onclick="prevCard()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-900 font-medium rounded-xl shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button onclick="playCurrentAudio()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition flex items-center gap-2" title="Play via Google Translate">
+                        <i class="fa-brands fa-google"></i> Google Audio
+                    </button>
+                    <button onclick="nextCard()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-900 font-medium rounded-xl shadow-sm transition flex items-center gap-2">
+                        Next <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ ROLEPLAY ============ -->
+        <section id="tab-roleplay" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
+
+            <div id="roleplay-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-comments"></i></div>
+                <h3 class="text-xl font-bold">No roleplay scenarios available</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>scenarios</code> array, or no lesson is loaded.</p>
+                <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
+            </div>
+
+            <div id="roleplay-body" class="space-y-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight">Interactive Dialogue Simulator</h2>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Pick a scenario and respond correctly to advance the conversation.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                        <button onclick="toggleRoleplayEnglish()" id="rp-english-toggle"
+                            class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
+                            title="Toggle English translation visibility">
+                            <i id="rp-english-icon" class="fa-solid fa-eye-slash"></i>
+                            <span id="rp-english-label">Show English</span>
+                        </button>
+                        <select id="scenario-select" onchange="changeScenario()" class="bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-500 max-w-full"></select>
+                    </div>
+                </div>
+
+                <div id="chat-container" class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm p-4 sm:p-6 h-[400px] overflow-y-auto space-y-4 flex flex-col"></div>
+
+                <div class="bg-white dark:bg-neutral-950 p-4 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-3">
+                    <div class="text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Select your reply or speak:</div>
+                    <div id="response-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-neutral-900">
+                        <input type="text" id="custom-reply-input" placeholder="Type Japanese response or Romaji..." class="flex-1 min-w-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        <button onclick="sendCustomReply()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl transition text-sm">Send</button>
+                        <button onclick="startVoiceRecognition()" id="mic-btn" class="p-2.5 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl transition text-sm" title="Speech Recognition">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ QUIZ ============ -->
+        <section id="tab-quiz" class="tab-content hidden space-y-6 max-w-2xl mx-auto">
+
+            <div id="quiz-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-brain"></i></div>
+                <h3 class="text-xl font-bold">No quiz available</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>quiz</code> array, or no lesson is loaded.</p>
+                <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
+            </div>
+
+            <div id="quiz-body" class="space-y-6">
+                <div class="bg-white dark:bg-neutral-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-neutral-900">
+                        <div>
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Self Assessment</span>
+                            <h2 class="text-xl font-bold tracking-tight">Comprehension &amp; Translation Test</h2>
+                        </div>
+                        <div id="quiz-progress-text" class="text-sm font-semibold text-slate-500">Question 1 of 1</div>
+                    </div>
+
+                    <div id="quiz-card" class="space-y-4">
+                        <div id="quiz-question" class="text-lg font-bold"></div>
+                        <div id="quiz-options" class="space-y-2.5"></div>
+                    </div>
+
+                    <div id="quiz-footer" class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-neutral-900">
+                        <div id="quiz-feedback" class="text-sm font-medium"></div>
+                        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition hidden">Next Question <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <div id="quiz-score-card" class="bg-white dark:bg-neutral-950 p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm text-center space-y-4 hidden">
+                    <div class="w-16 h-16 bg-emerald-500/10 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">Quiz Completed!</h3>
+                    <p id="quiz-final-score" class="text-slate-600 dark:text-neutral-300 text-lg"></p>
+                    <button onclick="restartQuiz()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Try Again</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ TRANSCRIPT ============ -->
+        <section id="tab-transcript" class="tab-content hidden space-y-6 max-w-4xl mx-auto">
+
+            <div id="transcript-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-book-open"></i></div>
+                <h3 class="text-xl font-bold">No transcript available</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">The active lesson has no <code>transcript</code> array, or no lesson is loaded.</p>
+                <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
+            </div>
+
+            <div id="transcript-toolbar" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                <div>
+                    <h2 class="text-xl font-bold tracking-tight">Transcript Explorer</h2>
+                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with Google Translate audio &amp; optional custom upload.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <button onclick="toggleTranscriptEnglish()" id="tr-english-toggle"
+                        class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
+                        title="Toggle English translation visibility">
+                        <i id="tr-english-icon" class="fa-solid fa-eye-slash"></i>
+                        <span id="tr-english-label">Show English</span>
+                    </button>
+                    <input type="text" id="transcript-search" oninput="filterTranscript()" placeholder="Search phrases..." class="bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 w-full sm:w-auto">
+                </div>
+            </div>
+
+            <div class="flex items-start gap-2 text-[11px] text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
+                <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+                <span>Google Translate audio may occasionally be rate-limited. If it doesn't play, wait a moment and try again, or upload your own audio for that sentence.</span>
+            </div>
+
+            <div id="transcript-list" class="space-y-3"></div>
+        </section>
+
+    </main>
+
+    <!-- ============ ALL LESSONS MODAL ============ -->
+    <div id="all-lessons-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-layer-group"></i></div>
+                    <div>
+                        <h3 class="text-lg font-bold">All Lessons (<span id="modal-lesson-count">0</span>)</h3>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Manage your full lesson library.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeAllLessonsModal(); toggleLessonManager(true);" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-plus"></i> Import
+                    </button>
+                    <button onclick="closeAllLessonsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition" title="Close">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="modal-lessons-scroll" class="overflow-y-auto p-5">
+                <div id="modal-lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="modal-lessons-empty" class="hidden text-center py-10 text-sm text-slate-500 dark:text-neutral-400">
+                    No lessons yet. Import one to get started.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           STATE
+           ========================================================= */
+        const STORAGE_KEY = 'pimsleur_lessons_v2';
+        const ACTIVE_KEY  = 'pimsleur_active_lesson_v2';
+        const FC_EN_KEY   = 'pimsleur_show_fc_english';
+        const TR_EN_KEY   = 'pimsleur_show_tr_english';
+        const RP_EN_KEY   = 'pimsleur_show_rp_english';
+        const ROMAJI_KEY  = 'pimsleur_show_romaji';
+        const MANAGER_KEY = 'pimsleur_lesson_manager_open';
+
+        const DASHBOARD_LESSON_LIMIT = 3;
+
+        let lessons = [];
+        let activeLesson = null;
+
+        let currentFlashcardIdx = 0;
+        let isCardFlipped = false;
+        let currentScenarioIdx = 0;
+        let chatStep = 0;
+        let currentQuizIdx = 0;
+        let quizScore = 0;
+
+        // Visibility toggles
+        let showFlashcardEnglish  = storageGet(FC_EN_KEY) === '1';           // default off
+        let showTranscriptEnglish = storageGet(TR_EN_KEY) === '1';           // default off
+        let showRoleplayEnglish   = storageGet(RP_EN_KEY) === '1';           // default off
+        let showRomaji            = storageGet(ROMAJI_KEY) !== '0';          // default ON
+        let lessonManagerOpen     = storageGet(MANAGER_KEY) === '1';         // default closed
+
+        // Roleplay state
+        let chatHistory = [];
+        let pendingOptions = null;
+
+        // Custom per-sentence audio (session-only, keyed by "<lessonId>:<index>")
+        const transcriptAudioMap = {};
+
+        // Current audio element
+        let currentAudioEl = null;
+
+        /* =========================================================
+           GOOGLE TRANSLATE TTS
+           ========================================================= */
+        function playGoogleTTS(text) {
+            if (!text) return;
+            stopCurrentAudio();
+
+            const url = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ja&q=' +
+                        encodeURIComponent(text);
+
+            const audio = new Audio(url);
+            currentAudioEl = audio;
+            audio.play().catch(err => {
+                console.warn('Google TTS playback failed:', err);
+                const fallback = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q=' +
+                                 encodeURIComponent(text);
+                const audio2 = new Audio(fallback);
+                currentAudioEl = audio2;
+                audio2.play().catch(err2 => {
+                    console.error('Fallback Google TTS also failed:', err2);
+                    alert('Google Translate audio could not be played. It may be rate-limited or blocked by your network.');
+                });
+            });
+        }
+
+        function stopCurrentAudio() {
+            if (currentAudioEl) {
+                try { currentAudioEl.pause(); } catch (e) {}
+                currentAudioEl = null;
+            }
+        }
+
+        /* =========================================================
+           DEMO LESSON  (sample data only — never auto-loaded)
+           ========================================================= */
+        const DEMO_LESSON = {
+            id: "demo-pimsleur-unit-2",
+            title: "Pimsleur Japanese 1 — Unit 2",
+            subtitle: "Greetings, Weather & Capabilities",
+            description: "Practice polite morning greetings, small talk about the weather, expressing language ability, and customary modesty.",
+            vocabulary: [
+                { jp: "おはようございます", romaji: "Ohayō gozaimasu", en: "Good morning (politely)", tag: "Greeting", notes: "Used customarily until 10 or 11 a.m. in business or formal contexts." },
+                { jp: "おはよう", romaji: "Ohayō", en: "Good morning (casual)", tag: "Greeting", notes: "Used for family members or close friends." },
+                { jp: "お天気", romaji: "Otenki", en: "Weather", tag: "Noun", notes: "Weather conditions." },
+                { jp: "いいお天気ですね", romaji: "Ii otenki desu ne", en: "It's good weather, isn't it?", tag: "Phrase", notes: "Used when fully expecting the other person to agree." },
+                { jp: "そうですね", romaji: "Sō desu ne", en: "That's right / I agree", tag: "Phrase", notes: "Agreement with the other speaker." },
+                { jp: "じゃあまた", romaji: "Jā mata", en: "See you / Goodbye", tag: "Farewell", notes: "Casual farewell when leaving." },
+                { jp: "ありがとう", romaji: "Arigatō", en: "Thanks (casual)", tag: "Courtesy", notes: "Expressing gratitude." },
+                { jp: "ありがとうございます", romaji: "Arigatō gozaimasu", en: "Thank you very much (polite)", tag: "Courtesy", notes: "Polite expression of thanks." },
+                { jp: "日本語がわかりますか", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?", tag: "Question", notes: "Asking about language comprehension." },
+                { jp: "日本語が少しわかります", romaji: "Nihongo ga sukoshi wakarimasu", en: "I understand Japanese a little", tag: "Phrase", notes: "Modest assertion of language skill." },
+                { jp: "上手ですね", romaji: "Jōzu desu ne", en: "You're skilled, aren't you?", tag: "Compliment", notes: "Praising someone's ability." },
+                { jp: "上手じゃありません", romaji: "Jōzu ja arimasen", en: "I'm not very good / not skilled", tag: "Modesty", notes: "Customary polite self-deprecation in Japanese culture." },
+                { jp: "英語がわかりますか", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?", tag: "Question", notes: "Asking about English proficiency." },
+                { jp: "わかりません", romaji: "Wakarimasen", en: "I don't understand", tag: "Phrase", notes: "Negative statement of comprehension." },
+                { jp: "少し", romaji: "Sukoshi", en: "A little", tag: "Adverb", notes: "Indicating a small amount." },
+                { jp: "私はアメリカ人です", romaji: "Watashi wa Amerikajin desu", en: "I am an American", tag: "Statement", notes: "Stating nationality." }
+            ],
+            transcript: [
+                { jp: "アメリカ人です。英語がわかりますか?", romaji: "Amerikajin desu. Eigo ga wakarimasu ka?", en: "You are American. Do you understand English?" },
+                { jp: "いえ、わかりません。", romaji: "Ie, wakarimasen.", en: "No, I don't understand." },
+                { jp: "えいご、えいご。", romaji: "Eigo, eigo.", en: "English, English." },
+                { jp: "日本語、日本語。", romaji: "Nihongo, nihongo.", en: "Japanese, Japanese." },
+                { jp: "わかります。", romaji: "Wakarimasu.", en: "I understand." },
+                { jp: "日本語がわかります。", romaji: "Nihongo ga wakarimasu.", en: "I understand Japanese." },
+                { jp: "少し", romaji: "Sukoshi", en: "A little." },
+                { jp: "日本語が少しわかります。", romaji: "Nihongo ga sukoshi wakarimasu.", en: "I understand Japanese a little." },
+                { jp: "英語がわかりません。", romaji: "Eigo ga wakarimasen.", en: "I don't understand English." },
+                { jp: "日本語がわかりません。", romaji: "Nihongo ga wakarimasen.", en: "I don't understand Japanese." },
+                { jp: "英語がわかります。", romaji: "Eigo ga wakarimasu.", en: "I understand English." },
+                { jp: "英語がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
+                { jp: "あなたはアメリカ人ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
+                { jp: "はい、私はアメリカ人です。", romaji: "Hai, watashi wa Amerikajin desu.", en: "Yes, I'm American." },
+                { jp: "おはようございます。", romaji: "Ohayō gozaimasu.", en: "Good morning." },
+                { jp: "いいお天気ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
+                { jp: "そうですね。", romaji: "Sō desu ne.", en: "That's right." },
+                { jp: "じゃあまた。", romaji: "Jā mata.", en: "See you." },
+                { jp: "ありがとうございます。", romaji: "Arigatō gozaimasu.", en: "Thank you." },
+                { jp: "上手ですね。", romaji: "Jōzu desu ne.", en: "You're skilled, aren't you?" },
+                { jp: "上手じゃありません。", romaji: "Jōzu ja arimasen.", en: "I'm not very good." }
+            ],
+            quiz: [
+                { q: "How do you politely say 'Good morning' in Japanese?", options: ["おはようございます (Ohayō gozaimasu)", "じゃあまた (Jā mata)", "そうですね (Sō desu ne)", "わかりません (Wakarimasen)"], correct: 0 },
+                { q: "What does '上手じゃありません' (Jōzu ja arimasen) mean?", options: ["I am American", "I don't understand English", "I'm not very good / not skilled", "It's good weather"], correct: 2 },
+                { q: "How do you say 'It's good weather, isn't it?'", options: ["日本語がわかりますか", "いいお天気ですね", "おはようございます", "英語がわかりません"], correct: 1 },
+                { q: "What is the Japanese word for 'A little'?", options: ["少し (Sukoshi)", "英語 (Eigo)", "天気 (Tenki)", "ありがとう (Arigatō)"], correct: 0 },
+                { q: "How do you say 'See you / Goodbye'?", options: ["そうですね", "じゃあまた", "上手です", "わかりません"], correct: 1 },
+                { q: "How do you respond when someone compliments your Japanese ('上手ですね'), following cultural modesty?", options: ["はい、上手です", "上手じゃありません", "おはようございます", "いいお天気ですね"], correct: 1 }
+            ],
+            scenarios: [
+                {
+                    id: "hotel",
+                    name: "Scenario 1: Hotel Receptionist",
+                    steps: [
+                        { speaker: "receptionist", jp: "おはようございます。", romaji: "Ohayō gozaimasu.", en: "Good morning." },
+                        { speaker: "user", prompt: "How do you greet back politely?", options: [
+                            { jp: "おはようございます。", en: "Good morning.", correct: true },
+                            { jp: "じゃあまた。", en: "See you.", correct: false }
+                        ]},
+                        { speaker: "receptionist", jp: "日本語がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
+                        { speaker: "user", prompt: "Answer that you understand a little.", options: [
+                            { jp: "はい、少しわかります。", en: "Yes, I understand a little.", correct: true },
+                            { jp: "わかりません。", en: "I don't understand.", correct: false }
+                        ]},
+                        { speaker: "receptionist", jp: "英語がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
+                        { speaker: "user", prompt: "Answer that you do understand English.", options: [
+                            { jp: "はい、英語がわかります。", en: "Yes, I understand English.", correct: true },
+                            { jp: "いいお天気ですね。", en: "It's good weather.", correct: false }
+                        ]},
+                        { speaker: "receptionist", jp: "日本語が上手ですね。", romaji: "Nihongo ga jōzu desu ne.", en: "You're skilled at Japanese, aren't you?" },
+                        { speaker: "user", prompt: "Respond with customary modesty.", options: [
+                            { jp: "上手じゃありません。", en: "I'm not very good.", correct: true },
+                            { jp: "はい、上手です。", en: "Yes, I am skilled.", correct: false }
+                        ]},
+                        { speaker: "receptionist", jp: "ありがとうございます。じゃあまた。", romaji: "Arigatō gozaimasu. Jā mata.", en: "Thank you. See you." },
+                        { speaker: "user", prompt: "Say goodbye.", options: [
+                            { jp: "じゃあまた。", en: "See you.", correct: true },
+                            { jp: "おはようございます。", en: "Good morning.", correct: false }
+                        ]}
+                    ]
+                },
+                {
+                    id: "associate",
+                    name: "Scenario 2: Business Associate Meeting",
+                    steps: [
+                        { speaker: "associate", jp: "おはようございます。", romaji: "Ohayō gozaimasu.", en: "Good morning." },
+                        { speaker: "user", prompt: "Greet your business associate back.", options: [
+                            { jp: "おはようございます。", en: "Good morning.", correct: true },
+                            { jp: "ありがとう。", en: "Thanks.", correct: false }
+                        ]},
+                        { speaker: "associate", jp: "いいお天気ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
+                        { speaker: "user", prompt: "Agree with the weather.", options: [
+                            { jp: "そうですね。", en: "That's right.", correct: true },
+                            { jp: "わかりません。", en: "I don't understand.", correct: false }
+                        ]},
+                        { speaker: "associate", jp: "あなたはアメリカ人ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
+                        { speaker: "user", prompt: "Answer yes, you are American.", options: [
+                            { jp: "はい、私はアメリカ人です。", en: "Yes, I am American.", correct: true },
+                            { jp: "いいえ、アメリカ人じゃありません。", en: "No, I am not American.", correct: false }
+                        ]},
+                        { speaker: "associate", jp: "日本語がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
+                        { speaker: "user", prompt: "Say you understand Japanese a little.", options: [
+                            { jp: "日本語が少しわかります。", en: "I understand Japanese a little.", correct: true },
+                            { jp: "日本語がわかりません。", en: "I don't understand Japanese.", correct: false }
+                        ]},
+                        { speaker: "associate", jp: "ありがとうございます。じゃあまた。", romaji: "Arigatō gozaimasu. Jā mata.", en: "Thank you. See you." },
+                        { speaker: "user", prompt: "Say farewell.", options: [
+                            { jp: "じゃあまた。", en: "See you.", correct: true },
+                            { jp: "おはようございます。", en: "Good morning.", correct: false }
+                        ]}
+                    ]
+                }
+            ]
+        };
+
+        const DEMO_JSON = JSON.stringify(DEMO_LESSON, null, 2);
+
+        const SCHEMA_TEXT = `{
+  "id": "unit-2",                              // optional — auto-generated when omitted
+  "title": "Pimsleur Japanese 1 — Unit 2",     // REQUIRED
+  "subtitle": "Greetings, Weather & Capabilities",   // optional
+  "description": "Short summary shown on the lesson card.",  // optional
+
+  "vocabulary": [                              // -> Flashcards tab
+    {
+      "jp": "おはようございます",                 // REQUIRED
+      "romaji": "Ohayō gozaimasu",
+      "en": "Good morning (politely)",
+      "tag": "Greeting",                       // small label on the card front
+      "notes": "Used until about 10 a.m."      // shown on the card back
+    }
+  ],
+
+  "transcript": [                              // -> Transcript Explorer tab
+    {
+      "jp": "いいお天気ですね。",
+      "romaji": "Ii otenki desu ne.",
+      "en": "It's good weather, isn't it?"
+    }
+  ],
+
+  "quiz": [                                    // -> Quiz tab  ("correct" = 0-based index)
+    {
+      "q": "How do you politely say 'Good morning'?",
+      "options": ["おはようございます", "じゃあまた", "そうですね", "わかりません"],
+      "correct": 0
+    }
+  ],
+
+  "scenarios": [                               // -> Roleplay Studio tab
+    {
+      "id": "hotel",
+      "name": "Hotel Receptionist",
+      "steps": [
+        {
+          "speaker": "receptionist",           // any name that is NOT "user"
+          "jp": "おはようございます。",
+          "romaji": "Ohayō gozaimasu.",
+          "en": "Good morning."
+        },
+        {
+          "speaker": "user",                   // "user" = you must choose a reply
+          "prompt": "How do you greet back politely?",
+          "options": [
+            { "jp": "おはようございます。", "en": "Good morning.", "correct": true  },
+            { "jp": "じゃあまた。",         "en": "See you.",      "correct": false }
+          ]
+        }
+      ]
+    }
+  ]
+}`;
+
+        /* =========================================================
+           HELPERS
+           ========================================================= */
+        function esc(s) {
+            return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, c => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+            ));
+        }
+        function storageGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+        function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        function scrollToEl(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        /* =========================================================
+           LESSON MANAGER TOGGLE
+           ========================================================= */
+        function applyLessonManagerUI() {
+            const panel = document.getElementById('lesson-manager');
+            const chevron = document.getElementById('lesson-manager-chevron');
+            const hint = document.getElementById('lesson-manager-hint');
+            if (lessonManagerOpen) {
+                panel.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+                hint.textContent = 'Hide';
+            } else {
+                panel.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+                hint.textContent = 'Show';
+            }
+        }
+
+        function toggleLessonManager(forceOpen) {
+            if (forceOpen === true) lessonManagerOpen = true;
+            else if (forceOpen === false) lessonManagerOpen = false;
+            else lessonManagerOpen = !lessonManagerOpen;
+
+            storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0');
+            applyLessonManagerUI();
+
+            if (lessonManagerOpen) {
+                setTimeout(() => scrollToEl('lesson-manager'), 50);
+            }
+        }
+
+        /* =========================================================
+           ALL LESSONS MODAL
+           ========================================================= */
+        function openAllLessonsModal() {
+            const modal = document.getElementById('all-lessons-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            renderAllLessonsModal();
+        }
+
+        function closeAllLessonsModal() {
+            const modal = document.getElementById('all-lessons-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function renderAllLessonsModal() {
+            const grid = document.getElementById('modal-lessons-grid');
+            const empty = document.getElementById('modal-lessons-empty');
+            const count = document.getElementById('modal-lesson-count');
+            if (!grid) return;
+
+            count.textContent = lessons.length;
+
+            if (!lessons.length) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            grid.innerHTML = lessons.map(lessonCardHtml).join('');
+        }
+
+        /* =========================================================
+           TOGGLE UI HELPERS
+           ========================================================= */
+        function setToggleStyle(btn, icon, on) {
+            if (on) {
+                btn.classList.add('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+                btn.classList.remove('text-slate-600', 'dark:text-neutral-300', 'bg-slate-100', 'dark:bg-neutral-900');
+            } else {
+                btn.classList.remove('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+                btn.classList.add('text-slate-600', 'dark:text-neutral-300', 'bg-slate-100', 'dark:bg-neutral-900');
+            }
+        }
+
+        /* =========================================================
+           ROMAJI TOGGLE (global)
+           ========================================================= */
+        function toggleRomaji() {
+            showRomaji = !showRomaji;
+            storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
+            updateRomajiUI();
+            applyRomajiToFlashcard();
+            if (activeLesson) {
+                renderTranscriptList();
+                renderRoleplay();
+                if (pendingOptions) renderRoleplayOptions(pendingOptions);
+            }
+        }
+
+        function updateRomajiUI() {
+            const icon = document.getElementById('romaji-icon');
+            const btn = document.getElementById('romaji-toggle');
+            if (showRomaji) {
+                icon.className = 'fa-solid fa-eye';
+                btn.classList.remove('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+                btn.classList.add('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+            } else {
+                icon.className = 'fa-solid fa-eye-slash';
+                btn.classList.remove('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+                btn.classList.add('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+            }
+        }
+
+        function applyRomajiToFlashcard() {
+            const el = document.getElementById('fc-romaji');
+            if (el) el.style.display = showRomaji ? '' : 'none';
+        }
+
+        /* =========================================================
+           ENGLISH TOGGLES
+           ========================================================= */
+        function toggleFlashcardEnglish() {
+            showFlashcardEnglish = !showFlashcardEnglish;
+            storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0');
+            updateFlashcardEnglishUI();
+            applyFlashcardEnglishVisibility();
+        }
+
+        function toggleTranscriptEnglish() {
+            showTranscriptEnglish = !showTranscriptEnglish;
+            storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0');
+            updateTranscriptEnglishUI();
+            renderTranscriptList();
+        }
+
+        function toggleRoleplayEnglish() {
+            showRoleplayEnglish = !showRoleplayEnglish;
+            storageSet(RP_EN_KEY, showRoleplayEnglish ? '1' : '0');
+            updateRoleplayEnglishUI();
+            renderRoleplay();
+            if (pendingOptions) renderRoleplayOptions(pendingOptions);
+        }
+
+        function updateFlashcardEnglishUI() {
+            const icon = document.getElementById('fc-english-icon');
+            const label = document.getElementById('fc-english-label');
+            const btn = document.getElementById('fc-english-toggle');
+            if (showFlashcardEnglish) {
+                icon.className = 'fa-solid fa-eye';
+                label.textContent = 'Hide English';
+                setToggleStyle(btn, icon, true);
+            } else {
+                icon.className = 'fa-solid fa-eye-slash';
+                label.textContent = 'Show English';
+                setToggleStyle(btn, icon, false);
+            }
+        }
+
+        function updateTranscriptEnglishUI() {
+            const icon = document.getElementById('tr-english-icon');
+            const label = document.getElementById('tr-english-label');
+            const btn = document.getElementById('tr-english-toggle');
+            if (showTranscriptEnglish) {
+                icon.className = 'fa-solid fa-eye';
+                label.textContent = 'Hide English';
+                setToggleStyle(btn, icon, true);
+            } else {
+                icon.className = 'fa-solid fa-eye-slash';
+                label.textContent = 'Show English';
+                setToggleStyle(btn, icon, false);
+            }
+        }
+
+        function updateRoleplayEnglishUI() {
+            const icon = document.getElementById('rp-english-icon');
+            const label = document.getElementById('rp-english-label');
+            const btn = document.getElementById('rp-english-toggle');
+            if (showRoleplayEnglish) {
+                icon.className = 'fa-solid fa-eye';
+                label.textContent = 'Hide English';
+                setToggleStyle(btn, icon, true);
+            } else {
+                icon.className = 'fa-solid fa-eye-slash';
+                label.textContent = 'Show English';
+                setToggleStyle(btn, icon, false);
+            }
+        }
+
+        function applyFlashcardEnglishVisibility() {
+            const revealed = document.getElementById('fc-back-revealed');
+            const hidden = document.getElementById('fc-back-hidden');
+            if (!revealed || !hidden) return;
+            if (showFlashcardEnglish) {
+                revealed.classList.remove('hidden');
+                hidden.classList.add('hidden');
+                hidden.classList.remove('flex');
+            } else {
+                revealed.classList.add('hidden');
+                hidden.classList.remove('hidden');
+                hidden.classList.add('flex');
+            }
+        }
+
+        /* =========================================================
+           LESSON NORMALISATION / VALIDATION
+           ========================================================= */
+        function normalizeLesson(raw) {
+            if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+                throw new Error('The JSON root must be a single lesson object.');
+            }
+            const title = String(raw.title || '').trim();
+            if (!title) throw new Error('Missing required field: "title".');
+
+            const lesson = {
+                id: String(raw.id || '').trim() || ('lesson-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
+                title,
+                subtitle: String(raw.subtitle || '').trim(),
+                description: String(raw.description || '').trim(),
+                vocabulary: [],
+                transcript: [],
+                quiz: [],
+                scenarios: []
+            };
+
+            if (Array.isArray(raw.vocabulary)) {
+                lesson.vocabulary = raw.vocabulary
+                    .filter(v => v && typeof v === 'object' && (v.jp || v.en))
+                    .map(v => ({
+                        jp: String(v.jp || ''),
+                        romaji: String(v.romaji || ''),
+                        en: String(v.en || ''),
+                        tag: String(v.tag || 'Vocabulary'),
+                        notes: String(v.notes || '')
+                    }));
+            }
+
+            if (Array.isArray(raw.transcript)) {
+                lesson.transcript = raw.transcript
+                    .filter(t => t && typeof t === 'object' && (t.jp || t.en))
+                    .map(t => ({
+                        jp: String(t.jp || ''),
+                        romaji: String(t.romaji || ''),
+                        en: String(t.en || '')
+                    }));
+            }
+
+            if (Array.isArray(raw.quiz)) {
+                lesson.quiz = raw.quiz
+                    .filter(q => q && typeof q === 'object' && q.q && Array.isArray(q.options) && q.options.length)
+                    .map(q => ({
+                        q: String(q.q),
+                        options: q.options.map(o => String(o)),
+                        correct: Math.max(0, Math.min(q.options.length - 1, parseInt(q.correct, 10) || 0))
+                    }));
+            }
+
+            if (Array.isArray(raw.scenarios)) {
+                lesson.scenarios = raw.scenarios
+                    .filter(s => s && typeof s === 'object' && Array.isArray(s.steps))
+                    .map((s, i) => ({
+                        id: String(s.id || ('scenario-' + i)),
+                        name: String(s.name || ('Scenario ' + (i + 1))),
+                        steps: s.steps
+                            .filter(st => st && typeof st === 'object')
+                            .map(st => {
+                                if (String(st.speaker) === 'user') {
+                                    return {
+                                        speaker: 'user',
+                                        prompt: String(st.prompt || 'Choose the correct response:'),
+                                        options: (Array.isArray(st.options) ? st.options : [])
+                                            .filter(o => o && typeof o === 'object')
+                                            .map(o => ({
+                                                jp: String(o.jp || ''),
+                                                en: String(o.en || ''),
+                                                correct: !!o.correct
+                                            }))
+                                    };
+                                }
+                                return {
+                                    speaker: String(st.speaker || 'speaker'),
+                                    jp: String(st.jp || ''),
+                                    romaji: String(st.romaji || ''),
+                                    en: String(st.en || '')
+                                };
+                            })
+                    }));
+            }
+
+            if (!lesson.vocabulary.length && !lesson.transcript.length && !lesson.quiz.length && !lesson.scenarios.length) {
+                throw new Error('The lesson must contain at least one of: "vocabulary", "transcript", "quiz", "scenarios".');
+            }
+
+            return lesson;
+        }
+
+        /* =========================================================
+           PERSISTENCE
+           ========================================================= */
+        function persistLessons() { storageSet(STORAGE_KEY, JSON.stringify(lessons)); }
+
+        function loadFromStorage() {
+            try {
+                const raw = JSON.parse(storageGet(STORAGE_KEY) || '[]');
+                lessons = Array.isArray(raw) ? raw.filter(l => l && l.title) : [];
+            } catch (e) { lessons = []; }
+
+            const activeId = storageGet(ACTIVE_KEY);
+            activeLesson = lessons.find(l => l.id === activeId) || null;
+        }
+
+        /* =========================================================
+           TAB SWITCHING
+           ========================================================= */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'dark:text-neutral-300', 'hover:bg-slate-100', 'dark:hover:bg-neutral-900');
+            });
+
+            const section = document.getElementById('tab-' + tabId);
+            if (section) section.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.remove('text-slate-600', 'dark:text-neutral-300', 'hover:bg-slate-100', 'dark:hover:bg-neutral-900');
+                activeNav.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
+            }
+
+            if (tabId === 'roleplay') initRoleplay();
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            icon.className = html.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        /* =========================================================
+           DASHBOARD RENDERING
+           ========================================================= */
+        function renderStats() {
+            const totals = lessons.reduce((acc, l) => {
+                acc.vocab += (l.vocabulary || []).length;
+                acc.quiz += (l.quiz || []).length;
+                acc.scen += (l.scenarios || []).length;
+                return acc;
+            }, { vocab: 0, quiz: 0, scen: 0 });
+
+            document.getElementById('stat-lessons').textContent = lessons.length;
+            document.getElementById('stat-vocab').textContent = totals.vocab;
+            document.getElementById('stat-quiz').textContent = totals.quiz;
+            document.getElementById('stat-scenarios').textContent = totals.scen;
+        }
+
+        function renderActiveBanner() {
+            const banner = document.getElementById('active-banner');
+            const badge = document.getElementById('active-lesson-badge');
+            if (activeLesson) {
+                banner.classList.remove('hidden');
+                document.getElementById('active-banner-title').textContent = activeLesson.title;
+                document.getElementById('active-banner-sub').textContent =
+                    activeLesson.subtitle || `${(activeLesson.vocabulary || []).length} words · ${(activeLesson.quiz || []).length} quiz questions`;
+                badge.classList.remove('hidden');
+                badge.textContent = activeLesson.title;
+            } else {
+                banner.classList.add('hidden');
+                badge.classList.add('hidden');
+            }
+        }
+
+        function lessonCardHtml(l) {
+            const isActive = activeLesson && activeLesson.id === l.id;
+            const chips = [
+                { icon: 'fa-clone', n: (l.vocabulary || []).length, label: 'cards' },
+                { icon: 'fa-book-open', n: (l.transcript || []).length, label: 'lines' },
+                { icon: 'fa-brain', n: (l.quiz || []).length, label: 'quiz' },
+                { icon: 'fa-comments', n: (l.scenarios || []).length, label: 'scenarios' }
+            ];
+            return `
+            <div class="p-5 rounded-2xl border ${isActive ? 'border-rose-500/60 ring-1 ring-rose-500/20' : 'border-slate-200 dark:border-neutral-900'} bg-slate-50/60 dark:bg-neutral-900/40 flex flex-col justify-between gap-4">
+                <div>
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <h4 class="font-bold text-base leading-tight truncate">${esc(l.title)}</h4>
+                            ${l.subtitle ? `<p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5 line-clamp-2">${esc(l.subtitle)}</p>` : ''}
+                        </div>
+                        ${isActive ? '<span class="shrink-0 px-2 py-0.5 bg-rose-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wide">Active</span>' : ''}
+                    </div>
+                    ${l.description ? `<p class="text-xs text-slate-500 dark:text-neutral-400 mt-2 line-clamp-2">${esc(l.description)}</p>` : ''}
+                    <div class="flex flex-wrap gap-1.5 mt-3">
+                        ${chips.filter(c => c.n > 0).map(c => `
+                            <span class="px-2 py-1 rounded-lg bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 text-[10px] font-semibold text-slate-600 dark:text-neutral-300 flex items-center gap-1">
+                                <i class="fa-solid ${c.icon} text-rose-500"></i> ${c.n} ${c.label}
+                            </span>`).join('')}
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-200/70 dark:border-neutral-900">
+                    <button onclick="openLesson('${esc(l.id)}')" class="flex-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> Study
+                    </button>
+                    <button onclick="exportLesson('${esc(l.id)}')" title="Export JSON" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-slate-100 dark:hover:bg-neutral-900 text-xs font-semibold rounded-xl transition">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button onclick="deleteLesson('${esc(l.id)}')" title="Delete" class="px-3 py-2 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 text-xs font-semibold rounded-xl transition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        function renderLessons() {
+            const grid = document.getElementById('lessons-grid');
+            const empty = document.getElementById('lessons-empty');
+            const viewAllBtn = document.getElementById('view-all-lessons-btn');
+
+            if (!lessons.length) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                viewAllBtn.classList.add('hidden');
+                renderAllLessonsModal();
+                return;
+            }
+            empty.classList.add('hidden');
+
+            // Only show the first N lessons on the dashboard
+            const visible = lessons.slice(0, DASHBOARD_LESSON_LIMIT);
+            grid.innerHTML = visible.map(lessonCardHtml).join('');
+
+            if (lessons.length > DASHBOARD_LESSON_LIMIT) {
+                viewAllBtn.classList.remove('hidden');
+                document.getElementById('view-all-count').textContent = lessons.length;
+            } else {
+                viewAllBtn.classList.add('hidden');
+            }
+
+            // Refresh modal contents too (if it exists)
+            renderAllLessonsModal();
+        }
+
+        /* =========================================================
+           LESSON ACTIONS
+           ========================================================= */
+        function openLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+            activeLesson = lesson;
+            storageSet(ACTIVE_KEY, lesson.id);
+            currentFlashcardIdx = 0;
+            stopCurrentAudio();
+            refreshLessonViews();
+            renderLessons();
+            closeAllLessonsModal();
+            switchTab('flashcards');
+        }
+
+        function clearActiveLesson() {
+            activeLesson = null;
+            storageSet(ACTIVE_KEY, '');
+            stopCurrentAudio();
+            refreshLessonViews();
+            renderLessons();
+        }
+
+        function deleteLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+            if (!confirm(`Delete "${lesson.title}"? This cannot be undone.`)) return;
+            lessons = lessons.filter(l => l.id !== id);
+
+            Object.keys(transcriptAudioMap).forEach(key => {
+                if (key.startsWith(id + ':')) {
+                    URL.revokeObjectURL(transcriptAudioMap[key].url);
+                    delete transcriptAudioMap[key];
+                }
+            });
+
+            if (activeLesson && activeLesson.id === id) {
+                activeLesson = null;
+                storageSet(ACTIVE_KEY, '');
+                stopCurrentAudio();
+            }
+            persistLessons();
+            renderLessons();
+            renderStats();
+            renderActiveBanner();
+            refreshLessonViews();
+        }
+
+        function exportLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+            const blob = new Blob([JSON.stringify(lesson, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (lesson.id || 'lesson') + '.json';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        /* =========================================================
+           IMPORT
+           ========================================================= */
+        function handleFileImport(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('import-textarea').value = e.target.result;
+                importFromTextarea();
+            };
+            reader.onerror = () => showImportMessage('Could not read that file.', 'error');
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function importFromTextarea() {
+            const text = document.getElementById('import-textarea').value.trim();
+            if (!text) {
+                showImportMessage('Paste a lesson JSON or choose a .json file first.', 'error');
+                return;
+            }
+            let raw;
+            try {
+                raw = JSON.parse(text);
+            } catch (err) {
+                showImportMessage('Invalid JSON — ' + err.message, 'error');
+                return;
+            }
+            let lesson;
+            try {
+                lesson = normalizeLesson(raw);
+            } catch (err) {
+                showImportMessage(err.message, 'error');
+                return;
+            }
+
+            const existingIdx = lessons.findIndex(l => l.id === lesson.id);
+            let verb = 'Imported';
+            if (existingIdx >= 0) {
+                lessons[existingIdx] = lesson;
+                verb = 'Updated';
+            } else {
+                lessons.push(lesson);
+            }
+
+            persistLessons();
+            activeLesson = lesson;
+            storageSet(ACTIVE_KEY, lesson.id);
+
+            document.getElementById('import-textarea').value = '';
+            showImportMessage(`${verb} “${lesson.title}”. It is now the active lesson — open Flashcards to begin.`, 'success');
+
+            renderLessons();
+            renderStats();
+            renderActiveBanner();
+            refreshLessonViews();
+        }
+
+        function showImportMessage(text, type) {
+            const el = document.getElementById('import-message');
+            el.className = 'text-sm font-medium ' + (type === 'error' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400');
+            el.textContent = text;
+        }
+
+        function clearImportBox() {
+            document.getElementById('import-textarea').value = '';
+            showImportMessage('', 'success');
+        }
+
+        function loadDemoIntoImportBox() {
+            // Ensure the manager is open so the textarea is visible
+            if (!lessonManagerOpen) toggleLessonManager(true);
+            document.getElementById('import-textarea').value = DEMO_JSON;
+            showImportMessage('Demo lesson loaded into the import box. Review it, then press “Import Lesson”.', 'success');
+            setTimeout(() => scrollToEl('import-panel'), 100);
+        }
+
+        async function copyDemoJson() {
+            try {
+                await navigator.clipboard.writeText(DEMO_JSON);
+                showImportMessage('Demo JSON copied to clipboard.', 'success');
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = DEMO_JSON;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                showImportMessage('Demo JSON copied to clipboard.', 'success');
+            }
+        }
+
+        function downloadDemoJson() {
+            const blob = new Blob([DEMO_JSON], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pimsleur-unit-2-demo.json';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        /* =========================================================
+           VOICE RECOGNITION (input only)
+           ========================================================= */
+        function startVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Speech recognition is not supported in this browser. You can type your response instead.");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.classList.add('bg-rose-500', 'text-white');
+
+            recognition.onresult = function (event) {
+                document.getElementById('custom-reply-input').value = event.results[0][0].transcript;
+                micBtn.classList.remove('bg-rose-500', 'text-white');
+            };
+            recognition.onerror = function () { micBtn.classList.remove('bg-rose-500', 'text-white'); };
+            recognition.onend = function () { micBtn.classList.remove('bg-rose-500', 'text-white'); };
+            recognition.start();
+        }
+
+        /* =========================================================
+           REFRESH ALL LESSON-DEPENDENT VIEWS
+           ========================================================= */
+        function refreshLessonViews() {
+            renderActiveBanner();
+
+            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
+            document.getElementById('flashcards-empty').classList.toggle('hidden', vocab.length > 0);
+            document.getElementById('flashcards-body').classList.toggle('hidden', vocab.length === 0);
+            document.getElementById('fc-lesson-name').textContent = activeLesson
+                ? (activeLesson.title + ' — click a card to flip.')
+                : 'Click card to flip.';
+            currentFlashcardIdx = 0;
+            isCardFlipped = false;
+            if (vocab.length) updateFlashcard();
+            applyFlashcardEnglishVisibility();
+            applyRomajiToFlashcard();
+
+            const quiz = activeLesson ? (activeLesson.quiz || []) : [];
+            document.getElementById('quiz-empty').classList.toggle('hidden', quiz.length > 0);
+            document.getElementById('quiz-body').classList.toggle('hidden', quiz.length === 0);
+            if (quiz.length) initQuiz();
+
+            document.getElementById('transcript-search').value = '';
+            renderTranscript();
+
+            populateScenarioSelect();
+            initRoleplay();
+        }
+
+        /* =========================================================
+           FLASHCARDS
+           ========================================================= */
+        function updateFlashcard() {
+            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
+            if (!vocab.length) return;
+            if (currentFlashcardIdx >= vocab.length) currentFlashcardIdx = 0;
+
+            const item = vocab[currentFlashcardIdx];
+            document.getElementById('fc-current').textContent = currentFlashcardIdx + 1;
+            document.getElementById('fc-total').textContent = vocab.length;
+            document.getElementById('fc-tag').textContent = item.tag || 'Vocabulary';
+            document.getElementById('fc-japanese').textContent = item.jp || '';
+            const romajiEl = document.getElementById('fc-romaji');
+            romajiEl.textContent = item.romaji || '';
+            romajiEl.style.display = showRomaji ? '' : 'none';
+            document.getElementById('fc-english').textContent = item.en || '';
+            document.getElementById('fc-notes').textContent = item.notes || '';
+
+            isCardFlipped = false;
+            document.getElementById('flashcard-inner').style.transform = 'rotateY(0deg)';
+            applyFlashcardEnglishVisibility();
+        }
+
+        function flipCard() {
+            isCardFlipped = !isCardFlipped;
+            document.getElementById('flashcard-inner').style.transform = isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+        }
+
+        function nextCard() {
+            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
+            if (!vocab.length) return;
+            currentFlashcardIdx = (currentFlashcardIdx + 1) % vocab.length;
+            updateFlashcard();
+        }
+
+        function prevCard() {
+            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
+            if (!vocab.length) return;
+            currentFlashcardIdx = (currentFlashcardIdx - 1 + vocab.length) % vocab.length;
+            updateFlashcard();
+        }
+
+        function playCurrentAudio() {
+            const vocab = activeLesson ? (activeLesson.vocabulary || []) : [];
+            if (!vocab.length) return;
+            playGoogleTTS(vocab[currentFlashcardIdx].jp);
+        }
+
+        /* =========================================================
+           ROLEPLAY
+           ========================================================= */
+        function populateScenarioSelect() {
+            const sel = document.getElementById('scenario-select');
+            const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
+            sel.innerHTML = scenarios.map((s, i) =>
+                `<option value="${i}">${esc(s.name || ('Scenario ' + (i + 1)))}</option>`
+            ).join('');
+            currentScenarioIdx = 0;
+        }
+
+        function changeScenario() {
+            currentScenarioIdx = parseInt(document.getElementById('scenario-select').value, 10) || 0;
+            initRoleplay();
+        }
+
+        function initRoleplay() {
+            chatStep = 0;
+            chatHistory = [];
+            pendingOptions = null;
+            document.getElementById('response-options').innerHTML = '';
+            document.getElementById('chat-container').innerHTML = '';
+
+            const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
+            const has = scenarios.length > 0 && scenarios[currentScenarioIdx] && scenarios[currentScenarioIdx].steps.length > 0;
+
+            document.getElementById('roleplay-empty').classList.toggle('hidden', has);
+            document.getElementById('roleplay-body').classList.toggle('hidden', !has);
+
+            if (!has) return;
+            renderChatStep();
+        }
+
+        function renderChatStep() {
+            const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
+            const scenario = scenarios[currentScenarioIdx];
+            if (!scenario) return;
+
+            const flow = scenario.steps;
+
+            if (chatStep >= flow.length) {
+                chatHistory.push({ type: 'complete' });
+                renderRoleplay();
+                document.getElementById('response-options').innerHTML = '';
+                pendingOptions = null;
+                return;
+            }
+
+            const current = flow[chatStep];
+            if (current.speaker !== 'user') {
+                chatHistory.push({
+                    type: 'npc',
+                    jp: current.jp,
+                    romaji: current.romaji,
+                    en: current.en
+                });
+                renderRoleplay();
+                playGoogleTTS(current.jp);
+
+                chatStep++;
+                setTimeout(renderChatStep, 800);
+            } else {
+                chatHistory.push({ type: 'prompt', text: current.prompt });
+                renderRoleplay();
+                pendingOptions = current.options;
+                renderRoleplayOptions(current.options);
+            }
+        }
+
+        function renderRoleplay() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.innerHTML = chatHistory.map(renderChatEntry).join('');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function renderChatEntry(entry) {
+            if (entry.type === 'npc') {
+                const romajiPart = (showRomaji && entry.romaji) ? esc(entry.romaji) : '';
+                const enPart = (showRoleplayEnglish && entry.en) ? esc(entry.en) : '';
+                let meta = '';
+                if (romajiPart && enPart) meta = romajiPart + ' — ' + enPart;
+                else meta = romajiPart || enPart;
+
+                return `
+                    <div class="flex items-start gap-3 max-w-[85%]">
+                        <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="bg-slate-100 dark:bg-neutral-900 p-3.5 rounded-2xl rounded-tl-none space-y-1">
+                            <div class="font-jp font-bold text-base">${esc(entry.jp)}</div>
+                            ${meta ? `<div class="text-xs text-slate-500 dark:text-neutral-400">${meta}</div>` : ''}
+                        </div>
+                    </div>`;
+            }
+            if (entry.type === 'prompt') {
+                return `<div class="text-xs font-semibold text-rose-600 bg-rose-500/10 p-3 rounded-xl border border-rose-500/20">${esc(entry.text)}</div>`;
+            }
+            if (entry.type === 'user') {
+                return `
+                    <div class="flex items-start gap-3 max-w-[85%] ml-auto flex-row-reverse">
+                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user"></i></div>
+                        <div class="bg-amber-600 text-white p-3.5 rounded-2xl rounded-tr-none space-y-1 text-right">
+                            <div class="font-jp font-bold text-base">${esc(entry.jp)}</div>
+                        </div>
+                    </div>`;
+            }
+            if (entry.type === 'complete') {
+                return `
+                    <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center space-y-2 my-auto">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-2xl"></i>
+                        <h4 class="font-bold text-emerald-700 dark:text-emerald-300">Scenario Completed Successfully!</h4>
+                        <p class="text-xs text-slate-600 dark:text-neutral-400">You successfully navigated the conversation.</p>
+                        <button onclick="initRoleplay()" class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-xl text-xs">Restart Scenario</button>
+                    </div>`;
+            }
+            return '';
+        }
+
+        function renderRoleplayOptions(options) {
+            const optionsContainer = document.getElementById('response-options');
+            optionsContainer.innerHTML = options.map((opt, idx) => {
+                const enPart = (showRoleplayEnglish && opt.en)
+                    ? `<span class="text-xs text-slate-500 dark:text-neutral-400">${esc(opt.en)}</span>`
+                    : '';
+                return `
+                    <button onclick="handleRoleplayChoice(${idx})" class="p-3 bg-slate-50 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200 dark:border-neutral-800 rounded-xl text-left transition flex flex-col gap-1">
+                        <span class="font-jp font-bold text-sm text-slate-900 dark:text-white">${esc(opt.jp)}</span>
+                        ${enPart}
+                    </button>`;
+            }).join('');
+        }
+
+        function handleRoleplayChoice(optIdx) {
+            const scenarios = activeLesson ? (activeLesson.scenarios || []) : [];
+            const scenario = scenarios[currentScenarioIdx];
+            if (!scenario) return;
+
+            const current = scenario.steps[chatStep];
+            if (!current || current.speaker !== 'user') return;
+
+            const chosen = current.options[optIdx];
+
+            if (chosen && chosen.correct) {
+                chatHistory.push({ type: 'user', jp: chosen.jp });
+                renderRoleplay();
+                chatStep++;
+                pendingOptions = null;
+                document.getElementById('response-options').innerHTML = '';
+                setTimeout(renderChatStep, 600);
+            } else {
+                alert("That wasn't the expected response for this prompt. Try again!");
+            }
+        }
+
+        function sendCustomReply() {
+            const input = document.getElementById('custom-reply-input');
+            const val = input.value.trim();
+            if (!val) return;
+
+            chatHistory.push({ type: 'user', jp: val });
+            renderRoleplay();
+            input.value = '';
+
+            chatStep++;
+            pendingOptions = null;
+            document.getElementById('response-options').innerHTML = '';
+            setTimeout(renderChatStep, 800);
+        }
+
+        /* =========================================================
+           QUIZ
+           ========================================================= */
+        function initQuiz() {
+            currentQuizIdx = 0;
+            quizScore = 0;
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('quiz-footer').classList.remove('hidden');
+            document.getElementById('quiz-score-card').classList.add('hidden');
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const quiz = activeLesson ? (activeLesson.quiz || []) : [];
+            if (!quiz.length) return;
+            const q = quiz[currentQuizIdx];
+
+            document.getElementById('quiz-progress-text').textContent = `Question ${currentQuizIdx + 1} of ${quiz.length}`;
+            document.getElementById('quiz-question').textContent = q.q;
+            document.getElementById('quiz-feedback').textContent = '';
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+
+            document.getElementById('quiz-options').innerHTML = q.options.map((opt, idx) => `
+                <button onclick="handleQuizAnswer(${idx}, ${q.correct})" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-neutral-900/50 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-left font-medium transition flex items-center justify-between group">
+                    <span class="font-jp text-sm sm:text-base">${esc(opt)}</span>
+                    <span class="w-6 h-6 rounded-full border border-slate-300 dark:border-neutral-700 flex items-center justify-center text-xs text-slate-400 group-hover:border-rose-500 group-hover:text-rose-500"><i class="fa-solid fa-check"></i></span>
+                </button>`).join('');
+        }
+
+        function handleQuizAnswer(selectedIdx, correctIdx) {
+            const options = document.getElementById('quiz-options').children;
+            for (let i = 0; i < options.length; i++) {
+                options[i].disabled = true;
+                if (i === correctIdx) {
+                    options[i].classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-300');
+                } else if (i === selectedIdx) {
+                    options[i].classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-700', 'dark:text-rose-300');
+                }
+            }
+
+            if (selectedIdx === correctIdx) {
+                quizScore++;
+                document.getElementById('quiz-feedback').innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Correct!</span>';
+            } else {
+                document.getElementById('quiz-feedback').innerHTML = '<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> Incorrect. Review the lesson.</span>';
+            }
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            const quiz = activeLesson ? (activeLesson.quiz || []) : [];
+            currentQuizIdx++;
+            if (currentQuizIdx < quiz.length) {
+                renderQuizQuestion();
+            } else {
+                document.getElementById('quiz-card').classList.add('hidden');
+                document.getElementById('quiz-footer').classList.add('hidden');
+                document.getElementById('quiz-score-card').classList.remove('hidden');
+                document.getElementById('quiz-final-score').textContent = `You scored ${quizScore} out of ${quiz.length} correct!`;
+            }
+        }
+
+        function restartQuiz() { initQuiz(); }
+
+        /* =========================================================
+           TRANSCRIPT
+           ========================================================= */
+        function renderTranscript() {
+            const lines = activeLesson ? (activeLesson.transcript || []) : [];
+            const empty = document.getElementById('transcript-empty');
+            const toolbar = document.getElementById('transcript-toolbar');
+            const list = document.getElementById('transcript-list');
+
+            empty.classList.toggle('hidden', lines.length > 0);
+            toolbar.classList.toggle('hidden', lines.length === 0);
+
+            if (!lines.length) { list.innerHTML = ''; return; }
+
+            document.getElementById('transcript-count').textContent =
+                `${lines.length} lines · ${activeLesson.title}`;
+            renderTranscriptList();
+        }
+
+        function getFilteredTranscript() {
+            const lines = activeLesson ? (activeLesson.transcript || []) : [];
+            const query = (document.getElementById('transcript-search').value || '').toLowerCase().trim();
+            const indexed = lines.map((item, idx) => ({ item, idx }));
+            if (!query) return indexed;
+            return indexed.filter(({ item }) =>
+                (item.jp || '').toLowerCase().includes(query) ||
+                (item.romaji || '').toLowerCase().includes(query) ||
+                (item.en || '').toLowerCase().includes(query)
+            );
+        }
+
+        function renderTranscriptList() {
+            const entries = getFilteredTranscript();
+            const lessonId = activeLesson ? activeLesson.id : '';
+            const list = document.getElementById('transcript-list');
+
+            if (!entries.length) {
+                list.innerHTML = `<div class="text-center text-sm text-slate-500 dark:text-neutral-400 py-8">No matching lines.</div>`;
+                return;
+            }
+
+            list.innerHTML = entries.map(({ item, idx }) => {
+                const key = lessonId + ':' + idx;
+                const custom = transcriptAudioMap[key];
+                const hasCustom = !!custom;
+
+                const romajiText = item.romaji || '';
+                const enText = item.en || '';
+                const showR = showRomaji && romajiText;
+                const showE = showTranscriptEnglish && enText;
+
+                let metaHtml = '';
+                if (showR && showE) {
+                    metaHtml = esc(romajiText) + ' — <span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
+                } else if (showR) {
+                    metaHtml = esc(romajiText);
+                } else if (showE) {
+                    metaHtml = '<span class="text-slate-700 dark:text-neutral-200">' + esc(enText) + '</span>';
+                }
+
+                const metaRow = metaHtml
+                    ? `<div class="text-xs text-slate-500 dark:text-neutral-400 font-medium">${metaHtml}</div>`
+                    : '';
+
+                return `
+                <div class="p-4 rounded-xl bg-white dark:bg-neutral-950 border ${hasCustom ? 'border-emerald-500/40' : 'border-slate-200 dark:border-neutral-900'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm hover:border-rose-500/50 transition">
+                    <div class="space-y-1 min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-bold text-slate-400">#${idx + 1}</span>
+                            <div class="font-jp text-lg font-bold">${esc(item.jp)}</div>
+                            ${hasCustom ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider" title="Custom audio attached"><i class="fa-solid fa-microphone-lines mr-1"></i>Custom</span>' : ''}
+                        </div>
+                        ${metaRow}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <button data-speak="${esc(item.jp)}" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Play Google Translate audio">
+                            <i class="fa-brands fa-google"></i> Google
+                        </button>
+                        ${hasCustom ? `
+                            <button data-play-uploaded="${idx}" class="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Play uploaded audio">
+                                <i class="fa-solid fa-play"></i> Custom
+                            </button>
+                            <label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Replace uploaded audio">
+                                <i class="fa-solid fa-rotate"></i> Replace
+                                <input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(${idx}, this)">
+                            </label>
+                            <button onclick="removeSentenceAudio(${idx})" class="px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-rose-100 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition" title="Remove uploaded audio">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        ` : `
+                            <label class="cursor-pointer px-3 py-2 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5" title="Upload your own audio for this sentence">
+                                <i class="fa-solid fa-upload"></i> Upload
+                                <input type="file" accept="audio/*" class="hidden" onchange="uploadSentenceAudio(${idx}, this)">
+                            </label>
+                        `}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterTranscript() { renderTranscriptList(); }
+
+        /* ---------- Per-sentence uploaded audio ---------- */
+        function uploadSentenceAudio(idx, input) {
+            const file = input.files && input.files[0];
+            if (!file || !activeLesson) return;
+
+            const key = activeLesson.id + ':' + idx;
+            if (transcriptAudioMap[key]) {
+                URL.revokeObjectURL(transcriptAudioMap[key].url);
+            }
+            transcriptAudioMap[key] = {
+                url: URL.createObjectURL(file),
+                name: file.name
+            };
+            input.value = '';
+            renderTranscriptList();
+        }
+
+        function removeSentenceAudio(idx) {
+            if (!activeLesson) return;
+            const key = activeLesson.id + ':' + idx;
+            if (transcriptAudioMap[key]) {
+                URL.revokeObjectURL(transcriptAudioMap[key].url);
+                delete transcriptAudioMap[key];
+                renderTranscriptList();
+            }
+        }
+
+        function playUploadedAudio(idx) {
+            if (!activeLesson) return;
+            const key = activeLesson.id + ':' + idx;
+            const entry = transcriptAudioMap[key];
+            if (!entry) return;
+
+            stopCurrentAudio();
+            const audio = new Audio(entry.url);
+            currentAudioEl = audio;
+            audio.play().catch(err => {
+                console.error('Uploaded audio playback failed:', err);
+                alert('Could not play the uploaded audio file.');
+            });
+        }
+
+        /* =========================================================
+           GLOBAL EVENT DELEGATION FOR AUDIO BUTTONS
+           ========================================================= */
+        document.addEventListener('click', function (e) {
+            const speakEl = e.target.closest('[data-speak]');
+            if (speakEl) {
+                e.stopPropagation();
+                playGoogleTTS(speakEl.getAttribute('data-speak'));
+                return;
+            }
+            const uploadPlayEl = e.target.closest('[data-play-uploaded]');
+            if (uploadPlayEl) {
+                e.stopPropagation();
+                const idx = parseInt(uploadPlayEl.getAttribute('data-play-uploaded'), 10);
+                playUploadedAudio(idx);
+            }
+        });
+
+        // Close modal on ESC, or when clicking on backdrop
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('all-lessons-modal');
+                if (modal && !modal.classList.contains('hidden')) closeAllLessonsModal();
+            }
+        });
+        document.getElementById('all-lessons-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeAllLessonsModal();
+        });
+
+        /* =========================================================
+           INIT
+           ========================================================= */
+        function initApp() {
+            document.getElementById('schema-code').textContent = SCHEMA_TEXT;
+            document.getElementById('demo-code').textContent = DEMO_JSON;
+
+            loadFromStorage();
+            renderLessons();
+            renderStats();
+            renderActiveBanner();
+
+            // Sync all toggle UIs with saved preferences
+            updateFlashcardEnglishUI();
+            updateTranscriptEnglishUI();
+            updateRoleplayEnglishUI();
+            updateRomajiUI();
+            applyRomajiToFlashcard();
+            applyLessonManagerUI();
+
+            refreshLessonViews();
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
