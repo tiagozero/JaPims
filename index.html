@@ -28,6 +28,23 @@
         pre::-webkit-scrollbar, #chat-container::-webkit-scrollbar, #modal-lessons-scroll::-webkit-scrollbar, #settings-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
         pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb, #settings-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
         .dark body { background-color: #000; }
+
+        /* Furigana (ruby) styling */
+        ruby {
+            ruby-position: over;
+            ruby-align: center;
+        }
+        ruby rt {
+            font-size: 0.5em;
+            font-weight: 500;
+            opacity: 0.6;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            user-select: none;
+        }
+        .text-4xl ruby rt, .text-5xl ruby rt { font-size: 0.45em; }
+        .text-sm ruby rt { font-size: 0.6em; }
+        .text-lg ruby rt { font-size: 0.5em; }
     </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
@@ -66,6 +83,12 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <button onclick="toggleFurigana()" id="furigana-toggle"
+                    class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                    title="Toggle Furigana (readings above kanji)">
+                    <i id="furigana-icon" class="fa-solid fa-eye"></i>
+                    <span class="hidden sm:inline">振仮名</span>
+                </button>
                 <button onclick="toggleRomaji()" id="romaji-toggle"
                     class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800"
                     title="Toggle Romaji visibility">
@@ -95,7 +118,7 @@
                     <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Your Pimsleur Study Dashboard</h2>
                     <p class="text-slate-600 dark:text-neutral-300 text-sm sm:text-base leading-relaxed mb-6">
                         Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, roleplay scenarios, quizzes and a full transcript explorer.
-                        Attach your own per-sentence audio in the Transcript tab.
+                        Furigana readings display above kanji via ruby annotations, and you can attach per-sentence audio in the Transcript tab.
                         No lesson ships with the app — bring your own, or start from the demo file provided below.
                     </p>
                     <div class="flex flex-wrap gap-3">
@@ -218,7 +241,7 @@
                         </div>
 
                         <textarea id="import-textarea" rows="9" spellcheck="false"
-                            placeholder='{&#10;  "title": "My Lesson",&#10;  "vocabulary": [ { "jp": "…", "romaji": "…", "en": "…" } ]&#10;}'
+                            placeholder='{&#10;  "title": "My Lesson",&#10;  "vocabulary": [ { "jp": "…", "furigana": "{漢字|かんじ}", "romaji": "…", "en": "…" } ]&#10;}'
                             class="w-full font-mono text-xs bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-y"></textarea>
 
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -253,7 +276,7 @@
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
                                     <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Optional</div>
-                                    <code class="text-slate-600 dark:text-neutral-300">id · subtitle · description</code>
+                                    <code class="text-slate-600 dark:text-neutral-300">id · subtitle · description · furigana</code>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-500/5 border border-slate-500/20">
                                     <div class="font-bold text-slate-600 dark:text-neutral-300 mb-1">Audio</div>
@@ -273,7 +296,7 @@
                                 <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-flask"></i></div>
                                 <div>
                                     <h3 class="font-bold text-lg">Demo Lesson JSON</h3>
-                                    <p class="text-xs text-slate-500 dark:text-neutral-400">A complete sample lesson (Unit 2: Greetings, Weather &amp; Capabilities). Not loaded by default.</p>
+                                    <p class="text-xs text-slate-500 dark:text-neutral-400">A complete sample lesson with furigana (Unit 2: Greetings, Weather &amp; Capabilities). Not loaded by default.</p>
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -329,7 +352,7 @@
                     <div id="flashcard-inner" class="w-full h-full duration-500 transform-style-3d relative rounded-3xl shadow-lg border border-slate-200 dark:border-neutral-900 bg-white dark:bg-neutral-950">
                         <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-white to-slate-50 dark:from-neutral-950 dark:to-black rounded-3xl">
                             <span id="fc-tag" class="px-3 py-1 bg-rose-500/10 text-rose-600 rounded-full text-xs font-semibold mb-4">Tag</span>
-                            <div id="fc-japanese" class="font-jp text-4xl sm:text-5xl font-bold tracking-wider mb-3 text-slate-900 dark:text-white"></div>
+                            <div id="fc-japanese" class="font-jp text-4xl sm:text-5xl font-bold mb-3 text-slate-900 dark:text-white leading-loose"></div>
                             <div id="fc-romaji" class="text-lg font-medium text-slate-500 dark:text-neutral-400 mb-6"></div>
                             <p class="text-xs text-slate-400 flex items-center gap-1.5"><i class="fa-solid fa-rotate"></i> Click card to reveal the back</p>
                         </div>
@@ -460,7 +483,7 @@
             <div id="transcript-toolbar" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
                 <div>
                     <h2 class="text-xl font-bold tracking-tight">Transcript Explorer</h2>
-                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with optional custom audio upload.</p>
+                    <p id="transcript-count" class="text-xs text-slate-500 dark:text-neutral-400">Every line of the lesson with furigana, romaji &amp; optional custom audio upload.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <button onclick="toggleTranscriptEnglish()" id="tr-english-toggle"
@@ -568,7 +591,7 @@
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-neutral-400">
                         <i class="fa-solid fa-circle-info mr-1"></i>
-                        Columns: <code>Lesson, Tag, Japanese, Romaji, English, Notes</code>. UTF-8 encoded with BOM (Excel-friendly).
+                        Columns: <code>Lesson, Tag, Japanese, Furigana, Romaji, English, Notes</code>. UTF-8 encoded with BOM (Excel-friendly).
                     </p>
                 </section>
 
@@ -602,10 +625,11 @@
         const TR_EN_KEY   = 'pimsleur_show_tr_english';
         const RP_EN_KEY   = 'pimsleur_show_rp_english';
         const ROMAJI_KEY  = 'pimsleur_show_romaji';
+        const FURIGANA_KEY = 'pimsleur_show_furigana';
         const MANAGER_KEY = 'pimsleur_lesson_manager_open';
 
         const DASHBOARD_LESSON_LIMIT = 3;
-        const BACKUP_VERSION = 1;
+        const BACKUP_VERSION = 2;
 
         let lessons = [];
         let activeLesson = null;
@@ -621,6 +645,7 @@
         let showTranscriptEnglish = storageGet(TR_EN_KEY) === '1';
         let showRoleplayEnglish   = storageGet(RP_EN_KEY) === '1';
         let showRomaji            = storageGet(ROMAJI_KEY) !== '0';
+        let showFurigana          = storageGet(FURIGANA_KEY) !== '0'; // default ON
         let lessonManagerOpen     = storageGet(MANAGER_KEY) === '1';
 
         let chatHistory = [];
@@ -630,7 +655,7 @@
         let currentAudioEl = null;
 
         /* =========================================================
-           AUDIO (custom uploads only)
+           AUDIO
            ========================================================= */
         function stopCurrentAudio() {
             if (currentAudioEl) {
@@ -640,7 +665,27 @@
         }
 
         /* =========================================================
-           DEMO LESSON
+           FURIGANA RENDERING
+           --------------------------------------------------------
+           Notation: {kanji|reading}
+           Examples:
+             "日本語"         -> "{日本語|にほんご}"
+             "いいお天気ですね" -> "いいお{天気|てんき}ですね"
+           If `furigana` is missing/empty, falls back to `jp`.
+           If the Furigana toggle is OFF, returns the plain text.
+           ========================================================= */
+        function renderFurigana(jp, furigana) {
+            const plain = String(jp || '');
+            if (!showFurigana || !furigana || !String(furigana).trim()) {
+                return esc(plain);
+            }
+            const safe = esc(String(furigana));
+            // Only match {something|something} with no nested braces or pipes inside
+            return safe.replace(/\{([^{}|]+)\|([^{}|]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>');
+        }
+
+        /* =========================================================
+           DEMO LESSON (with furigana)
            ========================================================= */
         const DEMO_LESSON = {
             id: "demo-pimsleur-unit-2",
@@ -650,43 +695,43 @@
             vocabulary: [
                 { jp: "おはようございます", romaji: "Ohayō gozaimasu", en: "Good morning (politely)", tag: "Greeting", notes: "Used customarily until 10 or 11 a.m. in business or formal contexts." },
                 { jp: "おはよう", romaji: "Ohayō", en: "Good morning (casual)", tag: "Greeting", notes: "Used for family members or close friends." },
-                { jp: "お天気", romaji: "Otenki", en: "Weather", tag: "Noun", notes: "Weather conditions." },
-                { jp: "いいお天気ですね", romaji: "Ii otenki desu ne", en: "It's good weather, isn't it?", tag: "Phrase", notes: "Used when fully expecting the other person to agree." },
+                { jp: "お天気", furigana: "お{天気|てんき}", romaji: "Otenki", en: "Weather", tag: "Noun", notes: "Weather conditions." },
+                { jp: "いいお天気ですね", furigana: "いいお{天気|てんき}ですね", romaji: "Ii otenki desu ne", en: "It's good weather, isn't it?", tag: "Phrase", notes: "Used when fully expecting the other person to agree." },
                 { jp: "そうですね", romaji: "Sō desu ne", en: "That's right / I agree", tag: "Phrase", notes: "Agreement with the other speaker." },
                 { jp: "じゃあまた", romaji: "Jā mata", en: "See you / Goodbye", tag: "Farewell", notes: "Casual farewell when leaving." },
                 { jp: "ありがとう", romaji: "Arigatō", en: "Thanks (casual)", tag: "Courtesy", notes: "Expressing gratitude." },
                 { jp: "ありがとうございます", romaji: "Arigatō gozaimasu", en: "Thank you very much (polite)", tag: "Courtesy", notes: "Polite expression of thanks." },
-                { jp: "日本語がわかりますか", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?", tag: "Question", notes: "Asking about language comprehension." },
-                { jp: "日本語が少しわかります", romaji: "Nihongo ga sukoshi wakarimasu", en: "I understand Japanese a little", tag: "Phrase", notes: "Modest assertion of language skill." },
-                { jp: "上手ですね", romaji: "Jōzu desu ne", en: "You're skilled, aren't you?", tag: "Compliment", notes: "Praising someone's ability." },
-                { jp: "上手じゃありません", romaji: "Jōzu ja arimasen", en: "I'm not very good / not skilled", tag: "Modesty", notes: "Customary polite self-deprecation in Japanese culture." },
-                { jp: "英語がわかりますか", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?", tag: "Question", notes: "Asking about English proficiency." },
+                { jp: "日本語がわかりますか", furigana: "{日本語|にほんご}がわかりますか", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?", tag: "Question", notes: "Asking about language comprehension." },
+                { jp: "日本語が少しわかります", furigana: "{日本語|にほんご}が{少し|すこし}わかります", romaji: "Nihongo ga sukoshi wakarimasu", en: "I understand Japanese a little", tag: "Phrase", notes: "Modest assertion of language skill." },
+                { jp: "上手ですね", furigana: "{上手|じょうず}ですね", romaji: "Jōzu desu ne", en: "You're skilled, aren't you?", tag: "Compliment", notes: "Praising someone's ability." },
+                { jp: "上手じゃありません", furigana: "{上手|じょうず}じゃありません", romaji: "Jōzu ja arimasen", en: "I'm not very good / not skilled", tag: "Modesty", notes: "Customary polite self-deprecation in Japanese culture." },
+                { jp: "英語がわかりますか", furigana: "{英語|えいご}がわかりますか", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?", tag: "Question", notes: "Asking about English proficiency." },
                 { jp: "わかりません", romaji: "Wakarimasen", en: "I don't understand", tag: "Phrase", notes: "Negative statement of comprehension." },
-                { jp: "少し", romaji: "Sukoshi", en: "A little", tag: "Adverb", notes: "Indicating a small amount." },
-                { jp: "私はアメリカ人です", romaji: "Watashi wa Amerikajin desu", en: "I am an American", tag: "Statement", notes: "Stating nationality." }
+                { jp: "少し", furigana: "{少し|すこし}", romaji: "Sukoshi", en: "A little", tag: "Adverb", notes: "Indicating a small amount." },
+                { jp: "私はアメリカ人です", furigana: "{私|わたし}はアメリカ{人|じん}です", romaji: "Watashi wa Amerikajin desu", en: "I am an American", tag: "Statement", notes: "Stating nationality." }
             ],
             transcript: [
-                { jp: "アメリカ人です。英語がわかりますか?", romaji: "Amerikajin desu. Eigo ga wakarimasu ka?", en: "You are American. Do you understand English?" },
+                { jp: "アメリカ人です。英語がわかりますか?", furigana: "アメリカ{人|じん}です。{英語|えいご}がわかりますか?", romaji: "Amerikajin desu. Eigo ga wakarimasu ka?", en: "You are American. Do you understand English?" },
                 { jp: "いえ、わかりません。", romaji: "Ie, wakarimasen.", en: "No, I don't understand." },
                 { jp: "えいご、えいご。", romaji: "Eigo, eigo.", en: "English, English." },
-                { jp: "日本語、日本語。", romaji: "Nihongo, nihongo.", en: "Japanese, Japanese." },
+                { jp: "日本語、日本語。", furigana: "{日本語|にほんご}、{日本語|にほんご}。", romaji: "Nihongo, nihongo.", en: "Japanese, Japanese." },
                 { jp: "わかります。", romaji: "Wakarimasu.", en: "I understand." },
-                { jp: "日本語がわかります。", romaji: "Nihongo ga wakarimasu.", en: "I understand Japanese." },
-                { jp: "少し", romaji: "Sukoshi", en: "A little." },
-                { jp: "日本語が少しわかります。", romaji: "Nihongo ga sukoshi wakarimasu.", en: "I understand Japanese a little." },
-                { jp: "英語がわかりません。", romaji: "Eigo ga wakarimasen.", en: "I don't understand English." },
-                { jp: "日本語がわかりません。", romaji: "Nihongo ga wakarimasen.", en: "I don't understand Japanese." },
-                { jp: "英語がわかります。", romaji: "Eigo ga wakarimasu.", en: "I understand English." },
-                { jp: "英語がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
-                { jp: "あなたはアメリカ人ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
-                { jp: "はい、私はアメリカ人です。", romaji: "Hai, watashi wa Amerikajin desu.", en: "Yes, I'm American." },
+                { jp: "日本語がわかります。", furigana: "{日本語|にほんご}がわかります。", romaji: "Nihongo ga wakarimasu.", en: "I understand Japanese." },
+                { jp: "少し", furigana: "{少し|すこし}", romaji: "Sukoshi", en: "A little." },
+                { jp: "日本語が少しわかります。", furigana: "{日本語|にほんご}が{少し|すこし}わかります。", romaji: "Nihongo ga sukoshi wakarimasu.", en: "I understand Japanese a little." },
+                { jp: "英語がわかりません。", furigana: "{英語|えいご}がわかりません。", romaji: "Eigo ga wakarimasen.", en: "I don't understand English." },
+                { jp: "日本語がわかりません。", furigana: "{日本語|にほんご}がわかりません。", romaji: "Nihongo ga wakarimasen.", en: "I don't understand Japanese." },
+                { jp: "英語がわかります。", furigana: "{英語|えいご}がわかります。", romaji: "Eigo ga wakarimasu.", en: "I understand English." },
+                { jp: "英語がわかりますか?", furigana: "{英語|えいご}がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
+                { jp: "あなたはアメリカ人ですか?", furigana: "あなたはアメリカ{人|じん}ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
+                { jp: "はい、私はアメリカ人です。", furigana: "はい、{私|わたし}はアメリカ{人|じん}です。", romaji: "Hai, watashi wa Amerikajin desu.", en: "Yes, I'm American." },
                 { jp: "おはようございます。", romaji: "Ohayō gozaimasu.", en: "Good morning." },
-                { jp: "いいお天気ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
+                { jp: "いいお天気ですね。", furigana: "いいお{天気|てんき}ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
                 { jp: "そうですね。", romaji: "Sō desu ne.", en: "That's right." },
                 { jp: "じゃあまた。", romaji: "Jā mata.", en: "See you." },
                 { jp: "ありがとうございます。", romaji: "Arigatō gozaimasu.", en: "Thank you." },
-                { jp: "上手ですね。", romaji: "Jōzu desu ne.", en: "You're skilled, aren't you?" },
-                { jp: "上手じゃありません。", romaji: "Jōzu ja arimasen.", en: "I'm not very good." }
+                { jp: "上手ですね。", furigana: "{上手|じょうず}ですね。", romaji: "Jōzu desu ne.", en: "You're skilled, aren't you?" },
+                { jp: "上手じゃありません。", furigana: "{上手|じょうず}じゃありません。", romaji: "Jōzu ja arimasen.", en: "I'm not very good." }
             ],
             quiz: [
                 { q: "How do you politely say 'Good morning' in Japanese?", options: ["おはようございます (Ohayō gozaimasu)", "じゃあまた (Jā mata)", "そうですね (Sō desu ne)", "わかりません (Wakarimasen)"], correct: 0 },
@@ -706,20 +751,20 @@
                             { jp: "おはようございます。", en: "Good morning.", correct: true },
                             { jp: "じゃあまた。", en: "See you.", correct: false }
                         ]},
-                        { speaker: "receptionist", jp: "日本語がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
+                        { speaker: "receptionist", jp: "日本語がわかりますか?", furigana: "{日本語|にほんご}がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
                         { speaker: "user", prompt: "Answer that you understand a little.", options: [
-                            { jp: "はい、少しわかります。", en: "Yes, I understand a little.", correct: true },
+                            { jp: "はい、少しわかります。", furigana: "はい、{少し|すこし}わかります。", en: "Yes, I understand a little.", correct: true },
                             { jp: "わかりません。", en: "I don't understand.", correct: false }
                         ]},
-                        { speaker: "receptionist", jp: "英語がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
+                        { speaker: "receptionist", jp: "英語がわかりますか?", furigana: "{英語|えいご}がわかりますか?", romaji: "Eigo ga wakarimasu ka?", en: "Do you understand English?" },
                         { speaker: "user", prompt: "Answer that you do understand English.", options: [
-                            { jp: "はい、英語がわかります。", en: "Yes, I understand English.", correct: true },
-                            { jp: "いいお天気ですね。", en: "It's good weather.", correct: false }
+                            { jp: "はい、英語がわかります。", furigana: "はい、{英語|えいご}がわかります。", en: "Yes, I understand English.", correct: true },
+                            { jp: "いいお天気ですね。", furigana: "いいお{天気|てんき}ですね。", en: "It's good weather.", correct: false }
                         ]},
-                        { speaker: "receptionist", jp: "日本語が上手ですね。", romaji: "Nihongo ga jōzu desu ne.", en: "You're skilled at Japanese, aren't you?" },
+                        { speaker: "receptionist", jp: "日本語が上手ですね。", furigana: "{日本語|にほんご}が{上手|じょうず}ですね。", romaji: "Nihongo ga jōzu desu ne.", en: "You're skilled at Japanese, aren't you?" },
                         { speaker: "user", prompt: "Respond with customary modesty.", options: [
-                            { jp: "上手じゃありません。", en: "I'm not very good.", correct: true },
-                            { jp: "はい、上手です。", en: "Yes, I am skilled.", correct: false }
+                            { jp: "上手じゃありません。", furigana: "{上手|じょうず}じゃありません。", en: "I'm not very good.", correct: true },
+                            { jp: "はい、上手です。", furigana: "はい、{上手|じょうず}です。", en: "Yes, I am skilled.", correct: false }
                         ]},
                         { speaker: "receptionist", jp: "ありがとうございます。じゃあまた。", romaji: "Arigatō gozaimasu. Jā mata.", en: "Thank you. See you." },
                         { speaker: "user", prompt: "Say goodbye.", options: [
@@ -737,20 +782,20 @@
                             { jp: "おはようございます。", en: "Good morning.", correct: true },
                             { jp: "ありがとう。", en: "Thanks.", correct: false }
                         ]},
-                        { speaker: "associate", jp: "いいお天気ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
+                        { speaker: "associate", jp: "いいお天気ですね。", furigana: "いいお{天気|てんき}ですね。", romaji: "Ii otenki desu ne.", en: "It's good weather, isn't it?" },
                         { speaker: "user", prompt: "Agree with the weather.", options: [
                             { jp: "そうですね。", en: "That's right.", correct: true },
                             { jp: "わかりません。", en: "I don't understand.", correct: false }
                         ]},
-                        { speaker: "associate", jp: "あなたはアメリカ人ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
+                        { speaker: "associate", jp: "あなたはアメリカ人ですか?", furigana: "あなたはアメリカ{人|じん}ですか?", romaji: "Anata wa Amerikajin desu ka?", en: "Are you American?" },
                         { speaker: "user", prompt: "Answer yes, you are American.", options: [
-                            { jp: "はい、私はアメリカ人です。", en: "Yes, I am American.", correct: true },
-                            { jp: "いいえ、アメリカ人じゃありません。", en: "No, I am not American.", correct: false }
+                            { jp: "はい、私はアメリカ人です。", furigana: "はい、{私|わたし}はアメリカ{人|じん}です。", en: "Yes, I am American.", correct: true },
+                            { jp: "いいえ、アメリカ人じゃありません。", furigana: "いいえ、アメリカ{人|じん}じゃありません。", en: "No, I am not American.", correct: false }
                         ]},
-                        { speaker: "associate", jp: "日本語がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
+                        { speaker: "associate", jp: "日本語がわかりますか?", furigana: "{日本語|にほんご}がわかりますか?", romaji: "Nihongo ga wakarimasu ka?", en: "Do you understand Japanese?" },
                         { speaker: "user", prompt: "Say you understand Japanese a little.", options: [
-                            { jp: "日本語が少しわかります。", en: "I understand Japanese a little.", correct: true },
-                            { jp: "日本語がわかりません。", en: "I don't understand Japanese.", correct: false }
+                            { jp: "日本語が少しわかります。", furigana: "{日本語|にほんご}が{少し|すこし}わかります。", en: "I understand Japanese a little.", correct: true },
+                            { jp: "日本語がわかりません。", furigana: "{日本語|にほんご}がわかりません。", en: "I don't understand Japanese.", correct: false }
                         ]},
                         { speaker: "associate", jp: "ありがとうございます。じゃあまた。", romaji: "Arigatō gozaimasu. Jā mata.", en: "Thank you. See you." },
                         { speaker: "user", prompt: "Say farewell.", options: [
@@ -772,17 +817,19 @@
 
   "vocabulary": [                              // -> Flashcards tab
     {
-      "jp": "おはようございます",                 // REQUIRED
-      "romaji": "Ohayō gozaimasu",
-      "en": "Good morning (politely)",
-      "tag": "Greeting",                       // small label on the card front
-      "notes": "Used until about 10 a.m."      // shown on the card back
+      "jp": "日本語",                           // REQUIRED — plain Japanese text
+      "furigana": "{日本語|にほんご}",           // optional — reading above kanji
+      "romaji": "Nihongo",
+      "en": "Japanese language",
+      "tag": "Noun",                           // small label on the card front
+      "notes": "…"                             // shown on the card back
     }
   ],
 
   "transcript": [                              // -> Transcript Explorer tab
     {
       "jp": "いいお天気ですね。",
+      "furigana": "いいお{天気|てんき}ですね。",  // optional
       "romaji": "Ii otenki desu ne.",
       "en": "It's good weather, isn't it?"
     }
@@ -803,22 +850,45 @@
       "steps": [
         {
           "speaker": "receptionist",           // any name that is NOT "user"
-          "jp": "おはようございます。",
-          "romaji": "Ohayō gozaimasu.",
-          "en": "Good morning."
+          "jp": "日本語がわかりますか?",
+          "furigana": "{日本語|にほんご}がわかりますか?",  // optional
+          "romaji": "Nihongo ga wakarimasu ka?",
+          "en": "Do you understand Japanese?"
         },
         {
           "speaker": "user",                   // "user" = you must choose a reply
-          "prompt": "How do you greet back politely?",
+          "prompt": "Answer that you understand a little.",
           "options": [
-            { "jp": "おはようございます。", "en": "Good morning.", "correct": true  },
-            { "jp": "じゃあまた。",         "en": "See you.",      "correct": false }
+            { "jp": "はい、少しわかります。",
+              "furigana": "はい、{少し|すこし}わかります。",   // optional
+              "en": "Yes, I understand a little.", "correct": true },
+            { "jp": "わかりません。", "en": "I don't understand.", "correct": false }
           ]
         }
       ]
     }
   ]
-}`;
+}
+
+// -----------------------------------------------------------------
+// FURIGANA NOTATION
+// -----------------------------------------------------------------
+// Use {kanji|reading} to place a reading above a kanji group.
+// The whole string is written with plain kanji + markup where needed.
+//
+//   "日本語"           -> "{日本語|にほんご}"
+//   "お天気"           -> "お{天気|てんき}"
+//   "私はアメリカ人です" -> "{私|わたし}はアメリカ{人|じん}です"
+//
+// Multiple readings can appear in one string:
+//   "{日本語|にほんご}が{少し|すこし}わかります"
+//
+// Only the text inside the braces (before the pipe) is used for display;
+// the text after the pipe becomes the furigana above it.
+// Hiragana, katakana, and punctuation are left as-is.
+//
+// `furigana` is completely optional — if omitted, the plain "jp" is shown.
+// A global toggle in the header can hide all furigana at any time.`;
 
         /* =========================================================
            HELPERS
@@ -926,7 +996,6 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
             refreshCSVLessonScope();
-            // Clear any previous messages
             const msg = document.getElementById('settings-import-message');
             msg.textContent = '';
             msg.className = 'text-sm font-medium';
@@ -945,7 +1014,6 @@
             const current = sel.value;
             sel.innerHTML = '<option value="__all__">All lessons</option>' +
                 lessons.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join('');
-            // Try to preserve previous selection if it still exists
             if (current && [...sel.options].some(o => o.value === current)) {
                 sel.value = current;
             }
@@ -971,6 +1039,7 @@
                     showTranscriptEnglish,
                     showRoleplayEnglish,
                     showRomaji,
+                    showFurigana,
                     lessonManagerOpen
                 }
             };
@@ -1010,9 +1079,6 @@
         }
 
         function applyImportAllData(data) {
-            // Accept two shapes:
-            // 1) { lessons: [...], preferences: {...} }  (our backup format)
-            // 2) [...]                                     (plain array of lessons)
             let incomingLessons = null;
             let incomingPrefs = null;
 
@@ -1026,7 +1092,6 @@
                 return;
             }
 
-            // Normalize + validate every incoming lesson
             const normalized = [];
             for (let i = 0; i < incomingLessons.length; i++) {
                 try {
@@ -1049,11 +1114,9 @@
                 return;
             }
 
-            // Apply lessons
             lessons = normalized;
             persistLessons();
 
-            // Apply preferences if present
             if (incomingPrefs && typeof incomingPrefs === 'object') {
                 if (typeof incomingPrefs.showFlashcardEnglish === 'boolean') {
                     showFlashcardEnglish = incomingPrefs.showFlashcardEnglish;
@@ -1071,14 +1134,16 @@
                     showRomaji = incomingPrefs.showRomaji;
                     storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
                 }
+                if (typeof incomingPrefs.showFurigana === 'boolean') {
+                    showFurigana = incomingPrefs.showFurigana;
+                    storageSet(FURIGANA_KEY, showFurigana ? '1' : '0');
+                }
                 if (typeof incomingPrefs.lessonManagerOpen === 'boolean') {
                     lessonManagerOpen = incomingPrefs.lessonManagerOpen;
                     storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0');
                 }
             }
 
-            // Reset active lesson — keep only if it still exists
-            const activeId = storageGet(ACTIVE_KEY);
             const stillExists = activeLesson ? lessons.find(l => l.id === activeLesson.id) : null;
             if (!stillExists) {
                 activeLesson = null;
@@ -1087,17 +1152,16 @@
                 activeLesson = stillExists;
             }
 
-            // Clear any cached transcript audio (invalid because indices may have shifted)
             Object.keys(transcriptAudioMap).forEach(key => {
                 URL.revokeObjectURL(transcriptAudioMap[key].url);
                 delete transcriptAudioMap[key];
             });
 
-            // Refresh UI
             updateFlashcardEnglishUI();
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
             updateRomajiUI();
+            updateFuriganaUI();
             applyLessonManagerUI();
             renderLessons();
             renderStats();
@@ -1118,7 +1182,6 @@
             }
             if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
 
-            // Clear per-lesson transcript audio
             Object.keys(transcriptAudioMap).forEach(key => {
                 URL.revokeObjectURL(transcriptAudioMap[key].url);
                 delete transcriptAudioMap[key];
@@ -1128,11 +1191,11 @@
             activeLesson = null;
             stopCurrentAudio();
 
-            // Reset preferences to defaults
             showFlashcardEnglish = false;
             showTranscriptEnglish = false;
             showRoleplayEnglish = false;
             showRomaji = true;
+            showFurigana = true;
             lessonManagerOpen = false;
 
             storageSet(STORAGE_KEY, '[]');
@@ -1141,12 +1204,14 @@
             storageSet(TR_EN_KEY, '0');
             storageSet(RP_EN_KEY, '0');
             storageSet(ROMAJI_KEY, '1');
+            storageSet(FURIGANA_KEY, '1');
             storageSet(MANAGER_KEY, '0');
 
             updateFlashcardEnglishUI();
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
             updateRomajiUI();
+            updateFuriganaUI();
             applyLessonManagerUI();
             renderLessons();
             renderStats();
@@ -1183,9 +1248,8 @@
                 return;
             }
 
-            // Header row
             const rows = [
-                ['Lesson', 'Tag', 'Japanese', 'Romaji', 'English', 'Notes']
+                ['Lesson', 'Tag', 'Japanese', 'Furigana', 'Romaji', 'English', 'Notes']
             ];
 
             let totalCards = 0;
@@ -1195,6 +1259,7 @@
                         lesson.title || '',
                         v.tag || '',
                         v.jp || '',
+                        v.furigana || '',
                         v.romaji || '',
                         v.en || '',
                         v.notes || ''
@@ -1208,7 +1273,6 @@
                 return;
             }
 
-            // Build CSV text with CRLF line endings (best compatibility) and UTF-8 BOM
             const csv = '\uFEFF' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1233,6 +1297,35 @@
             } else {
                 btn.classList.remove('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
                 btn.classList.add('text-slate-600', 'dark:text-neutral-300', 'bg-slate-100', 'dark:bg-neutral-900');
+            }
+        }
+
+        /* =========================================================
+           FURIGANA TOGGLE
+           ========================================================= */
+        function toggleFurigana() {
+            showFurigana = !showFurigana;
+            storageSet(FURIGANA_KEY, showFurigana ? '1' : '0');
+            updateFuriganaUI();
+            if (activeLesson) {
+                updateFlashcard();
+                renderTranscriptList();
+                renderRoleplay();
+                if (pendingOptions) renderRoleplayOptions(pendingOptions);
+            }
+        }
+
+        function updateFuriganaUI() {
+            const icon = document.getElementById('furigana-icon');
+            const btn = document.getElementById('furigana-toggle');
+            if (showFurigana) {
+                icon.className = 'fa-solid fa-eye';
+                btn.classList.add('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+                btn.classList.remove('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+            } else {
+                icon.className = 'fa-solid fa-eye-slash';
+                btn.classList.remove('bg-rose-500/10', 'text-rose-600', 'dark:text-rose-400');
+                btn.classList.add('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
             }
         }
 
@@ -1381,6 +1474,7 @@
                     .filter(v => v && typeof v === 'object' && (v.jp || v.en))
                     .map(v => ({
                         jp: String(v.jp || ''),
+                        furigana: String(v.furigana || ''),
                         romaji: String(v.romaji || ''),
                         en: String(v.en || ''),
                         tag: String(v.tag || 'Vocabulary'),
@@ -1393,6 +1487,7 @@
                     .filter(t => t && typeof t === 'object' && (t.jp || t.en))
                     .map(t => ({
                         jp: String(t.jp || ''),
+                        furigana: String(t.furigana || ''),
                         romaji: String(t.romaji || ''),
                         en: String(t.en || '')
                     }));
@@ -1425,6 +1520,7 @@
                                             .filter(o => o && typeof o === 'object')
                                             .map(o => ({
                                                 jp: String(o.jp || ''),
+                                                furigana: String(o.furigana || ''),
                                                 en: String(o.en || ''),
                                                 correct: !!o.correct
                                             }))
@@ -1433,6 +1529,7 @@
                                 return {
                                     speaker: String(st.speaker || 'speaker'),
                                     jp: String(st.jp || ''),
+                                    furigana: String(st.furigana || ''),
                                     romaji: String(st.romaji || ''),
                                     en: String(st.en || '')
                                 };
@@ -1828,7 +1925,7 @@
             document.getElementById('fc-current').textContent = currentFlashcardIdx + 1;
             document.getElementById('fc-total').textContent = vocab.length;
             document.getElementById('fc-tag').textContent = item.tag || 'Vocabulary';
-            document.getElementById('fc-japanese').textContent = item.jp || '';
+            document.getElementById('fc-japanese').innerHTML = renderFurigana(item.jp, item.furigana);
             const romajiEl = document.getElementById('fc-romaji');
             romajiEl.textContent = item.romaji || '';
             romajiEl.style.display = showRomaji ? '' : 'none';
@@ -1913,6 +2010,7 @@
                 chatHistory.push({
                     type: 'npc',
                     jp: current.jp,
+                    furigana: current.furigana,
                     romaji: current.romaji,
                     en: current.en
                 });
@@ -1945,7 +2043,7 @@
                     <div class="flex items-start gap-3 max-w-[85%]">
                         <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user-tie"></i></div>
                         <div class="bg-slate-100 dark:bg-neutral-900 p-3.5 rounded-2xl rounded-tl-none space-y-1">
-                            <div class="font-jp font-bold text-base">${esc(entry.jp)}</div>
+                            <div class="font-jp font-bold text-base leading-loose">${renderFurigana(entry.jp, entry.furigana)}</div>
                             ${meta ? `<div class="text-xs text-slate-500 dark:text-neutral-400">${meta}</div>` : ''}
                         </div>
                     </div>`;
@@ -1958,7 +2056,7 @@
                     <div class="flex items-start gap-3 max-w-[85%] ml-auto flex-row-reverse">
                         <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs shrink-0"><i class="fa-solid fa-user"></i></div>
                         <div class="bg-amber-600 text-white p-3.5 rounded-2xl rounded-tr-none space-y-1 text-right">
-                            <div class="font-jp font-bold text-base">${esc(entry.jp)}</div>
+                            <div class="font-jp font-bold text-base leading-loose">${renderFurigana(entry.jp, entry.furigana)}</div>
                         </div>
                     </div>`;
             }
@@ -1982,7 +2080,7 @@
                     : '';
                 return `
                     <button onclick="handleRoleplayChoice(${idx})" class="p-3 bg-slate-50 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200 dark:border-neutral-800 rounded-xl text-left transition flex flex-col gap-1">
-                        <span class="font-jp font-bold text-sm text-slate-900 dark:text-white">${esc(opt.jp)}</span>
+                        <span class="font-jp font-bold text-sm text-slate-900 dark:text-white leading-loose">${renderFurigana(opt.jp, opt.furigana)}</span>
                         ${enPart}
                     </button>`;
             }).join('');
@@ -1999,7 +2097,7 @@
             const chosen = current.options[optIdx];
 
             if (chosen && chosen.correct) {
-                chatHistory.push({ type: 'user', jp: chosen.jp });
+                chatHistory.push({ type: 'user', jp: chosen.jp, furigana: chosen.furigana });
                 renderRoleplay();
                 chatStep++;
                 pendingOptions = null;
@@ -2115,6 +2213,7 @@
             if (!query) return indexed;
             return indexed.filter(({ item }) =>
                 (item.jp || '').toLowerCase().includes(query) ||
+                (item.furigana || '').toLowerCase().includes(query) ||
                 (item.romaji || '').toLowerCase().includes(query) ||
                 (item.en || '').toLowerCase().includes(query)
             );
@@ -2158,7 +2257,7 @@
                     <div class="space-y-1 min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-bold text-slate-400">#${idx + 1}</span>
-                            <div class="font-jp text-lg font-bold">${esc(item.jp)}</div>
+                            <div class="font-jp text-lg font-bold leading-loose">${renderFurigana(item.jp, item.furigana)}</div>
                             ${hasCustom ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider" title="Custom audio attached"><i class="fa-solid fa-microphone-lines mr-1"></i>Custom</span>' : ''}
                         </div>
                         ${metaRow}
@@ -2279,6 +2378,7 @@
             updateTranscriptEnglishUI();
             updateRoleplayEnglishUI();
             updateRomajiUI();
+            updateFuriganaUI();
             applyRomajiToFlashcard();
             applyLessonManagerUI();
 
