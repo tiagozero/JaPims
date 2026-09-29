@@ -25,8 +25,8 @@
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
-        pre::-webkit-scrollbar, #chat-container::-webkit-scrollbar, #modal-lessons-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-        pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
+        pre::-webkit-scrollbar, #chat-container::-webkit-scrollbar, #modal-lessons-scroll::-webkit-scrollbar, #settings-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        pre::-webkit-scrollbar-thumb, #chat-container::-webkit-scrollbar-thumb, #modal-lessons-scroll::-webkit-scrollbar-thumb, #settings-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 8px; }
         .dark body { background-color: #000; }
     </style>
 </head>
@@ -71,6 +71,11 @@
                     title="Toggle Romaji visibility">
                     <i id="romaji-icon" class="fa-solid fa-eye"></i>
                     <span class="hidden sm:inline">Romaji</span>
+                </button>
+                <button onclick="openSettingsModal()" id="settings-btn"
+                    class="p-2 rounded-lg bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800 transition"
+                    title="Settings">
+                    <i class="fa-solid fa-gear"></i>
                 </button>
                 <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-800 transition" title="Toggle Theme">
                     <i id="theme-icon" class="fa-solid fa-moon"></i>
@@ -502,6 +507,91 @@
         </div>
     </div>
 
+    <!-- ============ SETTINGS MODAL ============ -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-gear"></i></div>
+                    <div>
+                        <h3 class="text-lg font-bold">Settings</h3>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Data backup, restore, and exports.</p>
+                    </div>
+                </div>
+                <button onclick="closeSettingsModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition" title="Close">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="settings-scroll" class="overflow-y-auto p-5 space-y-6">
+
+                <!-- Data Backup -->
+                <section class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-database text-rose-500"></i>
+                        <h4 class="font-bold text-base">Data Backup &amp; Restore</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">
+                        Export <span class="font-semibold">all your lessons and preferences</span> as a single JSON file, or restore from a previous backup.
+                        Importing will <span class="font-semibold text-rose-600">replace</span> everything currently saved in this browser.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="exportAllData()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Export All Data
+                        </button>
+                        <label class="cursor-pointer px-4 py-2.5 bg-slate-900 dark:bg-neutral-800 hover:bg-slate-800 dark:hover:bg-neutral-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-upload"></i> Import All Data
+                            <input type="file" accept=".json,application/json" class="hidden" onchange="handleImportAllData(event)">
+                        </label>
+                    </div>
+                    <div id="settings-import-message" class="text-sm font-medium"></div>
+                </section>
+
+                <hr class="border-slate-200 dark:border-neutral-900">
+
+                <!-- Flashcards CSV -->
+                <section class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv text-emerald-500"></i>
+                        <h4 class="font-bold text-base">Flashcards CSV Export</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">
+                        Download your flashcards as a CSV file — compatible with <span class="font-semibold">Anki</span>, <span class="font-semibold">Quizlet</span>, Excel, and Google Sheets.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <select id="csv-lesson-scope" class="flex-1 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                            <option value="__all__">All lessons</option>
+                        </select>
+                        <button onclick="downloadFlashcardsCSV()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-neutral-400">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Columns: <code>Lesson, Tag, Japanese, Romaji, English, Notes</code>. UTF-8 encoded with BOM (Excel-friendly).
+                    </p>
+                </section>
+
+                <hr class="border-slate-200 dark:border-neutral-900">
+
+                <!-- Danger Zone -->
+                <section class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                        <h4 class="font-bold text-base">Danger Zone</h4>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">
+                        This permanently deletes all lessons and preferences from this browser. <span class="font-semibold">Export a backup first!</span>
+                    </p>
+                    <button onclick="clearAllData()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-trash"></i> Clear All Data
+                    </button>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         /* =========================================================
            STATE
@@ -515,6 +605,7 @@
         const MANAGER_KEY = 'pimsleur_lesson_manager_open';
 
         const DASHBOARD_LESSON_LIMIT = 3;
+        const BACKUP_VERSION = 1;
 
         let lessons = [];
         let activeLesson = null;
@@ -743,6 +834,22 @@
             const el = document.getElementById(id);
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        function todayStamp() {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+        function slugify(s) {
+            return String(s || '').toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60) || 'lesson';
+        }
+        function csvEscape(v) {
+            const s = String(v === undefined || v === null ? '' : v);
+            if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+            return s;
+        }
 
         /* =========================================================
            LESSON MANAGER TOGGLE
@@ -808,6 +915,312 @@
             }
             empty.classList.add('hidden');
             grid.innerHTML = lessons.map(lessonCardHtml).join('');
+        }
+
+        /* =========================================================
+           SETTINGS MODAL
+           ========================================================= */
+        function openSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            refreshCSVLessonScope();
+            // Clear any previous messages
+            const msg = document.getElementById('settings-import-message');
+            msg.textContent = '';
+            msg.className = 'text-sm font-medium';
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function refreshCSVLessonScope() {
+            const sel = document.getElementById('csv-lesson-scope');
+            if (!sel) return;
+            const current = sel.value;
+            sel.innerHTML = '<option value="__all__">All lessons</option>' +
+                lessons.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join('');
+            // Try to preserve previous selection if it still exists
+            if (current && [...sel.options].some(o => o.value === current)) {
+                sel.value = current;
+            }
+        }
+
+        function showSettingsMessage(text, type) {
+            const el = document.getElementById('settings-import-message');
+            el.className = 'text-sm font-medium ' + (type === 'error' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400');
+            el.textContent = text;
+        }
+
+        /* =========================================================
+           EXPORT / IMPORT ALL DATA
+           ========================================================= */
+        function exportAllData() {
+            const backup = {
+                app: 'pimsleur-study-hub',
+                version: BACKUP_VERSION,
+                exportedAt: new Date().toISOString(),
+                lessons: lessons,
+                preferences: {
+                    showFlashcardEnglish,
+                    showTranscriptEnglish,
+                    showRoleplayEnglish,
+                    showRomaji,
+                    lessonManagerOpen
+                }
+            };
+
+            const json = JSON.stringify(backup, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pimsleur-backup-${todayStamp()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+            showSettingsMessage(`Exported ${lessons.length} lesson${lessons.length === 1 ? '' : 's'} + preferences.`, 'success');
+        }
+
+        function handleImportAllData(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                let data;
+                try {
+                    data = JSON.parse(e.target.result);
+                } catch (err) {
+                    showSettingsMessage('Invalid JSON — ' + err.message, 'error');
+                    return;
+                }
+                applyImportAllData(data);
+            };
+            reader.onerror = () => showSettingsMessage('Could not read that file.', 'error');
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function applyImportAllData(data) {
+            // Accept two shapes:
+            // 1) { lessons: [...], preferences: {...} }  (our backup format)
+            // 2) [...]                                     (plain array of lessons)
+            let incomingLessons = null;
+            let incomingPrefs = null;
+
+            if (Array.isArray(data)) {
+                incomingLessons = data;
+            } else if (data && typeof data === 'object' && Array.isArray(data.lessons)) {
+                incomingLessons = data.lessons;
+                incomingPrefs = data.preferences || null;
+            } else {
+                showSettingsMessage('This file does not look like a Pimsleur backup.', 'error');
+                return;
+            }
+
+            // Normalize + validate every incoming lesson
+            const normalized = [];
+            for (let i = 0; i < incomingLessons.length; i++) {
+                try {
+                    normalized.push(normalizeLesson(incomingLessons[i]));
+                } catch (err) {
+                    showSettingsMessage(`Lesson #${i + 1} is invalid — ${err.message}`, 'error');
+                    return;
+                }
+            }
+
+            if (!normalized.length) {
+                showSettingsMessage('The backup contains no lessons.', 'error');
+                return;
+            }
+
+            const existingSummary = lessons.length
+                ? `This will REPLACE ${lessons.length} existing lesson${lessons.length === 1 ? '' : 's'} and all preferences.`
+                : 'This will restore your lessons and preferences.';
+            if (!confirm(`${existingSummary}\n\nImport ${normalized.length} lesson${normalized.length === 1 ? '' : 's'} now?`)) {
+                return;
+            }
+
+            // Apply lessons
+            lessons = normalized;
+            persistLessons();
+
+            // Apply preferences if present
+            if (incomingPrefs && typeof incomingPrefs === 'object') {
+                if (typeof incomingPrefs.showFlashcardEnglish === 'boolean') {
+                    showFlashcardEnglish = incomingPrefs.showFlashcardEnglish;
+                    storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0');
+                }
+                if (typeof incomingPrefs.showTranscriptEnglish === 'boolean') {
+                    showTranscriptEnglish = incomingPrefs.showTranscriptEnglish;
+                    storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0');
+                }
+                if (typeof incomingPrefs.showRoleplayEnglish === 'boolean') {
+                    showRoleplayEnglish = incomingPrefs.showRoleplayEnglish;
+                    storageSet(RP_EN_KEY, showRoleplayEnglish ? '1' : '0');
+                }
+                if (typeof incomingPrefs.showRomaji === 'boolean') {
+                    showRomaji = incomingPrefs.showRomaji;
+                    storageSet(ROMAJI_KEY, showRomaji ? '1' : '0');
+                }
+                if (typeof incomingPrefs.lessonManagerOpen === 'boolean') {
+                    lessonManagerOpen = incomingPrefs.lessonManagerOpen;
+                    storageSet(MANAGER_KEY, lessonManagerOpen ? '1' : '0');
+                }
+            }
+
+            // Reset active lesson — keep only if it still exists
+            const activeId = storageGet(ACTIVE_KEY);
+            const stillExists = activeLesson ? lessons.find(l => l.id === activeLesson.id) : null;
+            if (!stillExists) {
+                activeLesson = null;
+                storageSet(ACTIVE_KEY, '');
+            } else {
+                activeLesson = stillExists;
+            }
+
+            // Clear any cached transcript audio (invalid because indices may have shifted)
+            Object.keys(transcriptAudioMap).forEach(key => {
+                URL.revokeObjectURL(transcriptAudioMap[key].url);
+                delete transcriptAudioMap[key];
+            });
+
+            // Refresh UI
+            updateFlashcardEnglishUI();
+            updateTranscriptEnglishUI();
+            updateRoleplayEnglishUI();
+            updateRomajiUI();
+            applyLessonManagerUI();
+            renderLessons();
+            renderStats();
+            renderActiveBanner();
+            refreshLessonViews();
+            refreshCSVLessonScope();
+
+            showSettingsMessage(`Imported ${lessons.length} lesson${lessons.length === 1 ? '' : 's'} successfully.`, 'success');
+        }
+
+        function clearAllData() {
+            if (!lessons.length && !activeLesson) {
+                showSettingsMessage('Nothing to clear — already empty.', 'success');
+                return;
+            }
+            if (!confirm('This will permanently DELETE all lessons and preferences from this browser.\n\nExport a backup first if you have not already.\n\nContinue?')) {
+                return;
+            }
+            if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+
+            // Clear per-lesson transcript audio
+            Object.keys(transcriptAudioMap).forEach(key => {
+                URL.revokeObjectURL(transcriptAudioMap[key].url);
+                delete transcriptAudioMap[key];
+            });
+
+            lessons = [];
+            activeLesson = null;
+            stopCurrentAudio();
+
+            // Reset preferences to defaults
+            showFlashcardEnglish = false;
+            showTranscriptEnglish = false;
+            showRoleplayEnglish = false;
+            showRomaji = true;
+            lessonManagerOpen = false;
+
+            storageSet(STORAGE_KEY, '[]');
+            storageSet(ACTIVE_KEY, '');
+            storageSet(FC_EN_KEY, '0');
+            storageSet(TR_EN_KEY, '0');
+            storageSet(RP_EN_KEY, '0');
+            storageSet(ROMAJI_KEY, '1');
+            storageSet(MANAGER_KEY, '0');
+
+            updateFlashcardEnglishUI();
+            updateTranscriptEnglishUI();
+            updateRoleplayEnglishUI();
+            updateRomajiUI();
+            applyLessonManagerUI();
+            renderLessons();
+            renderStats();
+            renderActiveBanner();
+            refreshLessonViews();
+            refreshCSVLessonScope();
+
+            showSettingsMessage('All data cleared.', 'success');
+        }
+
+        /* =========================================================
+           FLASHCARDS CSV EXPORT
+           ========================================================= */
+        function downloadFlashcardsCSV() {
+            const scope = document.getElementById('csv-lesson-scope').value;
+            let targetLessons;
+            let filenameBase;
+
+            if (scope === '__all__') {
+                targetLessons = lessons.slice();
+                filenameBase = 'pimsleur-flashcards-all';
+            } else {
+                const found = lessons.find(l => l.id === scope);
+                if (!found) {
+                    showSettingsMessage('The selected lesson could not be found.', 'error');
+                    return;
+                }
+                targetLessons = [found];
+                filenameBase = `pimsleur-flashcards-${slugify(found.title)}`;
+            }
+
+            if (!targetLessons.length) {
+                showSettingsMessage('No lessons available to export.', 'error');
+                return;
+            }
+
+            // Header row
+            const rows = [
+                ['Lesson', 'Tag', 'Japanese', 'Romaji', 'English', 'Notes']
+            ];
+
+            let totalCards = 0;
+            targetLessons.forEach(lesson => {
+                (lesson.vocabulary || []).forEach(v => {
+                    rows.push([
+                        lesson.title || '',
+                        v.tag || '',
+                        v.jp || '',
+                        v.romaji || '',
+                        v.en || '',
+                        v.notes || ''
+                    ]);
+                    totalCards++;
+                });
+            });
+
+            if (totalCards === 0) {
+                showSettingsMessage('The selected lesson(s) contain no vocabulary cards.', 'error');
+                return;
+            }
+
+            // Build CSV text with CRLF line endings (best compatibility) and UTF-8 BOM
+            const csv = '\uFEFF' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filenameBase}-${todayStamp()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+            showSettingsMessage(`Exported ${totalCards} flashcard${totalCards === 1 ? '' : 's'} as CSV.`, 'success');
         }
 
         /* =========================================================
@@ -1225,6 +1638,7 @@
             renderStats();
             renderActiveBanner();
             refreshLessonViews();
+            refreshCSVLessonScope();
         }
 
         function exportLesson(id) {
@@ -1242,7 +1656,7 @@
         }
 
         /* =========================================================
-           IMPORT
+           IMPORT (single lesson)
            ========================================================= */
         function handleFileImport(event) {
             const file = event.target.files && event.target.files[0];
@@ -1298,6 +1712,7 @@
             renderStats();
             renderActiveBanner();
             refreshLessonViews();
+            refreshCSVLessonScope();
         }
 
         function showImportMessage(text, type) {
@@ -1829,12 +2244,23 @@
 
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                const modal = document.getElementById('all-lessons-modal');
-                if (modal && !modal.classList.contains('hidden')) closeAllLessonsModal();
+                const modalLessons = document.getElementById('all-lessons-modal');
+                if (modalLessons && !modalLessons.classList.contains('hidden')) {
+                    closeAllLessonsModal();
+                    return;
+                }
+                const modalSettings = document.getElementById('settings-modal');
+                if (modalSettings && !modalSettings.classList.contains('hidden')) {
+                    closeSettingsModal();
+                }
             }
         });
+
         document.getElementById('all-lessons-modal').addEventListener('click', function (e) {
             if (e.target === this) closeAllLessonsModal();
+        });
+        document.getElementById('settings-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeSettingsModal();
         });
 
         /* =========================================================
