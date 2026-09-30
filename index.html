@@ -61,6 +61,70 @@
         .text-5xl ruby rt { font-size: calc(0.5em * var(--furigana-scale)); }
         .text-sm ruby rt { font-size: calc(0.65em * var(--furigana-scale)); }
         .text-lg ruby rt { font-size: calc(0.55em * var(--furigana-scale)); }
+
+        /* ---------- Kaishi term highlighting ---------- */
+        .kaishi-hit {
+            border-radius: 4px;
+            padding: 0 1px;
+            cursor: pointer;
+            transition: background-color .15s ease, box-shadow .15s ease;
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+        }
+        .kaishi-hit.kaishi-new {
+            background-color: rgba(245, 158, 11, .18);
+            box-shadow: inset 0 -0.32em 0 rgba(245, 158, 11, .30);
+        }
+        .kaishi-hit.kaishi-mastered {
+            background-color: rgba(16, 185, 129, .16);
+            box-shadow: inset 0 -0.32em 0 rgba(16, 185, 129, .30);
+        }
+        .kaishi-hit:hover {
+            outline: 2px solid rgba(244, 63, 94, .45);
+            outline-offset: 1px;
+        }
+
+        /* ---------- Kaishi pagination ---------- */
+        .kaishi-page-btn {
+            min-width: 34px;
+            height: 34px;
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s ease;
+            border: 1px solid transparent;
+        }
+        .kaishi-page-btn.kaishi-page-active {
+            background-color: #e11d48;
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(225, 29, 72, .35);
+        }
+        .kaishi-page-btn.kaishi-page-idle {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        .dark .kaishi-page-btn.kaishi-page-idle {
+            background-color: #171717;
+            color: #cbd5e1;
+        }
+        .kaishi-page-btn.kaishi-page-idle:hover { background-color: #e2e8f0; }
+        .dark .kaishi-page-btn.kaishi-page-idle:hover { background-color: #262626; }
+        .kaishi-page-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+        .kaishi-page-ellipsis {
+            min-width: 24px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 700;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
@@ -89,6 +153,9 @@
                 </button>
                 <button onclick="switchTab('kana')" id="nav-kana" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-table-cells"></i> <span class="hidden sm:inline">Kana</span>
+                </button>
+                <button onclick="switchTab('kaishi')" id="nav-kaishi" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-list-check"></i> <span class="hidden sm:inline">Kaishi</span>
                 </button>
                 <button onclick="switchTab('roleplay')" id="nav-roleplay" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-comments"></i> <span class="hidden sm:inline">Roleplay</span>
@@ -522,6 +589,75 @@
             </div>
         </section>
 
+        <!-- ============ KAISHI ============ -->
+        <section id="tab-kaishi" class="tab-content hidden space-y-6">
+            <div class="bg-white dark:bg-neutral-950 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-5">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-rose-500"></i> Kaishi Term List
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+                            Upload a CSV/TSV of terms to highlight them in Flashcards &amp; Transcript. Click a highlighted term to toggle it as mastered.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <label class="cursor-pointer px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv"></i> Upload CSV
+                            <input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" class="hidden" onchange="handleKaishiCSV(event)">
+                        </label>
+                        <button onclick="downloadKaishiTemplate()" class="px-4 py-2.5 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 text-sm font-medium rounded-xl transition flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i> Template
+                        </button>
+                        <button onclick="clearKaishiTerms()" class="px-4 py-2.5 bg-slate-100 dark:bg-neutral-900 hover:bg-rose-100 dark:hover:bg-rose-950/40 hover:text-rose-600 text-slate-700 dark:text-neutral-200 text-sm font-medium rounded-xl transition flex items-center gap-2">
+                            <i class="fa-solid fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div id="kaishi-message" class="text-sm font-medium"></div>
+
+                <div id="kaishi-progress-wrap" class="hidden space-y-2">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-neutral-400">
+                        <span>Mastery progress</span>
+                        <span id="kaishi-progress-text">0 / 0 mastered</span>
+                    </div>
+                    <div class="w-full h-2.5 rounded-full bg-slate-100 dark:bg-neutral-900 overflow-hidden">
+                        <div id="kaishi-progress-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <input id="kaishi-search" type="text" oninput="setKaishiQuery(this.value)" placeholder="Search terms..."
+                        class="flex-1 min-w-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    <div class="flex items-center gap-2">
+                        <button id="kaishi-filter-all" onclick="setKaishiFilter('all')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition">All</button>
+                        <button id="kaishi-filter-learning" onclick="setKaishiFilter('learning')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition">Learning</button>
+                        <button id="kaishi-filter-mastered" onclick="setKaishiFilter('mastered')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition">Mastered</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kaishi-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-file-csv"></i>
+                </div>
+                <h3 class="text-xl font-bold">No terms loaded</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
+                    Upload a CSV or TSV file with one term per line. Columns:
+                    <span class="font-semibold">word</span>, <span class="font-semibold">reading</span>, <span class="font-semibold">meaning</span>.
+                </p>
+                <pre class="inline-block text-left text-xs font-mono bg-slate-900 text-slate-100 rounded-xl p-4 leading-relaxed">私	わたし	I
+水	みず	water
+日本語	にほんご	Japanese language</pre>
+            </div>
+
+            <div id="kaishi-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+            <!-- Pagination -->
+            <div id="kaishi-pagination" class="hidden flex-col lg:flex-row items-center justify-between gap-3 bg-white dark:bg-neutral-950 p-4 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm"></div>
+        </section>
+
         <!-- ============ ROLEPLAY ============ -->
         <section id="tab-roleplay" class="tab-content hidden space-y-6 max-w-3xl mx-auto">
             <div id="roleplay-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
@@ -730,7 +866,7 @@
                         <i class="fa-solid fa-database text-rose-500"></i>
                         <h4 class="font-bold text-base">Data Backup &amp; Restore</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">Export all lessons + preferences as a single JSON, or restore from a backup. Importing will <span class="font-semibold text-rose-600">replace</span> everything.</p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Export all lessons + Kaishi terms + preferences as a single JSON, or restore from a backup. Importing will <span class="font-semibold text-rose-600">replace</span> everything.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button onclick="exportAllData()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-download"></i> Export All Data
@@ -773,7 +909,7 @@
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
                         <h4 class="font-bold text-base">Danger Zone</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">Permanently deletes all lessons and preferences.</p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Permanently deletes all lessons, Kaishi terms and preferences.</p>
                     <button onclick="clearAllData()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2">
                         <i class="fa-solid fa-trash"></i> Clear All Data
                     </button>
@@ -798,10 +934,16 @@
         const FONT_FAMILY_KEY    = 'pimsleur_font_family';
         const FURIGANA_SCALE_KEY = 'pimsleur_furigana_scale';
         const KANA_MODE_KEY      = 'pimsleur_kana_mode';
+        const KAISHI_KEY         = 'pimsleur_kaishi_terms_v1';
+        const KAISHI_PAGE_SIZE_KEY = 'pimsleur_kaishi_page_size';
 
         const DASHBOARD_LESSON_LIMIT = 3;
-        const BACKUP_VERSION = 4;
+        const BACKUP_VERSION = 5;
         const KANA_EXERCISE_MAX = 20;
+
+        // Kaishi pagination — 0 means "show all on one page"
+        const KAISHI_PAGE_SIZE_OPTIONS = [30, 60, 120, 240, 0];
+        const KAISHI_PAGE_SIZE_DEFAULT = 60;
 
         // =========================================================
         // FONT FAMILY CATALOG (10 options)
@@ -902,6 +1044,19 @@
         let kanaChoiceAnswered  = false;
         let kanaChoiceOptions   = [];
 
+        // ---- Kaishi state ----
+        let kaishiTerms = [];        // [{ word, reading, meaning, mastered }]
+        let kaishiMap = {};          // word -> term
+        let kaishiRegex = null;      // global regex built from all words
+        let kaishiFilter = 'all';    // all | learning | mastered
+        let kaishiQuery = '';
+        let kaishiPage = 1;          // current page (1-based)
+        let kaishiPageSize = (function() {
+            const stored = parseInt(storageGet(KAISHI_PAGE_SIZE_KEY), 10);
+            if (!isNaN(stored) && KAISHI_PAGE_SIZE_OPTIONS.indexOf(stored) !== -1) return stored;
+            return KAISHI_PAGE_SIZE_DEFAULT;
+        })();
+
         // =========================================================
         // HELPERS
         // =========================================================
@@ -909,6 +1064,9 @@
             return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function(c) {
                 return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
             });
+        }
+        function escapeRegExp(s) {
+            return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
         function storageGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
         function storageSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -1024,6 +1182,458 @@
             if (!showFurigana || !furigana || !String(furigana).trim()) return esc(plain);
             const safe = esc(String(furigana));
             return safe.replace(/\{([^{}|]+)\|([^{}|]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>');
+        }
+
+        // =========================================================
+        // KAISHI — TERM STORE
+        // =========================================================
+        function loadKaishi() {
+            try {
+                const raw = JSON.parse(storageGet(KAISHI_KEY) || '[]');
+                kaishiTerms = Array.isArray(raw)
+                    ? raw.filter(function(t) { return t && t.word; }).map(function(t) {
+                        return {
+                            word: String(t.word),
+                            reading: String(t.reading || ''),
+                            meaning: String(t.meaning || ''),
+                            mastered: !!t.mastered
+                        };
+                    })
+                    : [];
+            } catch (e) { kaishiTerms = []; }
+            rebuildKaishiIndex();
+        }
+        function saveKaishi() { storageSet(KAISHI_KEY, JSON.stringify(kaishiTerms)); }
+
+        function rebuildKaishiIndex() {
+            kaishiMap = {};
+            kaishiTerms.forEach(function(t) { if (!kaishiMap[t.word]) kaishiMap[t.word] = t; });
+
+            const uniq = Array.from(new Set(kaishiTerms.map(function(t) { return t.word; }).filter(Boolean)));
+            uniq.sort(function(a, b) { return b.length - a.length; });
+
+            kaishiRegex = uniq.length
+                ? new RegExp(uniq.map(escapeRegExp).join('|'), 'g')
+                : null;
+        }
+
+        // ---- CSV / TSV parsing ----
+        function parseDelimited(text, delim) {
+            const rows = [];
+            let row = [];
+            let field = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (text[i + 1] === '"') { field += '"'; i++; }
+                        else inQuotes = false;
+                    } else {
+                        field += c;
+                    }
+                } else {
+                    if (c === '"') inQuotes = true;
+                    else if (c === delim) { row.push(field); field = ''; }
+                    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+                    else if (c === '\r') { /* skip */ }
+                    else field += c;
+                }
+            }
+            if (field.length || row.length) { row.push(field); rows.push(row); }
+            return rows;
+        }
+
+        function parseKaishiCSV(text) {
+            const firstLine = String(text).split(/\r?\n/)[0] || '';
+            const delim = firstLine.indexOf('\t') !== -1 ? '\t' : ',';
+            const rows = parseDelimited(String(text), delim);
+            const out = [];
+
+            rows.forEach(function(r, i) {
+                const cells = (r || []).map(function(c) { return String(c === undefined || c === null ? '' : c).trim(); });
+                if (!cells.length) return;
+                if (cells.every(function(c) { return !c; })) return;
+                // Skip a header row
+                if (i === 0 && /^(word|kanji|term|expression|vocab|vocabulary|japanese)$/i.test(cells[0])) return;
+
+                const word = cells[0];
+                if (!word) return;
+
+                out.push({
+                    word: word,
+                    reading: cells[1] || '',
+                    meaning: cells[2] || '',
+                    mastered: false
+                });
+            });
+            return out;
+        }
+
+        function handleKaishiCSV(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parsed = parseKaishiCSV(String(e.target.result || ''));
+                if (!parsed.length) {
+                    showKaishiMessage('No terms found. Expected lines like "私<TAB>わたし<TAB>I".', 'error');
+                    return;
+                }
+                const index = {};
+                kaishiTerms.forEach(function(t) { index[t.word] = t; });
+
+                let added = 0, updated = 0;
+                parsed.forEach(function(t) {
+                    const existing = index[t.word];
+                    if (existing) {
+                        let changed = false;
+                        if (t.reading && existing.reading !== t.reading) { existing.reading = t.reading; changed = true; }
+                        if (t.meaning && existing.meaning !== t.meaning) { existing.meaning = t.meaning; changed = true; }
+                        if (changed) updated++;
+                    } else {
+                        index[t.word] = t;
+                        kaishiTerms.push(t);
+                        added++;
+                    }
+                });
+
+                saveKaishi();
+                rebuildKaishiIndex();
+                kaishiPage = 1;
+                renderKaishiTab();
+                refreshTermHighlights();
+
+                showKaishiMessage(
+                    'Imported ' + added + ' new term' + (added === 1 ? '' : 's') +
+                    (updated ? ' · updated ' + updated : '') +
+                    '. Total: ' + kaishiTerms.length + ' terms.',
+                    'success'
+                );
+            };
+            reader.onerror = function() { showKaishiMessage('Could not read that file.', 'error'); };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function showKaishiMessage(text, type) {
+            const el = document.getElementById('kaishi-message');
+            if (!el) return;
+            el.className = 'text-sm font-medium ' + (type === 'error'
+                ? 'text-rose-600 dark:text-rose-400'
+                : 'text-emerald-600 dark:text-emerald-400');
+            el.textContent = text;
+        }
+
+        function downloadKaishiTemplate() {
+            const sample = '私\tわたし\tI\n水\tみず\twater\n日本語\tにほんご\tJapanese language\n';
+            const blob = new Blob(['\uFEFF' + sample], { type: 'text/tab-separated-values;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kaishi-terms-template.tsv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+        }
+
+        function clearKaishiTerms() {
+            if (!kaishiTerms.length) { showKaishiMessage('The term list is already empty.', 'success'); return; }
+            if (!confirm('Remove all ' + kaishiTerms.length + ' Kaishi terms?\n\nMastery progress will be lost.')) return;
+            kaishiTerms = [];
+            saveKaishi();
+            rebuildKaishiIndex();
+            kaishiPage = 1;
+            renderKaishiTab();
+            refreshTermHighlights();
+            showKaishiMessage('All terms removed.', 'success');
+        }
+
+        // ---- Mastery ----
+        function toggleKaishiMastery(word) {
+            const t = kaishiMap[word];
+            if (!t) return;
+            t.mastered = !t.mastered;
+            saveKaishi();
+
+            // Update every rendered occurrence in place
+            const nodes = document.querySelectorAll('[data-kaishi]');
+            for (let i = 0; i < nodes.length; i++) {
+                const el = nodes[i];
+                if (el.getAttribute('data-kaishi') === word) {
+                    el.classList.toggle('kaishi-mastered', t.mastered);
+                    el.classList.toggle('kaishi-new', !t.mastered);
+                }
+            }
+            renderKaishiTab();
+        }
+
+        function refreshTermHighlights() {
+            if (!activeLesson) return;
+            const vocab = activeLesson.vocabulary || [];
+            if (vocab.length) updateFlashcard();
+            renderTranscriptList();
+        }
+
+        // ---- Highlighting engine ----
+        function highlightTermsInText(text) {
+            if (!kaishiRegex || !text) return text;
+            kaishiRegex.lastIndex = 0;
+            return text.replace(kaishiRegex, function(match) {
+                const t = kaishiMap[match];
+                if (!t) return match;
+                const tip = [t.reading, t.meaning].filter(Boolean).join(' — ');
+                return '<span class="kaishi-hit ' + (t.mastered ? 'kaishi-mastered' : 'kaishi-new') + '"' +
+                       ' data-kaishi="' + esc(match) + '"' +
+                       ' title="' + esc((tip ? tip + ' · ' : '') + 'click to toggle mastered') + '">' +
+                       match +
+                       '</span>';
+            });
+        }
+
+        function highlightTermsInHtml(html) {
+            if (!kaishiRegex || !html) return html;
+            const parts = String(html).split(/(<[^>]*>)/);
+            const out = [];
+            let rtDepth = 0;
+            for (let i = 0; i < parts.length; i++) {
+                const p = parts[i];
+                if (!p) continue;
+                if (p.charAt(0) === '<') {
+                    if (/^<rt[\s>]/i.test(p)) rtDepth++;
+                    else if (/^<\/rt>/i.test(p)) rtDepth = Math.max(0, rtDepth - 1);
+                    out.push(p);
+                } else if (rtDepth > 0) {
+                    // Never highlight inside furigana readings
+                    out.push(p);
+                } else {
+                    out.push(highlightTermsInText(p));
+                }
+            }
+            return out.join('');
+        }
+
+        // ---- Kaishi tab UI ----
+        function setKaishiFilter(f) {
+            if (['all', 'learning', 'mastered'].indexOf(f) === -1) return;
+            if (kaishiFilter === f) return;
+            kaishiFilter = f;
+            kaishiPage = 1;              // reset to first page on filter change
+            renderKaishiTab();
+        }
+        function setKaishiQuery(v) {
+            const next = String(v || '');
+            if (kaishiQuery === next) return;
+            kaishiQuery = next;
+            kaishiPage = 1;              // reset to first page while typing
+            renderKaishiList();
+        }
+
+        function setKaishiPage(n) {
+            const page = parseInt(n, 10);
+            if (isNaN(page)) return;
+            kaishiPage = Math.max(1, page);
+            renderKaishiList();
+            // Keep the list header in view when paging
+            const listEl = document.getElementById('kaishi-list');
+            if (listEl) {
+                const y = listEl.getBoundingClientRect().top + window.pageYOffset - 90;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        }
+        function kaishiPrevPage() { setKaishiPage(kaishiPage - 1); }
+        function kaishiNextPage() { setKaishiPage(kaishiPage + 1); }
+        function changeKaishiPageSize(value) {
+            const n = parseInt(value, 10);
+            kaishiPageSize = (n === 0 || (n > 0 && KAISHI_PAGE_SIZE_OPTIONS.indexOf(n) !== -1)) ? n : KAISHI_PAGE_SIZE_DEFAULT;
+            storageSet(KAISHI_PAGE_SIZE_KEY, String(kaishiPageSize));
+            kaishiPage = 1;
+            renderKaishiList();
+        }
+
+        // Windowed page-number list: 1 … 4 5 [6] 7 8 … 42
+        function buildKaishiPageNumbers(current, total) {
+            const pages = [];
+            const span = 2;
+            if (total <= 7) {
+                for (let i = 1; i <= total; i++) pages.push(i);
+                return pages;
+            }
+            pages.push(1);
+            const start = Math.max(2, current - span);
+            const end = Math.min(total - 1, current + span);
+            if (start > 2) pages.push('…');
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (end < total - 1) pages.push('…');
+            pages.push(total);
+            return pages;
+        }
+
+        function renderKaishiTab() {
+            const total = kaishiTerms.length;
+            const mastered = kaishiTerms.filter(function(t) { return t.mastered; }).length;
+
+            const progressWrap = document.getElementById('kaishi-progress-wrap');
+            if (progressWrap) {
+                if (total) {
+                    progressWrap.classList.remove('hidden');
+                    const pct = Math.round((mastered / total) * 100);
+                    const bar = document.getElementById('kaishi-progress-bar');
+                    if (bar) bar.style.width = pct + '%';
+                    const txt = document.getElementById('kaishi-progress-text');
+                    if (txt) txt.textContent = mastered + ' / ' + total + ' mastered (' + pct + '%)';
+                } else {
+                    progressWrap.classList.add('hidden');
+                }
+            }
+
+            const emptyEl = document.getElementById('kaishi-empty');
+            if (emptyEl) emptyEl.classList.toggle('hidden', total > 0);
+
+            ['all', 'learning', 'mastered'].forEach(function(f) {
+                const btn = document.getElementById('kaishi-filter-' + f);
+                if (!btn) return;
+                if (f === kaishiFilter) {
+                    btn.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
+                    btn.classList.remove('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+                } else {
+                    btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm');
+                    btn.classList.add('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+                }
+            });
+
+            renderKaishiList();
+        }
+
+        function kaishiRowHtml(t) {
+            const attr = esc(t.word);
+            const meta = [t.reading, t.meaning].filter(Boolean).join(' · ');
+            return '' +
+                '<div class="flex items-center gap-3 p-3 rounded-xl border transition ' +
+                    (t.mastered
+                        ? 'border-emerald-500/40 bg-emerald-500/5'
+                        : 'border-slate-200 dark:border-neutral-900 bg-white dark:bg-neutral-950') + '">' +
+                    '<button type="button" data-word="' + attr + '" title="Toggle mastered" ' +
+                        'onclick="toggleKaishiMastery(this.getAttribute(\'data-word\'))" ' +
+                        'class="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center border transition ' +
+                        (t.mastered
+                            ? 'bg-emerald-600 border-emerald-600 text-white'
+                            : 'bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-400 hover:border-emerald-500 hover:text-emerald-500') + '">' +
+                        '<i class="fa-solid fa-check"></i>' +
+                    '</button>' +
+                    '<div class="min-w-0 flex-1">' +
+                        '<div class="font-jp font-bold text-lg leading-tight truncate">' + esc(t.word) + '</div>' +
+                        (meta ? '<div class="text-xs text-slate-500 dark:text-neutral-400 truncate">' + esc(meta) + '</div>' : '') +
+                    '</div>' +
+                '</div>';
+        }
+
+        function renderKaishiList() {
+            const listEl = document.getElementById('kaishi-list');
+            const pagEl = document.getElementById('kaishi-pagination');
+            if (!listEl || !pagEl) return;
+
+            // ---- 1. Filter + search ----
+            let items = kaishiTerms.slice();
+            if (kaishiFilter === 'mastered') items = items.filter(function(t) { return t.mastered; });
+            else if (kaishiFilter === 'learning') items = items.filter(function(t) { return !t.mastered; });
+
+            const q = kaishiQuery.toLowerCase().trim();
+            if (q) {
+                items = items.filter(function(t) {
+                    return (t.word + ' ' + t.reading + ' ' + t.meaning).toLowerCase().indexOf(q) !== -1;
+                });
+            }
+
+            // ---- 2. No matches ----
+            if (!items.length) {
+                listEl.innerHTML = '<div class="col-span-full text-center py-8 text-sm text-slate-500 dark:text-neutral-400">' +
+                    (kaishiTerms.length ? 'No terms match this filter.' : '') + '</div>';
+                pagEl.classList.add('hidden');
+                pagEl.classList.remove('flex');
+                pagEl.innerHTML = '';
+                return;
+            }
+
+            // ---- 3. Paginate ----
+            const perPage = kaishiPageSize > 0 ? kaishiPageSize : items.length;
+            const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+            if (kaishiPage > totalPages) kaishiPage = totalPages;
+            if (kaishiPage < 1) kaishiPage = 1;
+
+            const startIdx = (kaishiPage - 1) * perPage;
+            const pageItems = items.slice(startIdx, startIdx + perPage);
+
+            listEl.innerHTML = pageItems.map(kaishiRowHtml).join('');
+
+            // ---- 4. Render pagination controls ----
+            renderKaishiPagination(items.length, totalPages, startIdx, pageItems.length);
+        }
+
+        function renderKaishiPagination(totalItems, totalPages, startIdx, shownCount) {
+            const pagEl = document.getElementById('kaishi-pagination');
+            if (!pagEl) return;
+
+            pagEl.classList.remove('hidden');
+            pagEl.classList.add('flex');
+
+            const from = totalItems ? startIdx + 1 : 0;
+            const to = startIdx + shownCount;
+
+            // Page size selector
+            const sizeOptions = KAISHI_PAGE_SIZE_OPTIONS.map(function(n) {
+                const label = n === 0 ? 'Show all' : n + ' / page';
+                return '<option value="' + n + '"' + (n === kaishiPageSize ? ' selected' : '') + '>' + label + '</option>';
+            }).join('');
+
+            const sizeSelect =
+                '<div class="flex items-center gap-2">' +
+                    '<label class="text-xs font-semibold text-slate-500 dark:text-neutral-400 whitespace-nowrap">Per page</label>' +
+                    '<select onchange="changeKaishiPageSize(this.value)" ' +
+                        'class="bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-2.5 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500">' +
+                        sizeOptions +
+                    '</select>' +
+                '</div>';
+
+            const info =
+                '<div class="text-xs text-slate-500 dark:text-neutral-400 text-center lg:text-left">' +
+                    'Showing <strong class="text-slate-700 dark:text-neutral-200">' + from + '</strong>' +
+                    '–<strong class="text-slate-700 dark:text-neutral-200">' + to + '</strong>' +
+                    ' of <strong class="text-slate-700 dark:text-neutral-200">' + totalItems + '</strong> terms' +
+                '</div>';
+
+            // If everything fits on a single page, only show info + size selector
+            if (totalPages <= 1) {
+                pagEl.innerHTML = info + sizeSelect;
+                return;
+            }
+
+            const pageNumbers = buildKaishiPageNumbers(kaishiPage, totalPages);
+            const numberButtons = pageNumbers.map(function(p) {
+                if (p === '…') return '<span class="kaishi-page-ellipsis">…</span>';
+                const active = p === kaishiPage;
+                return '<button type="button" onclick="setKaishiPage(' + p + ')" ' +
+                    'class="kaishi-page-btn ' + (active ? 'kaishi-page-active' : 'kaishi-page-idle') + '" ' +
+                    'title="Page ' + p + '">' + p + '</button>';
+            }).join('');
+
+            const nav =
+                '<div class="flex flex-wrap items-center justify-center gap-1.5">' +
+                    '<button type="button" onclick="kaishiPrevPage()" ' + (kaishiPage <= 1 ? 'disabled' : '') + ' ' +
+                        'class="kaishi-page-btn kaishi-page-idle" title="Previous page">' +
+                        '<i class="fa-solid fa-chevron-left"></i>' +
+                    '</button>' +
+                    numberButtons +
+                    '<button type="button" onclick="kaishiNextPage()" ' + (kaishiPage >= totalPages ? 'disabled' : '') + ' ' +
+                        'class="kaishi-page-btn kaishi-page-idle" title="Next page">' +
+                        '<i class="fa-solid fa-chevron-right"></i>' +
+                    '</button>' +
+                '</div>';
+
+            pagEl.innerHTML =
+                info +
+                '<div class="flex flex-wrap items-center justify-center gap-3">' + nav + sizeSelect + '</div>';
         }
 
         // =========================================================
@@ -1235,7 +1845,21 @@
             '// Every kana (hiragana / katakana) found anywhere in the lesson',
             '// is collected automatically — vocabulary, transcript, quiz and',
             '// roleplay text all feed the Kana grid + drills. No extra fields',
-            '// are required in the JSON.'
+            '// are required in the JSON.',
+            '',
+            '// ============================================================',
+            '// KAISHI TAB',
+            '// ============================================================',
+            '// Upload a CSV / TSV with one term per line:',
+            '//   word <TAB> reading <TAB> meaning',
+            '//   e.g.  私    わたし    I',
+            '// Every matching term is highlighted in the Flashcards and',
+            '// Transcript tabs. Click a highlighted term (or its checkbox',
+            '// in the Kaishi tab) to mark it as mastered.',
+            '//',
+            '// The Kaishi list is paginated — use the per-page selector',
+            '// (30 / 60 / 120 / 240 / Show all) and the page buttons to',
+            '// browse every term.'
         ].join('\n');
 
         // =========================================================
@@ -1336,6 +1960,7 @@
                 version: BACKUP_VERSION,
                 exportedAt: new Date().toISOString(),
                 lessons: lessons,
+                kaishi: kaishiTerms,
                 preferences: {
                     showFlashcardEnglish: showFlashcardEnglish,
                     showTranscriptEnglish: showTranscriptEnglish,
@@ -1346,7 +1971,8 @@
                     darkModeEnabled: darkModeEnabled,
                     fontFamilyId: fontFamilyId,
                     furiganaScale: furiganaScale,
-                    kanaMode: kanaMode
+                    kanaMode: kanaMode,
+                    kaishiPageSize: kaishiPageSize
                 }
             };
             const json = JSON.stringify(backup, null, 2);
@@ -1359,7 +1985,8 @@
             a.click();
             a.remove();
             setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-            showSettingsMessage('Exported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' + preferences.', 'success');
+            showSettingsMessage('Exported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') +
+                ' + ' + kaishiTerms.length + ' Kaishi term' + (kaishiTerms.length === 1 ? '' : 's') + '.', 'success');
         }
         function handleImportAllData(event) {
             const file = event.target.files && event.target.files[0];
@@ -1378,10 +2005,13 @@
         function applyImportAllData(data) {
             let incomingLessons = null;
             let incomingPrefs = null;
+            let incomingKaishi = null;
             if (Array.isArray(data)) incomingLessons = data;
             else if (data && typeof data === 'object' && Array.isArray(data.lessons)) {
                 incomingLessons = data.lessons;
                 incomingPrefs = data.preferences || null;
+                incomingKaishi = Array.isArray(data.kaishi) ? data.kaishi
+                    : (Array.isArray(data.kaishiTerms) ? data.kaishiTerms : null);
             } else {
                 showSettingsMessage('This file does not look like a Pimsleur backup.', 'error');
                 return;
@@ -1401,6 +2031,19 @@
             lessons = normalized;
             persistLessons();
 
+            if (incomingKaishi) {
+                kaishiTerms = incomingKaishi.filter(function(t) { return t && t.word; }).map(function(t) {
+                    return {
+                        word: String(t.word),
+                        reading: String(t.reading || ''),
+                        meaning: String(t.meaning || ''),
+                        mastered: !!t.mastered
+                    };
+                });
+                saveKaishi();
+                rebuildKaishiIndex();
+            }
+
             if (incomingPrefs && typeof incomingPrefs === 'object') {
                 if (typeof incomingPrefs.showFlashcardEnglish === 'boolean') { showFlashcardEnglish = incomingPrefs.showFlashcardEnglish; storageSet(FC_EN_KEY, showFlashcardEnglish ? '1' : '0'); }
                 if (typeof incomingPrefs.showTranscriptEnglish === 'boolean') { showTranscriptEnglish = incomingPrefs.showTranscriptEnglish; storageSet(TR_EN_KEY, showTranscriptEnglish ? '1' : '0'); }
@@ -1412,6 +2055,10 @@
                 if (typeof incomingPrefs.fontFamilyId === 'string' && FONT_FAMILIES.some(function(f) { return f.id === incomingPrefs.fontFamilyId; })) { fontFamilyId = incomingPrefs.fontFamilyId; storageSet(FONT_FAMILY_KEY, fontFamilyId); }
                 if (typeof incomingPrefs.furiganaScale === 'number') { furiganaScale = clamp(incomingPrefs.furiganaScale, 0.5, 2); storageSet(FURIGANA_SCALE_KEY, String(furiganaScale)); }
                 if (typeof incomingPrefs.kanaMode === 'string' && ['grid','fill','choice'].indexOf(incomingPrefs.kanaMode) !== -1) { kanaMode = incomingPrefs.kanaMode; storageSet(KANA_MODE_KEY, kanaMode); }
+                if (typeof incomingPrefs.kaishiPageSize === 'number' && KAISHI_PAGE_SIZE_OPTIONS.indexOf(incomingPrefs.kaishiPageSize) !== -1) {
+                    kaishiPageSize = incomingPrefs.kaishiPageSize;
+                    storageSet(KAISHI_PAGE_SIZE_KEY, String(kaishiPageSize));
+                }
             }
 
             const stillExists = activeLesson ? lessons.find(function(l) { return l.id === activeLesson.id; }) : null;
@@ -1423,6 +2070,7 @@
                 delete transcriptAudioMap[key];
             });
 
+            kaishiPage = 1;
             applyDarkMode();
             applyTypography();
             updateFlashcardEnglishUI();
@@ -1436,11 +2084,12 @@
             renderActiveBanner();
             refreshLessonViews();
             refreshCSVLessonScope();
+            renderKaishiTab();
             showSettingsMessage('Imported ' + lessons.length + ' lesson' + (lessons.length === 1 ? '' : 's') + ' successfully.', 'success');
         }
         function clearAllData() {
-            if (!lessons.length && !activeLesson) { showSettingsMessage('Nothing to clear - already empty.', 'success'); return; }
-            if (!confirm('This will permanently DELETE all lessons and preferences.\n\nContinue?')) return;
+            if (!lessons.length && !activeLesson && !kaishiTerms.length) { showSettingsMessage('Nothing to clear - already empty.', 'success'); return; }
+            if (!confirm('This will permanently DELETE all lessons, Kaishi terms and preferences.\n\nContinue?')) return;
             if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
 
             Object.keys(transcriptAudioMap).forEach(function(key) {
@@ -1449,6 +2098,10 @@
             });
             lessons = [];
             activeLesson = null;
+            kaishiTerms = [];
+            kaishiMap = {};
+            kaishiRegex = null;
+            kaishiPage = 1;
             stopCurrentAudio();
             showFlashcardEnglish = false;
             showTranscriptEnglish = false;
@@ -1474,6 +2127,7 @@
             storageSet(FONT_FAMILY_KEY, 'inter');
             storageSet(FURIGANA_SCALE_KEY, '1');
             storageSet(KANA_MODE_KEY, 'grid');
+            storageSet(KAISHI_KEY, '[]');
 
             applyDarkMode();
             applyTypography();
@@ -1488,6 +2142,7 @@
             renderActiveBanner();
             refreshLessonViews();
             refreshCSVLessonScope();
+            renderKaishiTab();
             showSettingsMessage('All data cleared.', 'success');
         }
 
@@ -1778,6 +2433,7 @@
             }
             if (tabId === 'roleplay') initRoleplay();
             if (tabId === 'kana') renderKanaTab();
+            if (tabId === 'kaishi') renderKaishiTab();
         }
 
         // =========================================================
@@ -2490,7 +3146,8 @@
             document.getElementById('fc-current').textContent = currentFlashcardIdx + 1;
             document.getElementById('fc-total').textContent = vocab.length;
             document.getElementById('fc-tag').textContent = item.tag || 'Vocabulary';
-            document.getElementById('fc-japanese').innerHTML = renderFurigana(item.jp, item.furigana);
+            document.getElementById('fc-japanese').innerHTML =
+                highlightTermsInHtml(renderFurigana(item.jp, item.furigana));
             const romajiEl = document.getElementById('fc-romaji');
             romajiEl.textContent = item.romaji || '';
             romajiEl.style.display = showRomaji ? '' : 'none';
@@ -2789,7 +3446,7 @@
                         '<div class="space-y-1 min-w-0 flex-1">' +
                             '<div class="flex flex-wrap items-center gap-2">' +
                                 '<span class="text-xs font-bold text-slate-400">#' + (idx + 1) + '</span>' +
-                                '<div class="font-jp text-lg font-bold leading-loose">' + renderFurigana(item.jp, item.furigana) + '</div>' +
+                                '<div class="font-jp text-lg font-bold leading-loose">' + highlightTermsInHtml(renderFurigana(item.jp, item.furigana)) + '</div>' +
                                 (hasCustom ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider"><i class="fa-solid fa-microphone-lines mr-1"></i>Custom</span>' : '') +
                             '</div>' +
                             metaRow +
@@ -2835,8 +3492,20 @@
         // =========================================================
         // EVENT DELEGATION
         // =========================================================
+        // Capture-phase handler: clicking a highlighted Kaishi term toggles
+        // mastery and must not bubble up (e.g. to flip the flashcard).
         document.addEventListener('click', function(e) {
-            const uploadPlayEl = e.target.closest('[data-play-uploaded]');
+            const target = e.target;
+            if (!target || typeof target.closest !== 'function') return;
+            const hit = target.closest('[data-kaishi]');
+            if (!hit) return;
+            e.preventDefault();
+            e.stopPropagation();
+            toggleKaishiMastery(hit.getAttribute('data-kaishi'));
+        }, true);
+
+        document.addEventListener('click', function(e) {
+            const uploadPlayEl = e.target.closest ? e.target.closest('[data-play-uploaded]') : null;
             if (uploadPlayEl) {
                 e.stopPropagation();
                 const idx = parseInt(uploadPlayEl.getAttribute('data-play-uploaded'), 10);
@@ -2884,6 +3553,7 @@
                 applyTypography(); // re-sync UI now that options exist
 
                 loadFromStorage();
+                loadKaishi();
                 renderLessons();
                 renderStats();
                 renderActiveBanner();
@@ -2898,7 +3568,11 @@
 
                 refreshLessonViews();
                 applyKanaModeUI();
+                renderKaishiTab();
+
                 console.log('[Pimsleur Study Hub] Initialized. Lessons:', lessons.length,
+                    '| Kaishi terms:', kaishiTerms.length,
+                    '| Kaishi page size:', kaishiPageSize,
                     '| Dark:', darkModeEnabled,
                     '| Font:', fontFamilyId,
                     '| Furigana:', Math.round(furiganaScale * 100) + '%',
