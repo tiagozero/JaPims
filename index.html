@@ -87,6 +87,9 @@
                 <button onclick="switchTab('flashcards')" id="nav-flashcards" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-clone"></i> <span class="hidden sm:inline">Flashcards</span>
                 </button>
+                <button onclick="switchTab('kana')" id="nav-kana" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-table-cells"></i> <span class="hidden sm:inline">Kana</span>
+                </button>
                 <button onclick="switchTab('roleplay')" id="nav-roleplay" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-comments"></i> <span class="hidden sm:inline">Roleplay</span>
                 </button>
@@ -132,7 +135,7 @@
                     <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-700 dark:text-rose-300 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Lesson Library</span>
                     <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">Your Pimsleur Study Dashboard</h2>
                     <p class="text-slate-600 dark:text-neutral-300 text-sm sm:text-base leading-relaxed mb-6">
-                        Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, roleplay scenarios, quizzes and a full transcript explorer.
+                        Import a lesson as a <span class="font-semibold">.json</span> file to unlock flashcards, kana drills, roleplay scenarios, quizzes and a full transcript explorer.
                         Furigana readings display above kanji via ruby annotations, and you can attach per-sentence audio in the Transcript tab.
                     </p>
                     <div class="flex flex-wrap gap-3">
@@ -355,6 +358,166 @@
                     <button onclick="nextCard()" class="px-4 py-2.5 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-900 font-medium rounded-xl shadow-sm transition flex items-center gap-2">
                         Next <i class="fa-solid fa-arrow-right"></i>
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ KANA ============ -->
+        <section id="tab-kana" class="tab-content hidden space-y-6">
+            <div id="kana-empty" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-neutral-900 text-slate-400 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-table-cells"></i>
+                </div>
+                <h3 class="text-xl font-bold">No kana found</h3>
+                <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
+                    Load a lesson that contains Japanese text — the kana grid and drills are built automatically from every
+                    kana that appears in the vocabulary, transcript, quiz and roleplay content.
+                </p>
+                <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Go to Lesson Dashboard</button>
+            </div>
+
+            <div id="kana-body" class="space-y-6">
+                <!-- Toolbar -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-neutral-950 p-5 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-rose-500"></i> Kana Explorer
+                        </h2>
+                        <p id="kana-summary" class="text-xs text-slate-500 dark:text-neutral-400">Every kana that appears in this lesson.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="kana-mode-grid" onclick="setKanaMode('grid')"
+                            class="px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-table-cells"></i> Grid
+                        </button>
+                        <button id="kana-mode-fill" onclick="setKanaMode('fill')"
+                            class="px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-keyboard"></i> Fill in the Blank
+                        </button>
+                        <button id="kana-mode-choice" onclick="setKanaMode('choice')"
+                            class="px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check"></i> Multiple Choice
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GRID VIEW -->
+                <div id="kana-view-grid" class="space-y-6">
+                    <div id="kana-grid-hiragana-wrap" class="bg-white dark:bg-neutral-950 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-base">Hiragana</h3>
+                            <span id="kana-grid-hiragana-count" class="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold">0</span>
+                        </div>
+                        <div id="kana-grid-hiragana" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2"></div>
+                    </div>
+
+                    <div id="kana-grid-katakana-wrap" class="bg-white dark:bg-neutral-950 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-base">Katakana</h3>
+                            <span id="kana-grid-katakana-count" class="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold">0</span>
+                        </div>
+                        <div id="kana-grid-katakana" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- FILL IN THE BLANK -->
+                <div id="kana-view-fill" class="hidden space-y-6 max-w-3xl mx-auto w-full">
+                    <div id="kana-fill-none" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center text-sm text-slate-500 dark:text-neutral-400">
+                        Not enough kana in this lesson to run this drill.
+                    </div>
+
+                    <div id="kana-fill-card" class="bg-white dark:bg-neutral-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-6">
+                        <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-neutral-900">
+                            <div>
+                                <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Exercise 1</span>
+                                <h2 class="text-xl font-bold tracking-tight">Fill in the Blank</h2>
+                            </div>
+                            <div class="text-right">
+                                <div id="kana-fill-progress" class="text-sm font-semibold text-slate-500">Question 1 of 1</div>
+                                <div id="kana-fill-score" class="text-xs font-semibold text-emerald-600">Score: 0</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center space-y-3 py-2">
+                            <div class="text-xs uppercase tracking-wider font-bold text-slate-400">
+                                Write the romaji reading for this <span id="kana-fill-script" class="text-rose-500">Hiragana</span> character
+                            </div>
+                            <div id="kana-fill-kana" class="font-jp text-6xl sm:text-7xl font-bold text-slate-900 dark:text-white leading-none py-2">か</div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-xl mx-auto">
+                            <input id="kana-fill-input" type="text" autocomplete="off" spellcheck="false" inputmode="latin" placeholder="romaji…"
+                                class="flex-1 min-w-0 text-center text-xl sm:text-2xl lowercase bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+                            <button id="kana-fill-check" onclick="checkKanaFill()" class="px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl transition whitespace-nowrap">Check</button>
+                            <button id="kana-fill-reveal" onclick="revealKanaFill()" class="px-5 py-3 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 font-medium rounded-xl transition whitespace-nowrap">Show Answer</button>
+                            <button id="kana-fill-next" onclick="nextKanaFill()" class="hidden px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition whitespace-nowrap">Next <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+
+                        <div id="kana-fill-feedback" class="text-center text-sm font-medium min-h-[28px]"></div>
+
+                        <div class="flex items-center justify-center gap-3 text-[11px] text-slate-400 pt-2 border-t border-slate-100 dark:border-neutral-900">
+                            <span><i class="fa-solid fa-keyboard mr-1"></i>Type the romaji reading (e.g. "ka", "shi", "tsu").</span>
+                            <button onclick="startKanaFill()" class="underline hover:text-rose-500 font-semibold">Restart drill</button>
+                        </div>
+                    </div>
+
+                    <div id="kana-fill-score-card" class="hidden bg-white dark:bg-neutral-950 p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm text-center space-y-4">
+                        <div class="w-16 h-16 bg-emerald-500/10 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-3xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Drill Complete!</h3>
+                        <p id="kana-fill-final" class="text-slate-600 dark:text-neutral-300 text-lg"></p>
+                        <button onclick="startKanaFill()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Practice Again</button>
+                    </div>
+                </div>
+
+                <!-- MULTIPLE CHOICE -->
+                <div id="kana-view-choice" class="hidden space-y-6 max-w-3xl mx-auto w-full">
+                    <div id="kana-choice-none" class="hidden bg-white dark:bg-neutral-950 p-10 rounded-2xl border border-slate-200 dark:border-neutral-900 text-center text-sm text-slate-500 dark:text-neutral-400">
+                        Not enough kana in this lesson to run this drill.
+                    </div>
+
+                    <div id="kana-choice-card" class="bg-white dark:bg-neutral-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm space-y-6">
+                        <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-neutral-900">
+                            <div>
+                                <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">Exercise 2</span>
+                                <h2 class="text-xl font-bold tracking-tight">Multiple Choice</h2>
+                            </div>
+                            <div class="text-right">
+                                <div id="kana-choice-progress" class="text-sm font-semibold text-slate-500">Question 1 of 1</div>
+                                <div id="kana-choice-score" class="text-xs font-semibold text-emerald-600">Score: 0</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center space-y-2 py-1">
+                            <div class="text-xs uppercase tracking-wider font-bold text-slate-400">
+                                What is the reading of this <span id="kana-choice-script" class="text-rose-500">Hiragana</span>?
+                            </div>
+                            <div id="kana-choice-kana" class="font-jp text-6xl sm:text-7xl font-bold text-slate-900 dark:text-white leading-none py-3">か</div>
+                        </div>
+
+                        <div id="kana-choice-options" class="grid grid-cols-2 gap-2.5"></div>
+
+                        <div class="flex items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-neutral-900">
+                            <div id="kana-choice-feedback" class="text-sm font-medium"></div>
+                            <button id="kana-choice-next" onclick="nextKanaChoice()" class="hidden px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition whitespace-nowrap">
+                                Next Question <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+
+                        <div class="text-center text-[11px] text-slate-400 pt-1">
+                            <button onclick="startKanaChoice()" class="underline hover:text-rose-500 font-semibold">Restart drill</button>
+                        </div>
+                    </div>
+
+                    <div id="kana-choice-score-card" class="hidden bg-white dark:bg-neutral-950 p-8 rounded-2xl border border-slate-200 dark:border-neutral-900 shadow-sm text-center space-y-4">
+                        <div class="w-16 h-16 bg-emerald-500/10 text-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-3xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Drill Complete!</h3>
+                        <p id="kana-choice-final" class="text-slate-600 dark:text-neutral-300 text-lg"></p>
+                        <button onclick="startKanaChoice()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow-md transition">Practice Again</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -634,9 +797,11 @@
         const DARK_MODE_KEY      = 'pimsleur_dark_mode';
         const FONT_FAMILY_KEY    = 'pimsleur_font_family';
         const FURIGANA_SCALE_KEY = 'pimsleur_furigana_scale';
+        const KANA_MODE_KEY      = 'pimsleur_kana_mode';
 
         const DASHBOARD_LESSON_LIMIT = 3;
         const BACKUP_VERSION = 4;
+        const KANA_EXERCISE_MAX = 20;
 
         // =========================================================
         // FONT FAMILY CATALOG (10 options)
@@ -653,6 +818,46 @@
             { id: 'georgia',      label: 'Georgia (system serif)',          body: "Georgia, 'Noto Serif JP', serif",             jp: "'Noto Serif JP', serif" },
             { id: 'jetbrains',    label: 'JetBrains Mono (mono)',           body: "'JetBrains Mono', 'Noto Sans JP', monospace", jp: "'Noto Sans JP', sans-serif" }
         ];
+
+        // =========================================================
+        // KANA DATA
+        // =========================================================
+        const HIRAGANA_TABLE = [
+            ['あ','a'],['い','i'],['う','u'],['え','e'],['お','o'],
+            ['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko'],
+            ['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go'],
+            ['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so'],
+            ['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo'],
+            ['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to'],
+            ['だ','da'],['ぢ','ji'],['づ','zu'],['で','de'],['ど','do'],
+            ['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no'],
+            ['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho'],
+            ['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo'],
+            ['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po'],
+            ['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo'],
+            ['や','ya'],['ゆ','yu'],['よ','yo'],
+            ['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro'],
+            ['わ','wa'],['を','o'],['ん','n'],
+            ['ぁ','a'],['ぃ','i'],['ぅ','u'],['ぇ','e'],['ぉ','o'],
+            ['ゃ','ya'],['ゅ','yu'],['ょ','yo'],
+            ['っ','small tsu'],
+            ['ゔ','vu']
+        ];
+
+        function hiraToKata(ch) {
+            const c = ch.charCodeAt(0);
+            if (c >= 0x3041 && c <= 0x3096) return String.fromCharCode(c + 0x60);
+            return ch;
+        }
+
+        const KANA_TABLE = [];
+        HIRAGANA_TABLE.forEach(function(p) { KANA_TABLE.push({ k: p[0], r: p[1], s: 'hiragana' }); });
+        HIRAGANA_TABLE.forEach(function(p) { KANA_TABLE.push({ k: hiraToKata(p[0]), r: p[1], s: 'katakana' }); });
+
+        const KANA_INFO = {};
+        KANA_TABLE.forEach(function(e, i) { KANA_INFO[e.k] = { r: e.r, s: e.s, order: i }; });
+
+        const KANA_CHAR_TEST = /[\u3041-\u3096\u30A1-\u30F6]/;
 
         // =========================================================
         // STATE
@@ -683,6 +888,20 @@
         const transcriptAudioMap = {};
         let currentAudioEl = null;
 
+        // ---- Kana state ----
+        let kanaMode            = storageGet(KANA_MODE_KEY) || 'grid';
+        let kanaPool            = [];
+        let kanaPoolSignature   = null;
+        let kanaFillQueue       = [];
+        let kanaFillIdx         = 0;
+        let kanaFillScore       = 0;
+        let kanaFillChecked     = false;
+        let kanaChoiceQueue     = [];
+        let kanaChoiceIdx       = 0;
+        let kanaChoiceScore     = 0;
+        let kanaChoiceAnswered  = false;
+        let kanaChoiceOptions   = [];
+
         // =========================================================
         // HELPERS
         // =========================================================
@@ -711,6 +930,20 @@
             if (currentAudioEl) { try { currentAudioEl.pause(); } catch (e) {} currentAudioEl = null; }
         }
         function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function stripFuriganaMarkup(s) {
+            return String(s || '').replace(/\{([^{}|]+)\|([^{}|]+)\}/g, '$1');
+        }
+        function normalizeRomaji(s) {
+            return String(s || '').toLowerCase().trim().replace(/[\s\-_]/g, '');
+        }
 
         // =========================================================
         // THEME
@@ -994,7 +1227,15 @@
             '//',
             '// The "furigana" field is completely optional. If omitted, the',
             '// plain "jp" text is shown. A global toggle in the header',
-            '// can hide all furigana at any time.'
+            '// can hide all furigana at any time.',
+            '',
+            '// ============================================================',
+            '// KANA TAB',
+            '// ============================================================',
+            '// Every kana (hiragana / katakana) found anywhere in the lesson',
+            '// is collected automatically — vocabulary, transcript, quiz and',
+            '// roleplay text all feed the Kana grid + drills. No extra fields',
+            '// are required in the JSON.'
         ].join('\n');
 
         // =========================================================
@@ -1104,7 +1345,8 @@
                     lessonManagerOpen: lessonManagerOpen,
                     darkModeEnabled: darkModeEnabled,
                     fontFamilyId: fontFamilyId,
-                    furiganaScale: furiganaScale
+                    furiganaScale: furiganaScale,
+                    kanaMode: kanaMode
                 }
             };
             const json = JSON.stringify(backup, null, 2);
@@ -1169,6 +1411,7 @@
                 if (typeof incomingPrefs.darkModeEnabled === 'boolean') { darkModeEnabled = incomingPrefs.darkModeEnabled; storageSet(DARK_MODE_KEY, darkModeEnabled ? '1' : '0'); }
                 if (typeof incomingPrefs.fontFamilyId === 'string' && FONT_FAMILIES.some(function(f) { return f.id === incomingPrefs.fontFamilyId; })) { fontFamilyId = incomingPrefs.fontFamilyId; storageSet(FONT_FAMILY_KEY, fontFamilyId); }
                 if (typeof incomingPrefs.furiganaScale === 'number') { furiganaScale = clamp(incomingPrefs.furiganaScale, 0.5, 2); storageSet(FURIGANA_SCALE_KEY, String(furiganaScale)); }
+                if (typeof incomingPrefs.kanaMode === 'string' && ['grid','fill','choice'].indexOf(incomingPrefs.kanaMode) !== -1) { kanaMode = incomingPrefs.kanaMode; storageSet(KANA_MODE_KEY, kanaMode); }
             }
 
             const stillExists = activeLesson ? lessons.find(function(l) { return l.id === activeLesson.id; }) : null;
@@ -1216,6 +1459,8 @@
             darkModeEnabled = false;
             fontFamilyId = 'inter';
             furiganaScale = 1;
+            kanaMode = 'grid';
+            kanaPoolSignature = null;
 
             storageSet(STORAGE_KEY, '[]');
             storageSet(ACTIVE_KEY, '');
@@ -1228,6 +1473,7 @@
             storageSet(DARK_MODE_KEY, '0');
             storageSet(FONT_FAMILY_KEY, 'inter');
             storageSet(FURIGANA_SCALE_KEY, '1');
+            storageSet(KANA_MODE_KEY, 'grid');
 
             applyDarkMode();
             applyTypography();
@@ -1531,6 +1777,7 @@
                 activeNav.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
             }
             if (tabId === 'roleplay') initRoleplay();
+            if (tabId === 'kana') renderKanaTab();
         }
 
         // =========================================================
@@ -1790,6 +2037,421 @@
         }
 
         // =========================================================
+        // KANA — COLLECTION
+        // =========================================================
+        function collectKanaFromLesson(lesson) {
+            const counts = {};
+            const examples = {};
+            if (!lesson) return { counts: counts, examples: examples };
+
+            const rawStrings = [];
+            const seen = {};
+            const push = function(s) {
+                if (typeof s !== 'string') return;
+                const t = s.trim();
+                if (!t) return;
+                if (seen[t]) return;
+                seen[t] = true;
+                rawStrings.push(t);
+            };
+
+            (lesson.vocabulary || []).forEach(function(v) { push(v.jp); push(v.furigana); });
+            (lesson.transcript || []).forEach(function(t) { push(t.jp); push(t.furigana); });
+            (lesson.quiz || []).forEach(function(q) {
+                push(q.q);
+                (q.options || []).forEach(push);
+            });
+            (lesson.scenarios || []).forEach(function(s) {
+                (s.steps || []).forEach(function(st) {
+                    push(st.jp); push(st.furigana);
+                    (st.options || []).forEach(function(o) { push(o.jp); push(o.furigana); });
+                });
+            });
+
+            rawStrings.forEach(function(raw) {
+                const clean = stripFuriganaMarkup(raw);
+                Array.from(raw).forEach(function(ch) {
+                    if (!KANA_INFO[ch]) return;
+                    counts[ch] = (counts[ch] || 0) + 1;
+                    const cur = examples[ch];
+                    if (!cur || clean.length < cur.length) examples[ch] = clean;
+                });
+            });
+
+            return { counts: counts, examples: examples };
+        }
+
+        // =========================================================
+        // KANA — MODE SWITCHING
+        // =========================================================
+        function setKanaMode(mode) {
+            if (['grid', 'fill', 'choice'].indexOf(mode) === -1) return;
+            kanaMode = mode;
+            storageSet(KANA_MODE_KEY, mode);
+            applyKanaModeUI();
+        }
+        function applyKanaModeUI() {
+            ['grid', 'fill', 'choice'].forEach(function(m) {
+                const btn = document.getElementById('kana-mode-' + m);
+                if (!btn) return;
+                if (m === kanaMode) {
+                    btn.classList.add('bg-rose-600', 'text-white', 'shadow-sm');
+                    btn.classList.remove('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+                } else {
+                    btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm');
+                    btn.classList.add('bg-slate-100', 'dark:bg-neutral-900', 'text-slate-600', 'dark:text-neutral-300');
+                }
+            });
+            const g = document.getElementById('kana-view-grid');
+            const f = document.getElementById('kana-view-fill');
+            const c = document.getElementById('kana-view-choice');
+            if (g) g.classList.toggle('hidden', kanaMode !== 'grid');
+            if (f) f.classList.toggle('hidden', kanaMode !== 'fill');
+            if (c) c.classList.toggle('hidden', kanaMode !== 'choice');
+        }
+
+        // =========================================================
+        // KANA — MAIN RENDER
+        // =========================================================
+        function kanaCardHtml(entry) {
+            const ex = entry.example ? (entry.example.length > 44 ? entry.example.slice(0, 44) + '…' : entry.example) : '';
+            const title = entry.romaji + (ex ? ' — ' + ex : '');
+            return '' +
+                '<div title="' + esc(title) + '" ' +
+                    'class="relative flex flex-col items-center justify-center gap-0.5 py-2.5 px-1 rounded-xl bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900">' +
+                    '<span class="font-jp text-2xl sm:text-3xl font-bold leading-none text-slate-900 dark:text-white">' + esc(entry.ch) + '</span>' +
+                    '<span class="text-[10px] font-semibold text-slate-500 dark:text-neutral-400 lowercase">' + esc(entry.romaji) + '</span>' +
+                    (entry.count > 1 ? '<span class="absolute top-1 right-1 px-1 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[9px] font-bold leading-4">' + entry.count + '</span>' : '') +
+                '</div>';
+        }
+
+        function renderKanaGridSection(script, entries) {
+            const wrap = document.getElementById('kana-grid-' + script + '-wrap');
+            const grid = document.getElementById('kana-grid-' + script);
+            const countEl = document.getElementById('kana-grid-' + script + '-count');
+            if (!wrap || !grid) return;
+            if (!entries.length) { wrap.classList.add('hidden'); grid.innerHTML = ''; return; }
+            wrap.classList.remove('hidden');
+            if (countEl) countEl.textContent = entries.length;
+            grid.innerHTML = entries.map(kanaCardHtml).join('');
+        }
+
+        function renderKanaTab() {
+            const data = collectKanaFromLesson(activeLesson);
+            const entries = Object.keys(data.counts).map(function(ch) {
+                const info = KANA_INFO[ch];
+                return {
+                    ch: ch,
+                    romaji: info.r,
+                    script: info.s,
+                    order: info.order,
+                    count: data.counts[ch],
+                    example: data.examples[ch] || ''
+                };
+            });
+
+            const hira = entries.filter(function(e) { return e.script === 'hiragana'; })
+                               .sort(function(a, b) { return a.order - b.order; });
+            const kata = entries.filter(function(e) { return e.script === 'katakana'; })
+                               .sort(function(a, b) { return a.order - b.order; });
+
+            const has = entries.length > 0;
+            const emptyEl = document.getElementById('kana-empty');
+            const bodyEl = document.getElementById('kana-body');
+            if (emptyEl) emptyEl.classList.toggle('hidden', has);
+            if (bodyEl) bodyEl.classList.toggle('hidden', !has);
+
+            kanaPool = entries
+                .filter(function(e) { return /^[a-z]+$/.test(e.romaji); })
+                .sort(function(a, b) { return a.order - b.order; })
+                .map(function(e) { return e.ch; });
+
+            const sig = (activeLesson ? activeLesson.id : 'none') + '|' + kanaPool.join(',');
+            if (sig !== kanaPoolSignature) {
+                kanaPoolSignature = sig;
+                startKanaFill();
+                startKanaChoice();
+            }
+
+            applyKanaModeUI();
+
+            if (!has) return;
+
+            const summaryEl = document.getElementById('kana-summary');
+            if (summaryEl) {
+                summaryEl.textContent = entries.length + ' unique kana · ' +
+                    hira.length + ' hiragana · ' + kata.length + ' katakana — from ' +
+                    (activeLesson ? activeLesson.title : '');
+            }
+
+            renderKanaGridSection('hiragana', hira);
+            renderKanaGridSection('katakana', kata);
+        }
+
+        // =========================================================
+        // KANA — EXERCISE 1 : FILL IN THE BLANK
+        // =========================================================
+        function startKanaFill() {
+            const pool = shuffleArray(kanaPool);
+            kanaFillQueue = pool.slice(0, Math.min(pool.length, KANA_EXERCISE_MAX));
+            kanaFillIdx = 0;
+            kanaFillScore = 0;
+            kanaFillChecked = false;
+            renderKanaFill();
+        }
+
+        function setKanaFillInputState(state) {
+            const el = document.getElementById('kana-fill-input');
+            if (!el) return;
+            el.classList.remove('border-emerald-500', 'border-rose-500', 'border-slate-200', 'dark:border-neutral-800');
+            if (state === 'ok') el.classList.add('border-emerald-500');
+            else if (state === 'bad') el.classList.add('border-rose-500');
+            else el.classList.add('border-slate-200', 'dark:border-neutral-800');
+        }
+
+        function renderKanaFill() {
+            const card = document.getElementById('kana-fill-card');
+            const scoreCard = document.getElementById('kana-fill-score-card');
+            const none = document.getElementById('kana-fill-none');
+            if (!card || !scoreCard || !none) return;
+
+            const total = kanaFillQueue.length;
+            if (!total) {
+                card.classList.add('hidden');
+                scoreCard.classList.add('hidden');
+                none.classList.remove('hidden');
+                return;
+            }
+            none.classList.add('hidden');
+
+            if (kanaFillIdx >= total) {
+                card.classList.add('hidden');
+                scoreCard.classList.remove('hidden');
+                document.getElementById('kana-fill-final').textContent =
+                    'You scored ' + kanaFillScore + ' out of ' + total + '.';
+                return;
+            }
+
+            scoreCard.classList.add('hidden');
+            card.classList.remove('hidden');
+
+            const ch = kanaFillQueue[kanaFillIdx];
+            const info = KANA_INFO[ch];
+
+            document.getElementById('kana-fill-progress').textContent = 'Question ' + (kanaFillIdx + 1) + ' of ' + total;
+            document.getElementById('kana-fill-score').textContent = 'Score: ' + kanaFillScore;
+            document.getElementById('kana-fill-script').textContent = info.s === 'katakana' ? 'Katakana' : 'Hiragana';
+            document.getElementById('kana-fill-kana').textContent = ch;
+
+            const input = document.getElementById('kana-fill-input');
+            input.value = '';
+            input.disabled = false;
+            setKanaFillInputState('');
+
+            document.getElementById('kana-fill-feedback').innerHTML = '';
+            document.getElementById('kana-fill-check').classList.remove('hidden');
+            document.getElementById('kana-fill-reveal').classList.remove('hidden');
+            document.getElementById('kana-fill-next').classList.add('hidden');
+
+            kanaFillChecked = false;
+            setTimeout(function() { try { input.focus(); } catch (e) {} }, 60);
+        }
+
+        function checkKanaFill() {
+            if (kanaFillChecked) return;
+            const total = kanaFillQueue.length;
+            if (!total || kanaFillIdx >= total) return;
+
+            const ch = kanaFillQueue[kanaFillIdx];
+            const info = KANA_INFO[ch];
+            const input = document.getElementById('kana-fill-input');
+            const answer = String(input.value || '').trim();
+
+            if (!answer) {
+                document.getElementById('kana-fill-feedback').innerHTML =
+                    '<span class="text-slate-500 dark:text-neutral-400">Type the romaji reading first.</span>';
+                try { input.focus(); } catch (e) {}
+                return;
+            }
+
+            const ok = normalizeRomaji(answer) === normalizeRomaji(info.r);
+
+            kanaFillChecked = true;
+            input.disabled = true;
+            setKanaFillInputState(ok ? 'ok' : 'bad');
+
+            if (ok) {
+                kanaFillScore++;
+                document.getElementById('kana-fill-feedback').innerHTML =
+                    '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Correct!</span> ' +
+                    '<span class="font-jp text-2xl font-bold text-slate-900 dark:text-white align-middle">' + esc(ch) + '</span> ' +
+                    '<span class="text-slate-500 dark:text-neutral-400 font-semibold">= ' + esc(info.r) + '</span>';
+            } else {
+                document.getElementById('kana-fill-feedback').innerHTML =
+                    '<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>Not quite — the answer is</span> ' +
+                    '<span class="font-bold text-slate-900 dark:text-white align-middle">' + esc(info.r) + '</span>';
+            }
+
+            document.getElementById('kana-fill-score').textContent = 'Score: ' + kanaFillScore;
+            document.getElementById('kana-fill-check').classList.add('hidden');
+            document.getElementById('kana-fill-reveal').classList.add('hidden');
+            document.getElementById('kana-fill-next').classList.remove('hidden');
+        }
+
+        function revealKanaFill() {
+            if (kanaFillChecked) return;
+            const total = kanaFillQueue.length;
+            if (!total || kanaFillIdx >= total) return;
+
+            const ch = kanaFillQueue[kanaFillIdx];
+            const info = KANA_INFO[ch];
+            kanaFillChecked = true;
+
+            const input = document.getElementById('kana-fill-input');
+            input.disabled = true;
+            setKanaFillInputState('');
+
+            document.getElementById('kana-fill-feedback').innerHTML =
+                '<span class="text-slate-500 dark:text-neutral-400 font-semibold">Answer:</span> ' +
+                '<span class="font-jp text-2xl font-bold text-slate-900 dark:text-white align-middle">' + esc(ch) + '</span> ' +
+                '<span class="text-slate-500 dark:text-neutral-400 font-semibold">= ' + esc(info.r) + '</span>';
+
+            document.getElementById('kana-fill-check').classList.add('hidden');
+            document.getElementById('kana-fill-reveal').classList.add('hidden');
+            document.getElementById('kana-fill-next').classList.remove('hidden');
+        }
+
+        function nextKanaFill() {
+            kanaFillIdx++;
+            kanaFillChecked = false;
+            renderKanaFill();
+        }
+
+        // =========================================================
+        // KANA — EXERCISE 2 : MULTIPLE CHOICE
+        // =========================================================
+        function buildKanaChoiceOptions(ch) {
+            const correct = KANA_INFO[ch].r;
+            const pool = [];
+
+            kanaPool.forEach(function(k) {
+                const r = KANA_INFO[k] && KANA_INFO[k].r;
+                if (!r || r === correct) return;
+                if (pool.indexOf(r) === -1) pool.push(r);
+            });
+
+            if (pool.length < 3) {
+                KANA_TABLE.forEach(function(e) {
+                    if (!/^[a-z]+$/.test(e.r)) return;
+                    if (e.r === correct) return;
+                    if (pool.indexOf(e.r) !== -1) return;
+                    pool.push(e.r);
+                });
+            }
+
+            const distractors = shuffleArray(pool).slice(0, 3);
+            return shuffleArray(distractors.concat([correct]));
+        }
+
+        function startKanaChoice() {
+            const pool = shuffleArray(kanaPool);
+            kanaChoiceQueue = pool.slice(0, Math.min(pool.length, KANA_EXERCISE_MAX));
+            kanaChoiceIdx = 0;
+            kanaChoiceScore = 0;
+            kanaChoiceAnswered = false;
+            kanaChoiceOptions = [];
+            renderKanaChoice();
+        }
+
+        function renderKanaChoice() {
+            const card = document.getElementById('kana-choice-card');
+            const scoreCard = document.getElementById('kana-choice-score-card');
+            const none = document.getElementById('kana-choice-none');
+            if (!card || !scoreCard || !none) return;
+
+            const total = kanaChoiceQueue.length;
+            if (!total) {
+                card.classList.add('hidden');
+                scoreCard.classList.add('hidden');
+                none.classList.remove('hidden');
+                return;
+            }
+            none.classList.add('hidden');
+
+            if (kanaChoiceIdx >= total) {
+                card.classList.add('hidden');
+                scoreCard.classList.remove('hidden');
+                document.getElementById('kana-choice-final').textContent =
+                    'You scored ' + kanaChoiceScore + ' out of ' + total + '.';
+                return;
+            }
+
+            scoreCard.classList.add('hidden');
+            card.classList.remove('hidden');
+
+            const ch = kanaChoiceQueue[kanaChoiceIdx];
+            const info = KANA_INFO[ch];
+
+            document.getElementById('kana-choice-progress').textContent = 'Question ' + (kanaChoiceIdx + 1) + ' of ' + total;
+            document.getElementById('kana-choice-score').textContent = 'Score: ' + kanaChoiceScore;
+            document.getElementById('kana-choice-script').textContent = info.s === 'katakana' ? 'Katakana' : 'Hiragana';
+            document.getElementById('kana-choice-kana').textContent = ch;
+            document.getElementById('kana-choice-feedback').innerHTML = '';
+            document.getElementById('kana-choice-next').classList.add('hidden');
+
+            kanaChoiceOptions = buildKanaChoiceOptions(ch);
+            kanaChoiceAnswered = false;
+
+            document.getElementById('kana-choice-options').innerHTML = kanaChoiceOptions.map(function(r, i) {
+                return '' +
+                    '<button type="button" onclick="handleKanaChoice(' + i + ')" ' +
+                        'class="w-full p-4 rounded-xl bg-slate-50 dark:bg-neutral-900/50 hover:bg-slate-100 dark:hover:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-center font-bold text-base transition">' +
+                        esc(r) +
+                    '</button>';
+            }).join('');
+        }
+
+        function handleKanaChoice(selectedIdx) {
+            if (kanaChoiceAnswered) return;
+            const total = kanaChoiceQueue.length;
+            if (!total || kanaChoiceIdx >= total) return;
+
+            const ch = kanaChoiceQueue[kanaChoiceIdx];
+            const correct = KANA_INFO[ch].r;
+            const chosen = kanaChoiceOptions[selectedIdx];
+            kanaChoiceAnswered = true;
+
+            const btns = document.getElementById('kana-choice-options').children;
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].disabled = true;
+                if (kanaChoiceOptions[i] === correct) {
+                    btns[i].classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-300');
+                } else if (i === selectedIdx) {
+                    btns[i].classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-700', 'dark:text-rose-300');
+                }
+            }
+
+            if (chosen === correct) {
+                kanaChoiceScore++;
+                document.getElementById('kana-choice-feedback').innerHTML =
+                    '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Correct!</span>';
+            } else {
+                document.getElementById('kana-choice-feedback').innerHTML =
+                    '<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>Incorrect — it reads</span> ' +
+                    '<span class="font-bold text-slate-900 dark:text-white">' + esc(correct) + '</span>';
+            }
+
+            document.getElementById('kana-choice-score').textContent = 'Score: ' + kanaChoiceScore;
+            document.getElementById('kana-choice-next').classList.remove('hidden');
+        }
+
+        function nextKanaChoice() {
+            kanaChoiceIdx++;
+            kanaChoiceAnswered = false;
+            renderKanaChoice();
+        }
+
+        // =========================================================
         // REFRESH ALL
         // =========================================================
         function refreshLessonViews() {
@@ -1813,6 +2475,8 @@
             renderTranscript();
             populateScenarioSelect();
             initRoleplay();
+
+            renderKanaTab();
         }
 
         // =========================================================
@@ -2192,6 +2856,18 @@
         const modalSettingsEl = document.getElementById('settings-modal');
         if (modalSettingsEl) modalSettingsEl.addEventListener('click', function(e) { if (e.target === this) closeSettingsModal(); });
 
+        // Enter key inside the kana fill input
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('kana-fill-input');
+            if (!input) return;
+            input.addEventListener('keydown', function(e) {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (kanaFillChecked) nextKanaFill();
+                else checkKanaFill();
+            });
+        });
+
         // =========================================================
         // INIT
         // =========================================================
@@ -2221,10 +2897,12 @@
                 applyLessonManagerUI();
 
                 refreshLessonViews();
+                applyKanaModeUI();
                 console.log('[Pimsleur Study Hub] Initialized. Lessons:', lessons.length,
                     '| Dark:', darkModeEnabled,
                     '| Font:', fontFamilyId,
-                    '| Furigana:', Math.round(furiganaScale * 100) + '%');
+                    '| Furigana:', Math.round(furiganaScale * 100) + '%',
+                    '| Kana mode:', kanaMode);
             } catch (err) {
                 console.error('[Pimsleur Study Hub] Init error:', err);
                 alert('Initialization error: ' + err.message);
