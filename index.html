@@ -174,7 +174,7 @@
                     <i class="fa-solid fa-torii-gate"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">Pimsleur Japanese</h1>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent"><span>Pimsleur</span> <span id="app-title-lang">Japanese</span></h1>
                     <p class="text-xs text-slate-500 dark:text-neutral-400 font-medium flex items-center gap-1.5">
                         <span>Lesson Study Hub</span>
                         <span id="active-lesson-badge" class="hidden px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold truncate max-w-[180px]"></span>
@@ -207,6 +207,24 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <div class="relative" id="lang-switcher">
+                    <button onclick="toggleLangMenu(event)" id="lang-btn"
+                        class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-slate-100 dark:bg-neutral-900 text-slate-700 dark:text-neutral-200 hover:bg-slate-200 dark:hover:bg-neutral-800"
+                        title="Switch or add a language" aria-haspopup="true" aria-expanded="false">
+                        <span id="lang-btn-flag" class="text-base leading-none">🇯🇵</span>
+                        <span id="lang-btn-name" class="hidden sm:inline max-w-[110px] truncate">Japanese</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
+                    </button>
+                    <div id="lang-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-xl shadow-2xl p-1.5 z-[70]">
+                        <div class="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">Study language</div>
+                        <div id="lang-menu-list" class="max-h-64 overflow-y-auto modal-scroll"></div>
+                        <div class="border-t border-slate-200 dark:border-neutral-900 mt-1 pt-1">
+                            <button onclick="openLangAddModal()" class="w-full text-left px-2.5 py-2 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-xs"></i> Add language
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <button onclick="toggleFurigana()" id="furigana-toggle"
                     class="px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400"
                     title="Toggle Furigana (readings above kanji)">
@@ -997,6 +1015,54 @@
     </div>
 
     <!-- ============ SETTINGS MODAL ============ -->
+    <div id="lang-add-modal" class="hidden fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-language"></i></div>
+                    <div>
+                        <h3 class="text-lg font-bold">Add a language</h3>
+                        <p class="text-xs text-slate-500 dark:text-neutral-400">Each language keeps its own courses, lessons &amp; Kaishi terms.</p>
+                    </div>
+                </div>
+                <button onclick="closeLangAddModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-900 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="modal-scroll overflow-y-auto p-5 space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Quick pick</label>
+                    <div id="lang-presets" class="flex flex-wrap gap-1.5 mt-2"></div>
+                </div>
+                <div class="grid grid-cols-[72px_1fr] gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Flag</label>
+                        <input id="lang-add-flag" type="text" maxlength="8" placeholder="🌐"
+                            class="mt-2 w-full text-center text-xl bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-2 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Name (English)</label>
+                        <input id="lang-add-name" type="text" maxlength="40" placeholder="e.g. Spanish"
+                            class="mt-2 w-full bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 dark:text-neutral-300 uppercase tracking-wider">Native name <span class="normal-case font-normal text-slate-400">(optional)</span></label>
+                    <input id="lang-add-native" type="text" maxlength="40" placeholder="e.g. Español"
+                        class="mt-2 w-full bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                <p class="text-[11px] leading-relaxed text-slate-500 dark:text-neutral-400">
+                    Lessons use the same JSON format: put the target-language text in <code class="font-mono">jp</code>,
+                    its pronunciation/romanization in <code class="font-mono">romaji</code>, and the translation in <code class="font-mono">en</code>.
+                    Kana and furigana tools are only shown for Japanese.
+                </p>
+                <div id="lang-add-error" class="text-sm font-medium text-rose-600 dark:text-rose-400"></div>
+            </div>
+            <div class="flex justify-end gap-2 p-5 border-t border-slate-200 dark:border-neutral-900 shrink-0">
+                <button onclick="closeLangAddModal()" class="px-4 py-2.5 bg-slate-100 dark:bg-neutral-900 hover:bg-slate-200 dark:hover:bg-neutral-800 text-slate-700 dark:text-neutral-200 text-sm font-medium rounded-xl transition">Cancel</button>
+                <button onclick="submitAddLanguage()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-plus"></i> Add &amp; switch</button>
+            </div>
+        </div>
+    </div>
+
     <div id="settings-modal" class="hidden fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white dark:bg-neutral-950 rounded-2xl border border-slate-200 dark:border-neutral-900 w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-neutral-900 shrink-0">
@@ -1091,7 +1157,7 @@
                             <i class="fa-solid fa-file-csv"></i> Download CSV
                         </button>
                     </div>
-                    <p class="text-[11px] text-slate-500 dark:text-neutral-400">Columns: Lesson, Tag, Japanese, Furigana, Romaji, English, Notes.</p>
+                    <p class="text-[11px] text-slate-500 dark:text-neutral-400">Columns: Lesson, Tag, <span class="lang-name">Japanese</span>, Furigana, Romaji, English, Notes.</p>
                 </section>
 
                 <hr class="border-slate-200 dark:border-neutral-900">
@@ -1101,7 +1167,7 @@
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
                         <h4 class="font-bold text-base">Danger Zone</h4>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-neutral-400">Permanently deletes all courses, lessons, Kaishi terms and preferences.</p>
+                    <p class="text-xs text-slate-500 dark:text-neutral-400">Permanently deletes all courses, lessons, Kaishi terms and preferences for the <strong class="lang-name">Japanese</strong> workspace. Other languages are not affected.</p>
                     <button onclick="clearAllData()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl shadow-md transition flex items-center gap-2">
                         <i class="fa-solid fa-trash"></i> Clear All Data
                     </button>
@@ -1114,9 +1180,9 @@
         // =========================================================
         // STORAGE KEYS
         // =========================================================
-        const STORAGE_KEY        = 'pimsleur_lessons_v2';
-        const COURSES_KEY        = 'pimsleur_courses_v1';
-        const ACTIVE_KEY         = 'pimsleur_active_lesson_v2';
+        let STORAGE_KEY        = 'pimsleur_lessons_v2';
+        let COURSES_KEY        = 'pimsleur_courses_v1';
+        let ACTIVE_KEY         = 'pimsleur_active_lesson_v2';
         const FC_EN_KEY          = 'pimsleur_show_fc_english';
         const TR_EN_KEY          = 'pimsleur_show_tr_english';
         const RP_EN_KEY          = 'pimsleur_show_rp_english';
@@ -1127,7 +1193,7 @@
         const FONT_FAMILY_KEY    = 'pimsleur_font_family';
         const FURIGANA_SCALE_KEY = 'pimsleur_furigana_scale';
         const KANA_MODE_KEY      = 'pimsleur_kana_mode';
-        const KAISHI_KEY         = 'pimsleur_kaishi_terms_v1';
+        let KAISHI_KEY         = 'pimsleur_kaishi_terms_v1';
         const KAISHI_PAGE_SIZE_KEY = 'pimsleur_kaishi_page_size';
 
         const BACKUP_VERSION = 6;
@@ -1146,6 +1212,244 @@
         const LESSON_COVER_MAX_W = 320;
         const LESSON_COVER_MAX_H = 220;
         const LESSON_COVER_QUALITY = 0.7;
+
+        // =========================================================
+        // LANGUAGES (each language is its own workspace)
+        // =========================================================
+        const LANGS_KEY        = 'pimsleur_languages_v1';
+        const CURRENT_LANG_KEY = 'pimsleur_current_language_v1';
+        const BASE_KEYS = {
+            lessons: 'pimsleur_lessons_v2',
+            courses: 'pimsleur_courses_v1',
+            active:  'pimsleur_active_lesson_v2',
+            kaishi:  'pimsleur_kaishi_terms_v1'
+        };
+        const DEFAULT_LANGUAGE = { id: 'ja', name: 'Japanese', native: '日本語', flag: '🇯🇵', builtin: true };
+        const LANGUAGE_PRESETS = [
+            { name: 'Spanish',  native: 'Español',   flag: '🇪🇸' },
+            { name: 'French',   native: 'Français',  flag: '🇫🇷' },
+            { name: 'German',   native: 'Deutsch',   flag: '🇩🇪' },
+            { name: 'Italian',  native: 'Italiano',  flag: '🇮🇹' },
+            { name: 'Portuguese', native: 'Português', flag: '🇧🇷' },
+            { name: 'Korean',   native: '한국어',     flag: '🇰🇷' },
+            { name: 'Mandarin Chinese', native: '中文', flag: '🇨🇳' },
+            { name: 'Russian',  native: 'Русский',   flag: '🇷🇺' },
+            { name: 'Arabic',   native: 'العربية',    flag: '🇸🇦' },
+            { name: 'Hindi',    native: 'हिन्दी',      flag: '🇮🇳' }
+        ];
+
+        let languages = [];
+        let currentLangId = 'ja';
+
+        function loadLanguages() {
+            let list = [];
+            try {
+                const raw = JSON.parse(storageGet(LANGS_KEY) || '[]');
+                if (Array.isArray(raw)) {
+                    list = raw.filter(function(l) { return l && l.id && l.name && l.id !== 'ja'; }).map(function(l) {
+                        return { id: String(l.id), name: String(l.name), native: String(l.native || ''), flag: String(l.flag || '🌐') };
+                    });
+                }
+            } catch (e) { list = []; }
+            languages = [Object.assign({}, DEFAULT_LANGUAGE)].concat(list);
+            const saved = storageGet(CURRENT_LANG_KEY);
+            currentLangId = languages.some(function(l) { return l.id === saved; }) ? saved : 'ja';
+        }
+        function saveLanguages() {
+            storageSet(LANGS_KEY, JSON.stringify(languages.filter(function(l) { return !l.builtin; })));
+        }
+        function getCurrentLang() {
+            return languages.find(function(l) { return l.id === currentLangId; }) || languages[0] || DEFAULT_LANGUAGE;
+        }
+        function isJapaneseMode() { return currentLangId === 'ja'; }
+        function langStorageKey(base, id) { return id === 'ja' ? base : base + '__' + id; }
+        function applyLangKeys() {
+            STORAGE_KEY = langStorageKey(BASE_KEYS.lessons, currentLangId);
+            COURSES_KEY = langStorageKey(BASE_KEYS.courses, currentLangId);
+            ACTIVE_KEY  = langStorageKey(BASE_KEYS.active,  currentLangId);
+            KAISHI_KEY  = langStorageKey(BASE_KEYS.kaishi,  currentLangId);
+        }
+
+        function applyLanguageUI() {
+            const lang = getCurrentLang();
+            const jp = isJapaneseMode();
+            document.documentElement.lang = jp ? 'en' : 'en';
+            document.title = 'Pimsleur ' + lang.name + ' \u2014 Lesson Study Hub';
+            const t = document.getElementById('app-title-lang'); if (t) t.textContent = lang.name;
+            const f = document.getElementById('lang-btn-flag'); if (f) f.textContent = lang.flag || '\uD83C\uDF10';
+            const n = document.getElementById('lang-btn-name'); if (n) n.textContent = lang.name;
+            document.querySelectorAll('.lang-name').forEach(function(el) { el.textContent = lang.name; });
+
+            const kanaNav = document.getElementById('nav-kana');
+            if (kanaNav) kanaNav.classList.toggle('hidden', !jp);
+            const furiBtn = document.getElementById('furigana-toggle');
+            if (furiBtn) furiBtn.classList.toggle('hidden', !jp);
+            const kanaTab = document.getElementById('tab-kana');
+            if (!jp && kanaTab && !kanaTab.classList.contains('hidden')) switchTab('dashboard');
+
+            const reply = document.getElementById('custom-reply-input');
+            if (reply) reply.placeholder = 'Type ' + lang.name + '...';
+            const cName = document.getElementById('course-edit-name');
+            if (cName) cName.placeholder = 'e.g. Pimsleur ' + lang.name + ' 1';
+            renderLangMenu();
+        }
+
+        function renderLangMenu() {
+            const list = document.getElementById('lang-menu-list');
+            if (!list) return;
+            list.innerHTML = languages.map(function(l) {
+                const active = l.id === currentLangId;
+                return '<div class="group flex items-center gap-1 rounded-lg ' + (active ? 'bg-rose-500/10' : 'hover:bg-slate-100 dark:hover:bg-neutral-900') + '">' +
+                    '<button onclick="switchLanguage(\'' + esc(l.id) + '\')" class="flex-1 min-w-0 text-left px-2.5 py-2 flex items-center gap-2.5">' +
+                        '<span class="text-lg leading-none">' + esc(l.flag || '\uD83C\uDF10') + '</span>' +
+                        '<span class="min-w-0">' +
+                            '<span class="block text-sm font-semibold truncate ' + (active ? 'text-rose-600 dark:text-rose-400' : '') + '">' + esc(l.name) + '</span>' +
+                            (l.native ? '<span class="block text-[11px] text-slate-500 dark:text-neutral-400 truncate">' + esc(l.native) + '</span>' : '') +
+                        '</span>' +
+                        (active ? '<i class="fa-solid fa-check text-xs text-rose-600 dark:text-rose-400 ml-auto"></i>' : '') +
+                    '</button>' +
+                    (l.builtin ? '' : '<button onclick="deleteLanguage(\'' + esc(l.id) + '\')" class="p-2 mr-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-500/10 opacity-60 hover:opacity-100 transition" title="Delete language"><i class="fa-solid fa-trash text-xs"></i></button>') +
+                '</div>';
+            }).join('');
+        }
+
+        function toggleLangMenu(ev) {
+            if (ev) ev.stopPropagation();
+            const menu = document.getElementById('lang-menu');
+            const open = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !open);
+            document.getElementById('lang-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        function closeLangMenu() {
+            const menu = document.getElementById('lang-menu');
+            if (menu) menu.classList.add('hidden');
+            const b = document.getElementById('lang-btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+        }
+
+        function switchLanguage(id) {
+            closeLangMenu();
+            if (id === currentLangId) return;
+            if (!languages.some(function(l) { return l.id === id; })) return;
+
+            stopCurrentAudio();
+            Object.keys(transcriptAudioMap).forEach(function(key) {
+                URL.revokeObjectURL(transcriptAudioMap[key].url);
+                delete transcriptAudioMap[key];
+            });
+            ['closeCourseLessonsModal', 'closeCourseEditModal', 'closeLessonEditModal'].forEach(function(fn) {
+                if (typeof window[fn] === 'function') window[fn]();
+            });
+
+            currentLangId = id;
+            storageSet(CURRENT_LANG_KEY, id);
+            applyLangKeys();
+
+            // reset per-session study state
+            currentFlashcardIdx = 0; isCardFlipped = false;
+            currentScenarioIdx = 0; chatStep = 0; chatHistory = []; pendingOptions = null;
+            currentQuizIdx = 0; quizScore = 0;
+            kanaPoolSignature = null;
+            kaishiFilter = 'all'; kaishiQuery = ''; kaishiPage = 1;
+            clmSearchIndex = null;
+            clmState = { courseId: null, page: 1, query: '', filter: 'all' };
+
+            loadFromStorage();
+            loadCourses();
+            loadKaishi();
+
+            applyLanguageUI();
+            renderCourses();
+            renderStats();
+            renderImportAllLessonsCount();
+            renderActiveBanner();
+            refreshLessonViews();
+            refreshCSVLessonScope();
+            renderKaishiTab();
+            refreshImportCourseSelect();
+            updateRomajiUI();
+            updateFuriganaUI();
+            switchTab('dashboard');
+            window.scrollTo({ top: 0 });
+        }
+
+        function openLangAddModal() {
+            closeLangMenu();
+            document.getElementById('lang-add-name').value = '';
+            document.getElementById('lang-add-native').value = '';
+            document.getElementById('lang-add-flag').value = '';
+            document.getElementById('lang-add-error').textContent = '';
+            const have = languages.map(function(l) { return l.name.toLowerCase(); });
+            document.getElementById('lang-presets').innerHTML = LANGUAGE_PRESETS.filter(function(p) {
+                return have.indexOf(p.name.toLowerCase()) === -1;
+            }).map(function(p, i) {
+                return '<button type="button" onclick="pickLanguagePreset(' + LANGUAGE_PRESETS.indexOf(p) + ')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-neutral-900 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition">' +
+                    p.flag + ' ' + esc(p.name) + '</button>';
+            }).join('');
+            const m = document.getElementById('lang-add-modal');
+            m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(function() { document.getElementById('lang-add-name').focus(); }, 30);
+        }
+        function closeLangAddModal() {
+            const m = document.getElementById('lang-add-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+        }
+        function pickLanguagePreset(i) {
+            const p = LANGUAGE_PRESETS[i]; if (!p) return;
+            document.getElementById('lang-add-name').value = p.name;
+            document.getElementById('lang-add-native').value = p.native;
+            document.getElementById('lang-add-flag').value = p.flag;
+            document.getElementById('lang-add-error').textContent = '';
+        }
+        function submitAddLanguage() {
+            const name = document.getElementById('lang-add-name').value.trim();
+            const native = document.getElementById('lang-add-native').value.trim();
+            const flag = document.getElementById('lang-add-flag').value.trim() || '\uD83C\uDF10';
+            const err = document.getElementById('lang-add-error');
+            if (!name) { err.textContent = 'Please enter a language name.'; return; }
+            if (languages.some(function(l) { return l.name.toLowerCase() === name.toLowerCase(); })) {
+                err.textContent = 'That language already exists.'; return;
+            }
+            let id = slugify(name).replace(/[^a-z0-9-]/g, '') || 'lang';
+            if (id === 'lesson') id = 'lang';
+            const base = id; let n = 2;
+            while (languages.some(function(l) { return l.id === id; }) || id === 'ja') { id = base + '-' + n++; }
+            languages.push({ id: id, name: name, native: native, flag: flag });
+            saveLanguages();
+            closeLangAddModal();
+            switchLanguage(id);
+        }
+        function deleteLanguage(id) {
+            const lang = languages.find(function(l) { return l.id === id; });
+            if (!lang || lang.builtin) return;
+            if (!confirm('Delete "' + lang.name + '" and ALL of its courses, lessons and Kaishi terms?\n\nThis cannot be undone.')) return;
+            if (!confirm('Really delete the ' + lang.name + ' workspace?')) return;
+            Object.keys(BASE_KEYS).forEach(function(k) {
+                try { localStorage.removeItem(langStorageKey(BASE_KEYS[k], id)); } catch (e) {}
+            });
+            languages = languages.filter(function(l) { return l.id !== id; });
+            saveLanguages();
+            if (currentLangId === id) {
+                currentLangId = '__none__';
+                switchLanguage('ja');
+            } else {
+                renderLangMenu();
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const sw = document.getElementById('lang-switcher');
+            if (sw && !sw.contains(e.target)) closeLangMenu();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Escape') return;
+            closeLangMenu();
+            const m = document.getElementById('lang-add-modal');
+            if (m && !m.classList.contains('hidden')) closeLangAddModal();
+        });
+
+        loadLanguages();
+        applyLangKeys();
 
         // =========================================================
         // FONT FAMILY CATALOG
@@ -2447,6 +2751,7 @@
         function exportAllData() {
             const backup = {
                 app: 'pimsleur-study-hub',
+                language: { id: currentLangId, name: getCurrentLang().name, native: getCurrentLang().native, flag: getCurrentLang().flag },
                 version: BACKUP_VERSION,
                 exportedAt: new Date().toISOString(),
                 courses: courses,
@@ -2471,7 +2776,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'pimsleur-backup-' + todayStamp() + '.json';
+            a.download = 'pimsleur-backup-' + currentLangId + '-' + todayStamp() + '.json';
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -2599,7 +2904,7 @@
         }
         function clearAllData() {
             if (!lessons.length && !courses.length && !kaishiTerms.length) { showSettingsMessage('Nothing to clear - already empty.', 'success'); return; }
-            if (!confirm('This will permanently DELETE all courses, lessons, Kaishi terms and preferences.\n\nContinue?')) return;
+            if (!confirm('This will permanently DELETE all courses, lessons, Kaishi terms and preferences for "' + getCurrentLang().name + '" (other languages are kept).\n\nContinue?')) return;
             if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
 
             Object.keys(transcriptAudioMap).forEach(function(key) {
@@ -2676,7 +2981,7 @@
             }
             if (!targetLessons.length) { showSettingsMessage('No lessons available.', 'error'); return; }
 
-            const rows = [['Lesson', 'Tag', 'Japanese', 'Furigana', 'Romaji', 'English', 'Notes']];
+            const rows = [['Lesson', 'Tag', getCurrentLang().name, 'Furigana', 'Romaji', 'English', 'Notes']];
             let totalCards = 0;
             targetLessons.forEach(function(lesson) {
                 (lesson.vocabulary || []).forEach(function(v) {
@@ -4234,7 +4539,7 @@
             }
         });
 
-        ['course-lessons-modal', 'course-edit-modal', 'lesson-edit-modal', 'settings-modal'].forEach(function(id) {
+        ['course-lessons-modal', 'course-edit-modal', 'lesson-edit-modal', 'settings-modal', 'lang-add-modal'].forEach(function(id) {
             const el = document.getElementById(id);
             if (el) el.addEventListener('click', function(e) {
                 if (e.target !== this) return;
@@ -4242,10 +4547,15 @@
                 else if (id === 'course-edit-modal') closeCourseEditModal();
                 else if (id === 'lesson-edit-modal') closeLessonEditModal();
                 else if (id === 'settings-modal') closeSettingsModal();
+                else if (id === 'lang-add-modal') closeLangAddModal();
             });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            ['lang-add-name', 'lang-add-native', 'lang-add-flag'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); submitAddLanguage(); } });
+            });
             const input = document.getElementById('kana-fill-input');
             if (input) input.addEventListener('keydown', function(e) {
                 if (e.key !== 'Enter') return;
@@ -4274,6 +4584,7 @@
                 loadFromStorage();
                 loadCourses();
                 loadKaishi();
+                applyLanguageUI();
 
                 renderCourses();
                 renderStats();
